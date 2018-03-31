@@ -175,11 +175,11 @@ window.gb = function(file, canvas, options) {
 
 	}, false);
 
-	
+
 	this.scopeEval = function(code) {return eval(code)}
 
-	var registers, flags, SP, PC, Cycles, IME, game, bios, CGBbios, MemRead, MemWrite, VRAM, RAM, OAM, IORAM, ZRAM, CRAM, biosActive, 
-	vblankComplete, lineCycles, GBScreen, buttonByte, paused, masterClock, frameskip, timeStart, sampleNumber, 
+	var registers, flags, SP, PC, Cycles, IME, game, bios, CGBbios, MemRead, MemWrite, VRAM, RAM, OAM, IORAM, ZRAM, CRAM, biosActive,
+	vblankComplete, lineCycles, GBScreen, buttonByte, paused, masterClock, frameskip, timeStart, sampleNumber,
 	MBC, MBCReadHandler, MBCWriteHandler, AudioEngine, AudioMerge, soundLout, soundRout, audioSampleRate, LCDstate, halted,
 	palettes, palettesInt32, ROMID, timerCounts, WaveRAMCycles, CGB, CGBDMA, CPUSpeed, CGBBGPal, CGBBGPalReg, CGBSprPal, CGBSprPalReg,
 	tileLayerData = new Uint8Array(160), tileLayerPalette = new Uint8Array(160), emptyTileLayer = new Uint8Array(160), bufferSize,
@@ -211,7 +211,7 @@ window.gb = function(file, canvas, options) {
 	if (file != null) this.loadROM(file);
 
 	var loadbios = new XMLHttpRequest();
-	loadbios.open("GET", options.rootDir+"dmgbios.bin");
+  loadbios.open("GET", "./dmgbios.bin");
 	loadbios.responseType = "arraybuffer";
 	loadbios.send();
 	loadbios.onload = function() {
@@ -225,7 +225,7 @@ window.gb = function(file, canvas, options) {
 	}
 
 	var loadCGBbios = new XMLHttpRequest();
-	loadCGBbios.open("GET", options.rootDir+"gbcbios.bin");
+  loadCGBbios.open("GET", "./gbcbios.bin");
 	loadCGBbios.responseType = "arraybuffer";
 	loadCGBbios.send();
 	loadCGBbios.onload = function() {
@@ -296,10 +296,10 @@ window.gb = function(file, canvas, options) {
 		function(){LD(3, 1)}, function(){LD(3, 2)}, function(){LD(3, 3)}, function(){LD(3, 4)}, function(){LD(3, 5)}, function(){LD(3, 6)}, function(){LDFHL(3)}, function(){LD(3, 0)}, function(){LD(4, 1)}, function(){LD(4, 2)}, function(){LD(4, 3)}, function(){LD(4, 4)}, function(){LD(4, 5)}, function(){LD(4, 6)}, function(){LDFHL(4)}, function(){LD(4, 0)},
 		function(){LD(5, 1)}, function(){LD(5, 2)}, function(){LD(5, 3)}, function(){LD(5, 4)}, function(){LD(5, 5)}, function(){LD(5, 6)}, function(){LDFHL(5)}, function(){LD(5, 0)}, function(){LD(6, 1)}, function(){LD(6, 2)}, function(){LD(6, 3)}, function(){LD(6, 4)}, function(){LD(6, 5)}, function(){LD(6, 6)}, function(){LDFHL(6)}, function(){LD(6, 0)},
 		function(){LDTHL(1)}, function(){LDTHL(2)}, function(){LDTHL(3)}, function(){LDTHL(4)}, function(){LDTHL(5)}, function(){LDTHL(6)}, HALT, function(){LDTHL(0)}, function(){LD(0, 1)}, function(){LD(0, 2)}, function(){LD(0, 3)}, function(){LD(0, 4)}, function(){LD(0, 5)}, function(){LD(0, 6)}, function(){LDFHL(0)}, function(){LD(0, 0)},
-		function(){ADD(1)}, function(){ADD(2)}, function(){ADD(3)}, function(){ADD(4)}, function(){ADD(5)}, function(){ADD(6)}, ADDHL, function(){ADD(0)}, function(){ADC(1)}, function(){ADC(2)}, function(){ADC(3)}, function(){ADC(4)}, function(){ADC(5)}, function(){ADC(6)}, ADCHL, function(){ADC(0)},  
-		function(){SUB(1)}, function(){SUB(2)}, function(){SUB(3)}, function(){SUB(4)}, function(){SUB(5)}, function(){SUB(6)}, SUBHL, function(){SUB(0)}, function(){SBC(1)}, function(){SBC(2)}, function(){SBC(3)}, function(){SBC(4)}, function(){SBC(5)}, function(){SBC(6)}, SBCHL, function(){SBC(0)},  
-		function(){AND(1)}, function(){AND(2)}, function(){AND(3)}, function(){AND(4)}, function(){AND(5)}, function(){AND(6)}, ANDHL, function(){AND(0)}, function(){XOR(1)}, function(){XOR(2)}, function(){XOR(3)}, function(){XOR(4)}, function(){XOR(5)}, function(){XOR(6)}, XORHL, function(){XOR(0)},  
-		function(){OR(1)}, function(){OR(2)}, function(){OR(3)}, function(){OR(4)}, function(){OR(5)}, function(){OR(6)}, ORHL, function(){OR(0)}, function(){CP(1)}, function(){CP(2)}, function(){CP(3)}, function(){CP(4)}, function(){CP(5)}, function(){CP(6)}, CPHL, function(){CP(0)},  
+		function(){ADD(1)}, function(){ADD(2)}, function(){ADD(3)}, function(){ADD(4)}, function(){ADD(5)}, function(){ADD(6)}, ADDHL, function(){ADD(0)}, function(){ADC(1)}, function(){ADC(2)}, function(){ADC(3)}, function(){ADC(4)}, function(){ADC(5)}, function(){ADC(6)}, ADCHL, function(){ADC(0)},
+		function(){SUB(1)}, function(){SUB(2)}, function(){SUB(3)}, function(){SUB(4)}, function(){SUB(5)}, function(){SUB(6)}, SUBHL, function(){SUB(0)}, function(){SBC(1)}, function(){SBC(2)}, function(){SBC(3)}, function(){SBC(4)}, function(){SBC(5)}, function(){SBC(6)}, SBCHL, function(){SBC(0)},
+		function(){AND(1)}, function(){AND(2)}, function(){AND(3)}, function(){AND(4)}, function(){AND(5)}, function(){AND(6)}, ANDHL, function(){AND(0)}, function(){XOR(1)}, function(){XOR(2)}, function(){XOR(3)}, function(){XOR(4)}, function(){XOR(5)}, function(){XOR(6)}, XORHL, function(){XOR(0)},
+		function(){OR(1)}, function(){OR(2)}, function(){OR(3)}, function(){OR(4)}, function(){OR(5)}, function(){OR(6)}, ORHL, function(){OR(0)}, function(){CP(1)}, function(){CP(2)}, function(){CP(3)}, function(){CP(4)}, function(){CP(5)}, function(){CP(6)}, CPHL, function(){CP(0)},
 		function(){RET(0, 0)}, function(){POP(1)}, function(){JP(0, 0)}, function(){JP(4, 1)}, function(){CALL(0, 0)}, function(){PUSH(1)}, ADDM, function(){RST(0)}, function(){RET(0, 1)}, NRET, function(){JP(0, 1)}, PrefixCB, function(){CALL(0, 1)}, function(){CALL(4, 1)}, ADCM, function(){RST(8)},
 		function(){RET(3, 0)}, function(){POP(3)}, function(){JP(3, 0)}, UNIMP, function(){CALL(3, 0)}, function(){PUSH(3)}, SUBM, function(){RST(16)}, function(){RET(3, 1)}, function(){EI(); NRET()}, function(){JP(3, 1)}, UNIMP, function(){CALL(3, 1)}, UNIMP, SBCM, function(){RST(24)},
 		LDH_M_A, function(){POP(5)}, LDH_C_A, UNIMP, UNIMP, function(){PUSH(5)}, ANDM, function(){RST(32)}, ADDSP, JPHL, LD_M_A, UNIMP, UNIMP, UNIMP, XORM, function(){RST(40)},
@@ -308,21 +308,21 @@ window.gb = function(file, canvas, options) {
 
 	var PrefixCBI =
 	[
-		function(){RLC(1)}, function(){RLC(2)}, function(){RLC(3)}, function(){RLC(4)}, function(){RLC(5)}, function(){RLC(6)}, RLCHL, function(){RLC(0)}, function(){RRC(1)}, function(){RRC(2)}, function(){RRC(3)}, function(){RRC(4)}, function(){RRC(5)}, function(){RRC(6)}, RRCHL, function(){RRC(0)}, 
-		function(){RL(1)}, function(){RL(2)}, function(){RL(3)}, function(){RL(4)}, function(){RL(5)}, function(){RL(6)}, RLHL, function(){RL(0)}, function(){RR(1)}, function(){RR(2)}, function(){RR(3)}, function(){RR(4)}, function(){RR(5)}, function(){RR(6)}, RRHL, function(){RR(0)}, 
-		function(){SLA(1)}, function(){SLA(2)}, function(){SLA(3)}, function(){SLA(4)}, function(){SLA(5)}, function(){SLA(6)}, SLAHL, function(){SLA(0)},function(){SRA(1)}, function(){SRA(2)}, function(){SRA(3)}, function(){SRA(4)}, function(){SRA(5)}, function(){SRA(6)}, SRAHL, function(){SRA(0)}, 
-		function(){SWAP(1)}, function(){SWAP(2)}, function(){SWAP(3)}, function(){SWAP(4)}, function(){SWAP(5)}, function(){SWAP(6)}, SWAPHL, function(){SWAP(0)},function(){SRL(1)}, function(){SRL(2)}, function(){SRL(3)}, function(){SRL(4)}, function(){SRL(5)}, function(){SRL(6)}, SRLHL, function(){SRL(0)}, 
-		function(){BIT(0, 1)}, function(){BIT(0, 2)}, function(){BIT(0, 3)}, function(){BIT(0, 4)}, function(){BIT(0, 5)}, function(){BIT(0, 6)}, function(){BITHL(0)}, function(){BIT(0, 0)}, function(){BIT(1, 1)}, function(){BIT(1, 2)}, function(){BIT(1, 3)}, function(){BIT(1, 4)}, function(){BIT(1, 5)}, function(){BIT(1, 6)}, function(){BITHL(1)}, function(){BIT(1, 0)}, 
+		function(){RLC(1)}, function(){RLC(2)}, function(){RLC(3)}, function(){RLC(4)}, function(){RLC(5)}, function(){RLC(6)}, RLCHL, function(){RLC(0)}, function(){RRC(1)}, function(){RRC(2)}, function(){RRC(3)}, function(){RRC(4)}, function(){RRC(5)}, function(){RRC(6)}, RRCHL, function(){RRC(0)},
+		function(){RL(1)}, function(){RL(2)}, function(){RL(3)}, function(){RL(4)}, function(){RL(5)}, function(){RL(6)}, RLHL, function(){RL(0)}, function(){RR(1)}, function(){RR(2)}, function(){RR(3)}, function(){RR(4)}, function(){RR(5)}, function(){RR(6)}, RRHL, function(){RR(0)},
+		function(){SLA(1)}, function(){SLA(2)}, function(){SLA(3)}, function(){SLA(4)}, function(){SLA(5)}, function(){SLA(6)}, SLAHL, function(){SLA(0)},function(){SRA(1)}, function(){SRA(2)}, function(){SRA(3)}, function(){SRA(4)}, function(){SRA(5)}, function(){SRA(6)}, SRAHL, function(){SRA(0)},
+		function(){SWAP(1)}, function(){SWAP(2)}, function(){SWAP(3)}, function(){SWAP(4)}, function(){SWAP(5)}, function(){SWAP(6)}, SWAPHL, function(){SWAP(0)},function(){SRL(1)}, function(){SRL(2)}, function(){SRL(3)}, function(){SRL(4)}, function(){SRL(5)}, function(){SRL(6)}, SRLHL, function(){SRL(0)},
+		function(){BIT(0, 1)}, function(){BIT(0, 2)}, function(){BIT(0, 3)}, function(){BIT(0, 4)}, function(){BIT(0, 5)}, function(){BIT(0, 6)}, function(){BITHL(0)}, function(){BIT(0, 0)}, function(){BIT(1, 1)}, function(){BIT(1, 2)}, function(){BIT(1, 3)}, function(){BIT(1, 4)}, function(){BIT(1, 5)}, function(){BIT(1, 6)}, function(){BITHL(1)}, function(){BIT(1, 0)},
 		function(){BIT(2, 1)}, function(){BIT(2, 2)}, function(){BIT(2, 3)}, function(){BIT(2, 4)}, function(){BIT(2, 5)}, function(){BIT(2, 6)}, function(){BITHL(2)}, function(){BIT(2, 0)}, function(){BIT(3, 1)}, function(){BIT(3, 2)}, function(){BIT(3, 3)}, function(){BIT(3, 4)}, function(){BIT(3, 5)}, function(){BIT(3, 6)}, function(){BITHL(3)}, function(){BIT(3, 0)},
-		function(){BIT(4, 1)}, function(){BIT(4, 2)}, function(){BIT(4, 3)}, function(){BIT(4, 4)}, function(){BIT(4, 5)}, function(){BIT(4, 6)}, function(){BITHL(4)}, function(){BIT(4, 0)}, function(){BIT(5, 1)}, function(){BIT(5, 2)}, function(){BIT(5, 3)}, function(){BIT(5, 4)}, function(){BIT(5, 5)}, function(){BIT(5, 6)}, function(){BITHL(5)}, function(){BIT(5, 0)}, 
+		function(){BIT(4, 1)}, function(){BIT(4, 2)}, function(){BIT(4, 3)}, function(){BIT(4, 4)}, function(){BIT(4, 5)}, function(){BIT(4, 6)}, function(){BITHL(4)}, function(){BIT(4, 0)}, function(){BIT(5, 1)}, function(){BIT(5, 2)}, function(){BIT(5, 3)}, function(){BIT(5, 4)}, function(){BIT(5, 5)}, function(){BIT(5, 6)}, function(){BITHL(5)}, function(){BIT(5, 0)},
 		function(){BIT(6, 1)}, function(){BIT(6, 2)}, function(){BIT(6, 3)}, function(){BIT(6, 4)}, function(){BIT(6, 5)}, function(){BIT(6, 6)}, function(){BITHL(6)}, function(){BIT(6, 0)}, function(){BIT(7, 1)}, function(){BIT(7, 2)}, function(){BIT(7, 3)}, function(){BIT(7, 4)}, function(){BIT(7, 5)}, function(){BIT(7, 6)}, function(){BITHL(7)}, function(){BIT(7, 0)},
-		function(){RES(0, 1)}, function(){RES(0, 2)}, function(){RES(0, 3)}, function(){RES(0, 4)}, function(){RES(0, 5)}, function(){RES(0, 6)}, function(){RESHL(0)}, function(){RES(0, 0)}, function(){RES(1, 1)}, function(){RES(1, 2)}, function(){RES(1, 3)}, function(){RES(1, 4)}, function(){RES(1, 5)}, function(){RES(1, 6)}, function(){RESHL(1)}, function(){RES(1, 0)}, 
+		function(){RES(0, 1)}, function(){RES(0, 2)}, function(){RES(0, 3)}, function(){RES(0, 4)}, function(){RES(0, 5)}, function(){RES(0, 6)}, function(){RESHL(0)}, function(){RES(0, 0)}, function(){RES(1, 1)}, function(){RES(1, 2)}, function(){RES(1, 3)}, function(){RES(1, 4)}, function(){RES(1, 5)}, function(){RES(1, 6)}, function(){RESHL(1)}, function(){RES(1, 0)},
 		function(){RES(2, 1)}, function(){RES(2, 2)}, function(){RES(2, 3)}, function(){RES(2, 4)}, function(){RES(2, 5)}, function(){RES(2, 6)}, function(){RESHL(2)}, function(){RES(2, 0)}, function(){RES(3, 1)}, function(){RES(3, 2)}, function(){RES(3, 3)}, function(){RES(3, 4)}, function(){RES(3, 5)}, function(){RES(3, 6)}, function(){RESHL(3)}, function(){RES(3, 0)},
-		function(){RES(4, 1)}, function(){RES(4, 2)}, function(){RES(4, 3)}, function(){RES(4, 4)}, function(){RES(4, 5)}, function(){RES(4, 6)}, function(){RESHL(4)}, function(){RES(4, 0)}, function(){RES(5, 1)}, function(){RES(5, 2)}, function(){RES(5, 3)}, function(){RES(5, 4)}, function(){RES(5, 5)}, function(){RES(5, 6)}, function(){RESHL(5)}, function(){RES(5, 0)}, 
+		function(){RES(4, 1)}, function(){RES(4, 2)}, function(){RES(4, 3)}, function(){RES(4, 4)}, function(){RES(4, 5)}, function(){RES(4, 6)}, function(){RESHL(4)}, function(){RES(4, 0)}, function(){RES(5, 1)}, function(){RES(5, 2)}, function(){RES(5, 3)}, function(){RES(5, 4)}, function(){RES(5, 5)}, function(){RES(5, 6)}, function(){RESHL(5)}, function(){RES(5, 0)},
 		function(){RES(6, 1)}, function(){RES(6, 2)}, function(){RES(6, 3)}, function(){RES(6, 4)}, function(){RES(6, 5)}, function(){RES(6, 6)}, function(){RESHL(6)}, function(){RES(6, 0)}, function(){RES(7, 1)}, function(){RES(7, 2)}, function(){RES(7, 3)}, function(){RES(7, 4)}, function(){RES(7, 5)}, function(){RES(7, 6)}, function(){RESHL(7)}, function(){RES(7, 0)},
-		function(){SET(0, 1)}, function(){SET(0, 2)}, function(){SET(0, 3)}, function(){SET(0, 4)}, function(){SET(0, 5)}, function(){SET(0, 6)}, function(){SETHL(0)}, function(){SET(0, 0)}, function(){SET(1, 1)}, function(){SET(1, 2)}, function(){SET(1, 3)}, function(){SET(1, 4)}, function(){SET(1, 5)}, function(){SET(1, 6)}, function(){SETHL(1)}, function(){SET(1, 0)}, 
+		function(){SET(0, 1)}, function(){SET(0, 2)}, function(){SET(0, 3)}, function(){SET(0, 4)}, function(){SET(0, 5)}, function(){SET(0, 6)}, function(){SETHL(0)}, function(){SET(0, 0)}, function(){SET(1, 1)}, function(){SET(1, 2)}, function(){SET(1, 3)}, function(){SET(1, 4)}, function(){SET(1, 5)}, function(){SET(1, 6)}, function(){SETHL(1)}, function(){SET(1, 0)},
 		function(){SET(2, 1)}, function(){SET(2, 2)}, function(){SET(2, 3)}, function(){SET(2, 4)}, function(){SET(2, 5)}, function(){SET(2, 6)}, function(){SETHL(2)}, function(){SET(2, 0)}, function(){SET(3, 1)}, function(){SET(3, 2)}, function(){SET(3, 3)}, function(){SET(3, 4)}, function(){SET(3, 5)}, function(){SET(3, 6)}, function(){SETHL(3)}, function(){SET(3, 0)},
-		function(){SET(4, 1)}, function(){SET(4, 2)}, function(){SET(4, 3)}, function(){SET(4, 4)}, function(){SET(4, 5)}, function(){SET(4, 6)}, function(){SETHL(4)}, function(){SET(4, 0)}, function(){SET(5, 1)}, function(){SET(5, 2)}, function(){SET(5, 3)}, function(){SET(5, 4)}, function(){SET(5, 5)}, function(){SET(5, 6)}, function(){SETHL(5)}, function(){SET(5, 0)}, 
+		function(){SET(4, 1)}, function(){SET(4, 2)}, function(){SET(4, 3)}, function(){SET(4, 4)}, function(){SET(4, 5)}, function(){SET(4, 6)}, function(){SETHL(4)}, function(){SET(4, 0)}, function(){SET(5, 1)}, function(){SET(5, 2)}, function(){SET(5, 3)}, function(){SET(5, 4)}, function(){SET(5, 5)}, function(){SET(5, 6)}, function(){SETHL(5)}, function(){SET(5, 0)},
 		function(){SET(6, 1)}, function(){SET(6, 2)}, function(){SET(6, 3)}, function(){SET(6, 4)}, function(){SET(6, 5)}, function(){SET(6, 6)}, function(){SETHL(6)}, function(){SET(6, 0)}, function(){SET(7, 1)}, function(){SET(7, 2)}, function(){SET(7, 3)}, function(){SET(7, 4)}, function(){SET(7, 5)}, function(){SET(7, 6)}, function(){SETHL(7)}, function(){SET(7, 0)},
 	]
 
@@ -362,7 +362,7 @@ window.gb = function(file, canvas, options) {
 			CPUSpeed: CPUSpeed,
 
 			MBC: MBC,
-			
+
 			registers: byteToString(registers),
 			flags: flags,
 			SP: SP,
@@ -405,7 +405,7 @@ window.gb = function(file, canvas, options) {
 		}
 
 		MBC = obj.MBC;
-			
+
 		registers = stringToByte(obj.registers);
 		flags = obj.flags;
 		SP = obj.SP;
@@ -675,7 +675,7 @@ window.gb = function(file, canvas, options) {
 			var palette = IORAM[0x6A]&0x3F
 			CGBSprPalReg[palette] = a;
 			var colNum = Math.floor(palette/2)
-			var mult = 8.225806451612904; 
+			var mult = 8.225806451612904;
 			CGBSprPal.set([Math.round((CGBSprPalReg[colNum*2]&0x1F)*mult), Math.round(((CGBSprPalReg[colNum*2]>>5)+((CGBSprPalReg[colNum*2+1]&3)<<3))*mult), Math.round(((CGBSprPalReg[colNum*2+1]&0x7C)>>2)*mult), 255], colNum*4)
 			if (IORAM[0x6A]&0x80) {
 				IORAM[0x6A] = ((IORAM[0x6A]+1)&0x3F)|0x80
@@ -716,22 +716,22 @@ window.gb = function(file, canvas, options) {
 		AudioEngine[0].lengthCtr = (64-(a&0x3F)); // can be written while off on DMG for whatever reason
 	}
 
-	IOWriteFunctions[0x12] = function(a, b) { 
-		if (IORAM[0x26]&0x80) { 
+	IOWriteFunctions[0x12] = function(a, b) {
+		if (IORAM[0x26]&0x80) {
 
 			//ZOMBIE MODE
 			var attr = IORAM[esweepPtrs[0]];
 			if (IORAM[0x26]&(1<<0)) {
 				var period = attr&7
-				
+
 			}
 
-			IORAM[b] = a; 
+			IORAM[b] = a;
 			if (!(a&0xF8)) channelOff(0); //DAC Power Off
 			soundPhase = 1;
 
 
-		} 
+		}
 	}
 
 	IOWriteFunctions[0x13] = function(a, b) {
@@ -753,7 +753,7 @@ window.gb = function(file, canvas, options) {
 
 			if ((a>>7) == 1) triggerChannel(0);
 			else setChannelFrequency(0);
-			
+
 		}
 	}
 
@@ -762,26 +762,26 @@ window.gb = function(file, canvas, options) {
 	IOWriteFunctions[0x16] = function(a, b) {
 		if (IORAM[0x26]&0x80) {
 			IORAM[b] = a;
-			AudioEngine[1].duty = duties[a>>6]	
+			AudioEngine[1].duty = duties[a>>6]
 		} else {
 			if (CGB) return;
 		}
 		AudioEngine[1].lengthCtr = (64-(a&0x3F));
 	}
 
-	IOWriteFunctions[0x17] = function(a, b) { 
-		if (IORAM[0x26]&0x80) { 
+	IOWriteFunctions[0x17] = function(a, b) {
+		if (IORAM[0x26]&0x80) {
 
 			//ZOMBIE MODE
 			var attr = IORAM[esweepPtrs[1]];
 			if (IORAM[0x26]&(1<<1)) {
 				var period = attr&7
-				
+
 			}
 
-			IORAM[b] = a; 
+			IORAM[b] = a;
 			if (!(a&0xF8)) channelOff(1); //DAC Power Off
-		} 
+		}
 	}
 
 	IOWriteFunctions[0x18] = function(a, b) {
@@ -805,25 +805,25 @@ window.gb = function(file, canvas, options) {
 		}
 	}
 
-	IOWriteFunctions[0x1A] = function(a, b) { 
-		if (IORAM[0x26]&0x80) { 
-			IORAM[b] = a; 
+	IOWriteFunctions[0x1A] = function(a, b) {
+		if (IORAM[0x26]&0x80) {
+			IORAM[b] = a;
 			if (!(a&0x80)) channelOff(2);
-		} 
+		}
 	}
-	IOWriteFunctions[0x1B] = function(a, b) { 
-		if (IORAM[0x26]&0x80) { 
-			IORAM[b] = a; 
+	IOWriteFunctions[0x1B] = function(a, b) {
+		if (IORAM[0x26]&0x80) {
+			IORAM[b] = a;
 		} else {
 			if (CGB) return;
 		}
 		AudioEngine[2].lengthCtr = (256-a);
 	}
-	IOWriteFunctions[0x1C] = function(a, b) { 
-		if (IORAM[0x26]&0x80) { 
-			IORAM[b] = a; 
+	IOWriteFunctions[0x1C] = function(a, b) {
+		if (IORAM[0x26]&0x80) {
+			IORAM[b] = a;
 			readAndUpdateVolume(2);
-		} 
+		}
 	}
 
 	IOWriteFunctions[0x1D] = function(a, b) {
@@ -849,27 +849,27 @@ window.gb = function(file, canvas, options) {
 
 	IOWriteFunctions[0x1F] = function(a, b) { if (IORAM[0x26]&0x80) { IORAM[b] = a; } }
 
-	IOWriteFunctions[0x20] = function(a, b) { 
-		if (IORAM[0x26]&0x80) { 
-			IORAM[b] = a; 
+	IOWriteFunctions[0x20] = function(a, b) {
+		if (IORAM[0x26]&0x80) {
+			IORAM[b] = a;
 		} else {
 			if (CGB) return;
 		}
 		AudioEngine[3].lengthCtr = (64-(a&0x3F));
 	}
-	IOWriteFunctions[0x21] = function(a, b) { 
-		if (IORAM[0x26]&0x80) { 
+	IOWriteFunctions[0x21] = function(a, b) {
+		if (IORAM[0x26]&0x80) {
 
 			//ZOMBIE MODE
 			var attr = IORAM[esweepPtrs[3]];
 			if (IORAM[0x26]&(1<<3)) {
 				var period = attr&7
-				
+
 			}
 
-			IORAM[b] = a; 
+			IORAM[b] = a;
 			if (!(a&0xF8)) channelOff(3); //DAC Power Off
-		} 
+		}
 	}
 
 	IOWriteFunctions[0x22] = function(a, b) {
@@ -942,16 +942,16 @@ window.gb = function(file, canvas, options) {
 	IOReadFunctions[0x23] = function(a) { return IORAM[a] | 0xBF; }
 	IOReadFunctions[0x26] = function(a) { return IORAM[a] | 0x70; }
 
-	IOWriteFunctions[0x47] = function(a, b) { 
-		IORAM[b] = a; 
+	IOWriteFunctions[0x47] = function(a, b) {
+		IORAM[b] = a;
 		palettes.set(readDMGPalette(0), 0);
 	}
-	IOWriteFunctions[0x48] = function(a, b) { 
-		IORAM[b] = a; 
+	IOWriteFunctions[0x48] = function(a, b) {
+		IORAM[b] = a;
 		palettes.set(readDMGPalette(1), 16);
 	}
-	IOWriteFunctions[0x49] = function(a, b) { 
-		IORAM[b] = a; 
+	IOWriteFunctions[0x49] = function(a, b) {
+		IORAM[b] = a;
 		palettes.set(readDMGPalette(2), 32);
 	}
 
@@ -1000,7 +1000,7 @@ window.gb = function(file, canvas, options) {
 		var mempos = a<<8;
 		for (var i=0; i<0x9F; i++) {
 			OAM[i] = MemRead(mempos++);
-			/*if (i == 2) { 
+			/*if (i == 2) {
 				console.log(OAM[2] + " " + (mempos-1));
 				console.log(MemRead(55042) + " why");
 				Cycles -= 4;
@@ -1103,7 +1103,7 @@ window.gb = function(file, canvas, options) {
 	}
 
 	function prepareAudioEngine() {
-		var initRequired = (typeof AudioEngine == "undefined") 
+		var initRequired = (typeof AudioEngine == "undefined")
 
 		if (initRequired) {
 			AudioEngine = []
@@ -1119,9 +1119,9 @@ window.gb = function(file, canvas, options) {
 		var buffers = 4;
 		AudioEngine.buffers = buffers; // immediate audio is not possible without clicks since audio is at a diff frequency
 
-		if (initRequired) { 
+		if (initRequired) {
 			//if (iOS && !(NoAudioAPI)) AudioEngine.out = new iosSucksProcessorNode(GBAudioContext, bufferSize, 1);
-			//else 
+			//else
 			AudioEngine.out = GBAudioContext.createScriptProcessor(bufferSize, 0, stereo?2:1);
 			AudioEngine.out.connect(GBAudioContext.destination);
 		}
@@ -1192,7 +1192,7 @@ window.gb = function(file, canvas, options) {
 						AudioEngine[0].fsweep = period;
 						calculateSweep(true);
 						calculateSweep(false);
-					} 
+					}
 				} else {
 					if (--AudioEngine[0].fsweep <= 0) {
 						AudioEngine[0].fsweep = 8;
@@ -1282,7 +1282,7 @@ window.gb = function(file, canvas, options) {
 	var lengthPtrs = [0x14, 0x19, 0x1E, 0x23]
 
 	function triggerChannel(channel) { //todo: simplify.
-		if (false) { //DISABLED until accurate timings are achieved 
+		if (false) { //DISABLED until accurate timings are achieved
 			if ((channel == 2) && (IORAM[0x26]&4)) { //special dmg behaviour corrupts wave ram while on
 				var temp = Math.floor(AudioEngine[2].phase/2);
 				if (temp > 3) { //corrupt first 3 bytes
@@ -1315,12 +1315,12 @@ window.gb = function(file, canvas, options) {
 
 		AudioEngine[channel].esweep = 0;
 
-		if (channel == 0) { 
+		if (channel == 0) {
 			var period = (IORAM[0x10]>>4)&0x7
 			var shift = IORAM[0x10]&7
 			AudioEngine[0].fsweep = (period==0)?8:period;
 			AudioEngine[0].fSweepEnabled = (period+shift > 0);
-			AudioEngine[0].freqreg = IORAM[0x13]+((IORAM[0x14]&7)<<8); 
+			AudioEngine[0].freqreg = IORAM[0x13]+((IORAM[0x14]&7)<<8);
 			if (IORAM[0x10]&7) { calculateSweep(false); } //i don't think this affects frequency, just checks
 		}
 
@@ -1334,15 +1334,15 @@ window.gb = function(file, canvas, options) {
 
 	function readAndUpdateVolume(channel) {
 		switch (channel) {
-			case 0: 
+			case 0:
 				var volume = (IORAM[0x12]>>4)/15
 				break;
-			case 1: 
+			case 1:
 				var volume = (IORAM[0x17]>>4)/15
 				break;
-			case 2: 
+			case 2:
 				switch ((IORAM[0x1C]>>5)&3) {
-					case 0: 
+					case 0:
 						var volume = 0;
 						break;
 					case 1:
@@ -1356,7 +1356,7 @@ window.gb = function(file, canvas, options) {
 						break;
 				}
 				break;
-			case 3: 
+			case 3:
 				var volume = (IORAM[0x21]>>4)/15
 				break;
 		}
@@ -1366,15 +1366,15 @@ window.gb = function(file, canvas, options) {
 
 	function setChannelFrequency(channel) {
 		switch (channel) {
-			case 0: 
+			case 0:
 				var frequency = IORAM[0x13]+((IORAM[0x14]&7)<<8)
 				AudioEngine[channel].frequency = audioSampleRate/(524288/((2048-frequency)*4));
 				break;
-			case 1: 
+			case 1:
 				var frequency = IORAM[0x18]+((IORAM[0x19]&7)<<8)
 				AudioEngine[channel].frequency = audioSampleRate/(524288/((2048-frequency)*4));
 				break;
-			case 2: 
+			case 2:
 				var frequency = IORAM[0x1D]+((IORAM[0x1E]&7)<<8)
 				AudioEngine[channel].frequency = (4194304/((2048-frequency)*2))/audioSampleRate;
 				break;
@@ -1426,7 +1426,7 @@ window.gb = function(file, canvas, options) {
 
 			var tile1 = VRAM[tileOffset]
 			var tile2 = VRAM[tileOffset+1]
-			
+
 			var pnum
 			for (i=0; i<160; i++) {
 				pnum = ((tile1>>xfine)&1)+(((tile2>>xfine)&1)<<1);
@@ -1603,25 +1603,25 @@ window.gb = function(file, canvas, options) {
 		{type: 0, hardware: ["RAM", "BATTERY"]},
 		null,
 		{type: 6, hardware: []},//MMM01
-		{type: 6, hardware: ["RAM"]}, 
-		{type: 6, hardware: ["RAM", "BATTERY"]}, 
+		{type: 6, hardware: ["RAM"]},
+		{type: 6, hardware: ["RAM", "BATTERY"]},
 		null,
-		{type: 3, hardware: ["TIMER", "BATTERY"]}, 
-		{type: 3, hardware: ["TIMER", "RAM", "BATTERY"]}, 
-		{type: 3, hardware: []}, 
+		{type: 3, hardware: ["TIMER", "BATTERY"]},
+		{type: 3, hardware: ["TIMER", "RAM", "BATTERY"]},
+		{type: 3, hardware: []},
 		{type: 3, hardware: ["RAM"]},
 		{type: 3, hardware: ["RAM", "BATTERY"]},
 		null,
-		{type: 4, hardware: []}, 
-		{type: 4, hardware: ["RAM"]}, 
+		{type: 4, hardware: []},
+		{type: 4, hardware: ["RAM"]},
 		{type: 4, hardware: ["RAM", "BATTERY"]},
 		null,
-		{type: 5, hardware: []}, 
-		{type: 5, hardware: ["RAM"]}, 
-		{type: 5, hardware: ["RAM", "BATTERY"]}, 
-		{type: 5, hardware: ["RUMBLE"]}, 
-		{type: 5, hardware: ["RUMBLE", "RAM"]}, 
-		{type: 5, hardware: ["RUMBLE", "RAM", "BATTERY"]},  
+		{type: 5, hardware: []},
+		{type: 5, hardware: ["RAM"]},
+		{type: 5, hardware: ["RAM", "BATTERY"]},
+		{type: 5, hardware: ["RUMBLE"]},
+		{type: 5, hardware: ["RUMBLE", "RAM"]},
+		{type: 5, hardware: ["RUMBLE", "RAM", "BATTERY"]},
 	]
 
 	var MBCWriteHandlers = []
@@ -1721,7 +1721,7 @@ window.gb = function(file, canvas, options) {
 		} else if (a < 0x8000) {
 			return game[(a-0x4000)+MBC.ROMbank*0x4000];
 		} else if ((a < 0xC000) && (a >= 0xA000)) {
-			if (MBC.RAMenable) { 
+			if (MBC.RAMenable) {
 				if (MBC.RAMbank < 4) return CRAM[a-0xA000+MBC.RAMbank*0x2000];
 				else if (MBC.RAMbank == 8) return MBC.RTC.seconds;
 				else if (MBC.RAMbank == 9) return MBC.RTC.minutes;
@@ -1805,7 +1805,7 @@ window.gb = function(file, canvas, options) {
 
 		GBObj.cycle = cycle; //expose certain functions
 		GBObj.frameCycles = 0;
-		
+
 		for (var i=0; i<0x80; i++) {
 			if (IOReadFunctions[i] == null) IOReadFunctions[i] = IOReadDefault;
 			if (IOWriteFunctions[i] == null) IOWriteFunctions[i] = IOWriteDefault;
@@ -1835,8 +1835,8 @@ window.gb = function(file, canvas, options) {
 		MBC = JSON.parse(JSON.stringify(MBCTable[mbcid]));
 		GBObj.MBC = MBC; //make MBC public
 
-		if (MBC.hardware.indexOf("RAM") > -1) { 
-			MBC.RAMenable = false; 
+		if (MBC.hardware.indexOf("RAM") > -1) {
+			MBC.RAMenable = false;
 			MBC.RAMbank = 0;
 			if (reloadBattery) {
 				if (MBC.hardware.indexOf("BATTERY") > -1) loadBattery();
@@ -1949,7 +1949,7 @@ window.gb = function(file, canvas, options) {
 
 	this.prepareButtonByte = function() { //for default included controls system
 		buttonByte = ((keysArray[keyConfig.DOWN])<<3)+((keysArray[keyConfig.UP])<<2)+((keysArray[keyConfig.LEFT])<<1)+((keysArray[keyConfig.RIGHT])<<0)+ ((keysArray[keyConfig.START])<<7)+((keysArray[keyConfig.SELECT])<<6)+((keysArray[keyConfig.B])<<5)+(keysArray[keyConfig.A]<<4);
-		
+
 		if (getGamepads) { //gamepad support present!
 			//if (navigator.webkitGetGamepads) var gamepads = navigator.webkitGetGamepads();
 			//if (navigator.webkitGamepads) var gamepads = navigator.webkitGamepads();
@@ -1994,7 +1994,7 @@ window.gb = function(file, canvas, options) {
 				GBObj.frameCycles -= 70224;
 
 				audioSyncFrames--;
-				if (Date.now()-frameStart > 16) { 
+				if (Date.now()-frameStart > 16) {
 					audioSyncFrames = 1;
 					break; //can't make it back to audio sync, break out of loop before you freeze the gb
 				}
@@ -2117,11 +2117,11 @@ window.gb = function(file, canvas, options) {
 				drawFrame();
 				LCDstate = 1;
 				//vbl interrupt
-				if (IORAM[0x40]&0x80) { 
+				if (IORAM[0x40]&0x80) {
 					IORAM[0x0F] |= 0x1
 					if (IORAM[0x41]&0x10) { //lcdstat vbl
 						IORAM[0x0F] |= 0x2
-					} 
+					}
 				}
 			} else if (IORAM[0x44] == 0) {
 				LCDstate = 2;
@@ -2322,7 +2322,7 @@ window.gb = function(file, canvas, options) {
 		if (IORAM[0x07]&4) { //only check if clock is enabled.
 			//clock ticks until next interrupt given by 256-IORAM[0x05]
 			//we need to work back to get the cycles until the next timer interrupt.
-			
+
 			var cycles = (256-IORAM[0x05])-1; //distance to timer overflow, minus 1 as the first tick's duration is NOT a full set of cycles, but instead a fraction.
 			cycles *= 16*(timerMods[IORAM[0x07]&3]+1); //multiply by cycle length of one clock tick.
 			cycles += 16-(masterClock-timerCycles); //time to first clock check
@@ -2332,7 +2332,7 @@ window.gb = function(file, canvas, options) {
 			if ((ZRAM[0x7F]&0x4) && cycles<skipTo) skipTo = cycles;
 		}
 
-		if (IORAM[0x40]&0x80) { //only if screen enabled 
+		if (IORAM[0x40]&0x80) { //only if screen enabled
 			//VBL predicion, can also cause an lcd stat interrupt!
 			var linesToVBL = 144-IORAM[0x44];
 			if (linesToVBL <= 0) linesToVBL += 154; //handle wraparound for vbl
@@ -2355,7 +2355,7 @@ window.gb = function(file, canvas, options) {
 				linesToVBL = IORAM[0x45]-IORAM[0x44];
 				if (linesToVBL <= 0) linesToVBL += 154; //handle wraparound for vbl
 				var cycles = ((linesToVBL-1)*456+(456-lineCycles))*CPUSpeed; //calculate cycles to next vbl, mul by CPUSpeed
-				
+
 				if (interruptCycles[1]>cycles) interruptCycles[1] = cycles; //lcdstat on scancoin
 			}
 
@@ -2370,7 +2370,7 @@ window.gb = function(file, canvas, options) {
 				if (IORAM[0x41]&0x8) { //mode 0: hblank interrupt
 					if ((IORAM[0x44]>143) || ((IORAM[0x44]==143) && lineCycles>252)) { //after lineCycle 252 in line 143 there are no more hblanks until the next interrupt.
 						var cycles = blankCycles+(252*CPUSpeed)
-						if (interruptCycles[1]>cycles) interruptCycles[1] = cycles; 
+						if (interruptCycles[1]>cycles) interruptCycles[1] = cycles;
 					} else {
 						var cycles = (252-lineCycles);
 						if (cycles<=0) cycles += 456;
@@ -2415,7 +2415,7 @@ window.gb = function(file, canvas, options) {
 
 		if ((LCDstate == 2 || LCDstate == 3) && lineCycles>252) {
 			if (CGBDMA.active && CGBDMA.mode) { CGBDMAStep(16); }
-			if (!(frameskip)) drawScanline(IORAM[0x44]); 
+			if (!(frameskip)) drawScanline(IORAM[0x44]);
 		}
 
 		while (lineCycles >= 456) {
@@ -2423,7 +2423,7 @@ window.gb = function(file, canvas, options) {
 			lineCycles -= 456
 			if (IORAM[0x44] < 144 && lineCycles > 252) {
 				if (CGBDMA.active && CGBDMA.mode) { CGBDMAStep(16); }
-				if (!(frameskip)) drawScanline(IORAM[0x44]); 
+				if (!(frameskip)) drawScanline(IORAM[0x44]);
 			} else if (IORAM[0x44] == 144) {
 				drawFrame();
 			}
@@ -2443,9 +2443,9 @@ window.gb = function(file, canvas, options) {
 		//timer update
 
 		var divCountUpdates = (masterClock-timerCycles)>>4; //number of div count updates
-		
+
 		IORAM[0x04] = (IORAM[0x04]+(divCountUpdates>>4))&0xFF; //advance static clock
-		
+
 		if (IORAM[0x07]&4) {
 			//advance dynamic clock
 			//need to be careful because usually this does not start from 0
@@ -2807,7 +2807,7 @@ window.gb = function(file, canvas, options) {
 		SP = (SP+2)&0xFFFF
 
 	}
- 
+
 	function POPAF() { // POP AF
 		registers[0] = MemRead((SP+1)&0xFFFF);
 		var temp = MemRead(SP);
@@ -3065,16 +3065,16 @@ window.gb = function(file, canvas, options) {
 	}
 
 	function STOP() {
-		if (CGB && (IORAM[0x4D]&1)) { 
+		if (CGB && (IORAM[0x4D]&1)) {
 			if (CPUSpeed == 1) {
-				CPUSpeed = 2; 
+				CPUSpeed = 2;
 				console.log("doublespeed!")
 			} else {
 				CPUSpeed = 1;
 				console.log("singlespeed!")
 			}
 			cyclesForSample = (4194304*CPUSpeed)/audioSampleRate;
-			IORAM[0x4D] = 0; 
+			IORAM[0x4D] = 0;
 		} else {
 		//um
 		}
