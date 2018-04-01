@@ -278,6 +278,7 @@ function gbTouchUI(input, id, callback) {
             if (Math.sqrt(Math.pow(x-t.x, 2)+Math.pow(y-t.y, 2)) < t.radius) {
               switch (t.btype) {
                 case "menu":
+                  isMouseClicked = false;
                   openFileSelect();
                   break;
               }
@@ -427,12 +428,14 @@ window.addEventListener('load', function(evt) {
   setInterval(periodicState, 1000);
 
   var ui = document.getElementById('ui');
-  ui.addEventListener('touchmove', handleTouch);
+  // ui.addEventListener('touchmove', handleTouch);
   ui.addEventListener('touchstart', handleTouch);
   ui.addEventListener('touchend', handleTouch);
   ui.addEventListener('mousedown', handleMouse);
   ui.addEventListener('mouseup', handleMouse);
   ui.addEventListener('mousemove', handleMouse);
+  window.addEventListener("keydown", handleKeyboard);
+  window.addEventListener("keyup", handleKeyboard);
   window.addEventListener('resize', renderUI);
   window.addEventListener('scroll', scrollFix);
   window.addEventListener('orientationchange', scrollFix);
@@ -529,10 +532,56 @@ function handleMouse(evt) { //fallback for non touch devices
 
 function handleTouch(evt) {
   if (takeInput) {
-    evt.preventDefault();
     mainUI.getButtons(evt.touches, UIcanvas);
+    evt.preventDefault();
   }
 }
+
+
+function handleKeyboard(evt) {
+  if (!takeInput)
+  {
+    return;
+  }
+
+  if (evt.keyCode !== 116)
+  {
+    evt.preventDefault();
+    var btnByte = 0;
+    if (evt.type === 'keydown')
+    {
+      switch (evt.keyCode)
+      {
+        case 88:
+          btnByte = 16;
+          break;
+        case 90:
+          btnByte = 32;
+          break;
+        case 32:
+          btnByte = 64;
+          break;
+        case 13:
+          btnByte = 128;
+          break;
+        case 38:
+          btnByte = 4;
+          break;
+        case 40:
+          btnByte = 72;
+          break;
+        case 37:
+          btnByte = 2;
+          break;
+        case 39:
+          btnByte = 1;
+          break;
+      }
+    }
+    gameboy.setButtonByte(255 - btnByte);
+  }
+}
+
 
 function dropboxChoose(files) {
   loadURL(files[0].link);
@@ -998,13 +1047,4 @@ document.getElementById('chooseFile').onchange = function (e) {
   };
   reader.readAsArrayBuffer(file);
 };
-
-// window.addEventListener("keydown", controlChoose, false);
-
-function controlChoose(evt) {
-  evt.preventDefault();
-  if ((evt.keyCode !== 27) && (evt.keyCode !== 116)) {
-    gameboy.setButtonByte(255-evt.keyCode);
-  }
-}
 

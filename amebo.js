@@ -724,11 +724,13 @@ window.gb = function(file, canvas, options) {
 		DMATransfer(a);
 	};
 	IOWriteFunctions[0] = function(a, b){
-		a = 255 - a
+		a = 0xFF - a;
 		if(a&0x10) {
 			IORAM[0] = buttonByte&0xF;
+      console.log('0x10');
 		} else if(a&0x20) {
 			IORAM[0] = buttonByte>>4;
+      console.log('0x20');
 		}
 	};
 
