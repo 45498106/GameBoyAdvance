@@ -258,8 +258,10 @@ function controlChoose(evt) {
 	for (var i=0; i<gameboys.length; i++) {
 		var gui = gameboys[i].GUI
 		if (gui.selCont != -1) {
+      console.log(1111);
 			evt.preventDefault();
-			if (evt.keyCode != 27) {
+      if (evt.keyCode != 27)
+      {
 				var entry = controlsArray[i][numberToControl[gui.selCont]]
 				entry[0] = evt.keyCode
 				entry[1] = (keyNames[evt.keyCode])?keyNames[evt.keyCode]:String.fromCharCode(evt.keyCode);

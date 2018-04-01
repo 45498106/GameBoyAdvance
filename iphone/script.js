@@ -426,12 +426,13 @@ window.addEventListener('load', function(evt) {
 
   setInterval(periodicState, 1000);
 
-  document.body.addEventListener('touchmove', handleTouch);
-  document.body.addEventListener('touchstart', handleTouch);
-  document.body.addEventListener('touchend', handleTouch);
-  document.body.addEventListener('mousedown', handleClick);
-  document.body.addEventListener('mouseup', handleClick);
-  document.body.addEventListener('mousemove', handleClick);
+  var ui = document.getElementById('ui');
+  ui.addEventListener('touchmove', handleTouch);
+  ui.addEventListener('touchstart', handleTouch);
+  ui.addEventListener('touchend', handleTouch);
+  ui.addEventListener('mousedown', handleMouse);
+  ui.addEventListener('mouseup', handleMouse);
+  ui.addEventListener('mousemove', handleMouse);
   window.addEventListener('resize', renderUI);
   window.addEventListener('scroll', scrollFix);
   window.addEventListener('orientationchange', scrollFix);
@@ -504,19 +505,23 @@ function scrollFix() {
 }
 
 var isMouseClicked = false;
-function handleClick(evt) { //fallback for non touch devices
+function handleMouse(evt) { //fallback for non touch devices
+  console.log(evt);
   if (evt.type === 'mousedown')
   {
     isMouseClicked = true;
   }
+  else if (evt.type === 'mouseup')
+  {
+    isMouseClicked = false;
+  }
   if (takeInput)
   {
-    evt.preventDefault();
     var pos = [{pageX: evt.pageX, pageY: evt.pageY}];
+    evt.preventDefault();
     if ((evt.type === 'mouseup') || !isMouseClicked)
     {
       pos = [];
-      isMouseClicked = false;
     }
     mainUI.getButtons(pos, UIcanvas);
   }
@@ -525,7 +530,6 @@ function handleClick(evt) { //fallback for non touch devices
 function handleTouch(evt) {
   if (takeInput) {
     evt.preventDefault();
-    console.log(evt.touches);
     mainUI.getButtons(evt.touches, UIcanvas);
   }
 }
@@ -646,16 +650,23 @@ function deleteStyle() {
 function addROM(name, data, callback) {
   console.log("addROM");
   db.transaction(function (tx) {
-    tx.executeSql('INSERT INTO roms (name, data) VALUES (?, ?)', [name, data], function (tx, results) {
-      console.log("addedROM");
-      activeROM = results.insertId;
-      aROMname = name;
-      if (callback) callback();
-    },
-      function(tx, err) {
-        console.log(err)
-      });
-  })
+    tx.executeSql('SELECT id FROM roms WHERE data = ?', [data], function(tx, result){
+      if (result.rows.length)
+      {
+        alert('ROM exists!');
+        return;
+      }
+      tx.executeSql('INSERT INTO roms (name, data) VALUES (?, ?)', [name, data], function (tx, results) {
+        console.log("addedROM");
+        activeROM = results.insertId;
+        aROMname = name;
+        if (callback) callback();
+      },
+        function(tx, err) {
+          console.log(err)
+        });
+    });
+  });
 }
 
 function byteToString(byteArray, noBase64) {
@@ -967,31 +978,33 @@ function loadURL(url) {
 }
 
 document.getElementById('chooseFile').onchange = function (e) {
+  if (!e.target.files.length)
+  {
+    return;
+  }
   var gb = gameboy;
   var file = e.target.files[0];
   var reader = new FileReader();
   reader.gb = gb;
   gameboy.onload = function() {
-    addROM(file.name, byteToString(gameboy.game), false);
+    addROM(file.name, byteToString(gameboy.game), populateRecentFiles);
   }
   reader.onload = function(e) {
     var gb = e.target.gb;
     e.target.gb.loadROMBuffer(e.target.result, e.target.result);
-    backButtonDisp("block");
-    closeFileSelect();
-    gameboy.paused = true;
+    // backButtonDisp("block");
+    // closeFileSelect();
+    // gameboy.paused = true;
   };
   reader.readAsArrayBuffer(file);
-  console.log(e);
-  // loadURL(e.target.)
 };
 
-window.addEventListener("keydown", controlChoose, false);
+// window.addEventListener("keydown", controlChoose, false);
 
 function controlChoose(evt) {
-  // evt.preventDefault();
-  if (evt.keyCode != 27) {
-    // gameboy.keyConfig['UP'] = evt.keyCode;
+  evt.preventDefault();
+  if ((evt.keyCode !== 27) && (evt.keyCode !== 116)) {
+    gameboy.setButtonByte(255-evt.keyCode);
   }
 }
 
