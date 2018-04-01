@@ -9,6 +9,8 @@ body {
 	padding: 0;
 	overflow: hidden;
 	background-color: #000;
+	width: 100vw;
+	height: 100vh;
 }
 
 html {
@@ -71,8 +73,8 @@ html {
 
 #ui {
 	position: absolute;
-	width: 100%;
-	height: 100%;
+	width: 100vw;
+	height: 100vh;
 }
 
 #appcontainer {
@@ -94,8 +96,10 @@ html {
 
 .expandDiv {
 	width: 100%;
-	margin-top: -51px;
-	height: 50px;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
 	text-align: right;
 }
 
@@ -350,10 +354,10 @@ html {
 }
 
 .fileEntry {
+	position: relative;
 	width: 100%;
 	height: 50px;
 	border-bottom: 1px solid #BBBBBB;
-	margin-bottom: -1px;
 }
 
 /* .fileEntry:before { */

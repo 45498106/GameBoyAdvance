@@ -21,7 +21,10 @@ window.GBMasterClass = function() {
 		var gbl = gameboys.length
 
 		for (var gbn=0; gbn<gbl; gbn++) {
-			if (!(gameboys[gbn].options.cButByte)) gameboys[gbn].prepareButtonByte();
+			if (!(gameboys[gbn].options.cButByte))
+      {
+        gameboys[gbn].prepareButtonByte();
+      }
 		}
 		var mostCycles = 0;
 		while (mostCycles<70224) {
@@ -87,7 +90,7 @@ window.gb = function(file, canvas, options) {
 		loadfile.onerror = function() {
       loadfile.open("POST", url);
       loadfile.onerror = function() {
-        console.log("Failed to load "+url+"! Are CORS requests enabled on the server?");
+        throw 'Failed to load '+url+'! Are CORS requests enabled on the server?';
       }
       loadfile.send();
 		}
@@ -95,17 +98,26 @@ window.gb = function(file, canvas, options) {
 	}
 
 	this.loadROMBuffer = function(buffer, battery) { //battery is an optional parameter
-		if (buffer instanceof ArrayBuffer) game = new Uint8Array(buffer);
-		else if (buffer instanceof Uint8Array) game = buffer;
-		else console.log(buffer);
+    if (buffer instanceof ArrayBuffer)
+    {
+      game = new Uint8Array(buffer);
+    }
+    else if (buffer instanceof Uint8Array)
+    {
+      game = buffer;
+    }
+
 		GBObj.game = game;
 		gameLoaded = true;
-		if (battery != null) {
+    if (battery != null)
+    {
 			ROMID = generateUniqueName();
 			CRAM = new Uint8Array(battery);
 			saveBattery();
 		}
-		if (biosLoaded == 2) init();
+    if (biosLoaded == 2){
+      init();
+    };
 	}
 
 	var internalCanvas = document.createElement("canvas");
@@ -118,9 +130,9 @@ window.gb = function(file, canvas, options) {
 	this.canvas = canvas; //output canvas
 	var ctx = canvas.getContext("2d");
 
-	if (typeof ctx.webkitImageSmoothingEnabled != "undefined") {
+	if (typeof ctx.webkitImageSmoothingEnabled !== 'undefined') {
 		ctx.webkitImageSmoothingEnabled = false;
-	} else if (typeof ctx.imageSmoothingEnabled != "undefined") {
+	} else if (typeof ctx.imageSmoothingEnabled !== 'undefined') {
 		ctx.imageSmoothingEnabled = false;
 	} else {
 		console.warn("imageSmoothingEnabled not supported, falling back to css scaling")

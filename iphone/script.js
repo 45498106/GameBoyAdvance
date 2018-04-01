@@ -1,6 +1,5 @@
 var defaultControls =
   {
-
     "images": [
       "styles/default/abtn.svg",
       "styles/default/bbtn.svg",
@@ -122,7 +121,6 @@ function gbTouchUI(input, id, callback) {
   db.transaction(function (tx) {
     tx.executeSql('SELECT res_id, data FROM styleres WHERE style_id = ?', [id], function (tx, results) {
       for (var i=0; i<results.rows.length; i++) {
-        console.log(results.rows.item(i))
         item = results.rows.item(i);
         var img = new Image();
         img.src = item.data;
@@ -340,7 +338,6 @@ function resizeGB(zoom) {
 }
 
 function renderUI() {
-  console.log('Rendering UI');
   scrollTo(0, 0);
   var ratio = window.devicePixelRatio || 1;
   UIcanvas.width = document.body.clientWidth*ratio;
@@ -377,10 +374,10 @@ var aROMname = "";
 
 function createDB() {
   db.transaction(function (tx) {
-    tx.executeSql('CREATE TABLE IF NOT EXISTS roms (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME);', [], function(){console.log("yes")}, function(t, e){console.log(t, e)});
-    tx.executeSql('CREATE TABLE IF NOT EXISTS styles (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar);', [], function(){console.log("yes")}, function(t, e){console.log(t, e)});
-    tx.executeSql('CREATE TABLE IF NOT EXISTS styleres (id integer PRIMARY KEY AUTOINCREMENT, res_id integer, style_id integer, data varchar);', [], function(){console.log("yes")}, function(t, e){console.log(t, e)});
-    tx.executeSql('CREATE TABLE IF NOT EXISTS states (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME, rom_id integer, rom_name varchar);', [], function(){console.log("yes")}, function(t, e){console.log(t, e)});
+    tx.executeSql('CREATE TABLE IF NOT EXISTS roms (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME);', [], function(){}, function(t, e){console.log(t, e)});
+    tx.executeSql('CREATE TABLE IF NOT EXISTS styles (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar);', [], function(){}, function(t, e){console.log(t, e)});
+    tx.executeSql('CREATE TABLE IF NOT EXISTS styleres (id integer PRIMARY KEY AUTOINCREMENT, res_id integer, style_id integer, data varchar);', [], function(){}, function(t, e){console.log(t, e)});
+    tx.executeSql('CREATE TABLE IF NOT EXISTS states (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME, rom_id integer, rom_name varchar);', [], function(){}, function(t, e){console.log(t, e)});
   });
 }
 
@@ -858,7 +855,16 @@ function populateRecentFiles() {
         var deleteStr = 'deleteFile(\''+row.id+'\', '+i+', \''+singleQSafe(filename)+'\');'
 
         //r u rdy for the longest generated html ever
-        html += '<div class="fileEntry"><div class="entryText">'+filename+'</div></div><div class="expandDiv" onclick="'+loadStr+'"><img src="iphone/expandb.svg" class="expBut fileEx" id="FExp'+i+'" onclick="expandEdit('+i+'); event.preventDefault();" ontouchstart="expandEdit('+i+'); event.preventDefault();"><div class="fEditControls" id="feC'+i+'"><img src="iphone/rename.svg" class="rename" ontouchstart="'+renameStr+'"><img src="iphone/bin.svg" class="delete" ontouchstart="'+deleteStr+'"></div></div>'
+        html += '<div class="fileEntry" onclick="'+loadStr+'">'
+          + '<div class="entryText">'+filename+'</div>'
+          + '<div class="expandDiv">'
+          + '<img src="iphone/expandb.svg" class="expBut fileEx" id="FExp'+i+'" onclick="expandEdit('+i+'); event.preventDefault();" ontouchstart="expandEdit('+i+'); event.preventDefault();" />'
+          + '<div class="fEditControls" id="feC'+i+'">'
+          + '<img src="iphone/rename.svg" class="rename" onclick="'+renameStr+'" />'
+          + '<img src="iphone/bin.svg" class="delete" onclick="'+deleteStr+'" />'
+          + '</div>'
+          + '</div>'
+          + '</div>';
         //i dont think u were ready
 
         recentFilesState.push({editing: false});
@@ -950,6 +956,9 @@ document.getElementById('chooseFile').onchange = function (e) {
   var file = e.target.files[0];
   var reader = new FileReader();
   reader.gb = gb;
+  gameboy.onload = function() {
+    addROM(file.name, byteToString(gameboy.game), false);
+  }
   reader.onload = function(e) {
     var gb = e.target.gb;
     e.target.gb.loadROMBuffer(e.target.result, e.target.result);
@@ -961,4 +970,13 @@ document.getElementById('chooseFile').onchange = function (e) {
   console.log(e);
   // loadURL(e.target.)
 };
+
+window.addEventListener("keydown", controlChoose, false);
+
+function controlChoose(evt) {
+  // evt.preventDefault();
+  if (evt.keyCode != 27) {
+    // gameboy.keyConfig['UP'] = evt.keyCode;
+  }
+}
 

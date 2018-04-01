@@ -24,7 +24,7 @@ iosSucksProcessorNode = function(context, sampleSize, outputChannels) { //doesn'
 			src.connect(internalGainNode);
 			if (nextTime < context.currentTime) nextTime = (Math.floor(context.currentTime/timePerChunk)+1)*timePerChunk;
 			src.noteOn(nextTime);
-			nextTime += timePerChunk; 
+			nextTime += timePerChunk;
 		}
 	}
 	setInterval(sampleHandler, (timePerChunk)*1000);
@@ -46,7 +46,7 @@ function encodeAudio16bitByteArray(data, sampleRate) {
 
 	// ChunkSize
 	insertLong(36 + n * 2);
-      
+
 	// SampleRate
 	insertLong(sampleRate);
 
@@ -55,7 +55,7 @@ function encodeAudio16bitByteArray(data, sampleRate) {
 
 	// Subchunk2Size
 	insertLong(n * 2);
-      
+
       // Output sound data
 	var bytes = new Uint8Array(soundBuf, 0, 44);
 	for (var i = 0; i < header.length; i++) {
@@ -70,3 +70,4 @@ function encodeAudio16bitByteArray(data, sampleRate) {
 	}
 	return soundBuf;
 }
+
