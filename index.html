@@ -1,80 +1,186 @@
 <!DOCTYPE HTML>
-<html>
+<html> <!-- manifest="test.manifest" -->
 	<head>
-		<title>amebo</title>
-		<meta name="description" content="Javascript Gameboy Colour Emulator with sound, save functionality and (eventually) a gameboy IDE!">
-		<link rel="stylesheet" type="text/css" href="css/main.css">
-		<script>window.onload = function(){
-			var gb = window.addGB(document.getElementById("gameboys"));
-			gb.GUI.zoom = 4;
-			setZoom(gb);
-		};
-		</script>
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="apple-mobile-web-app-title" content="amebo">
+		<meta name="format-detection" content="telephone=no">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1.0, user-scalable=no">
+
+		<!-- iPhone (Retina)
+		<link rel="apple-touch-startup-image" href="iphone/start.png" media="(device-width: 320px) and (device-height: 480px)" >-->
+
+		<!-- iPhone 5 -->
+
+		<link href="iphone/5start.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+
+		<!-- <link rel="apple-touch-startup-image" href="iphone/5start.png"> -->
+
+		<link rel="apple-touch-icon" href="iphone/icon120.png" sizes="120x120">
+
+		<link rel="stylesheet" href="iphone/style.css" />
 	</head>
 	<body>
+		<div id="debug"></div>
+		<div id="appcontainer">
+			<div id="splash"><img src="iphone/load.png" width="140" height"140" id="splashImg"></div>
+			<div id="container"><canvas id="ui"></canvas><canvas id="gameboy" width="320" height="288"></canvas></div>
 
-		<div class="template">
-			<div id="carttmp" class="cartCtr cartHide">
-				<img src="images/cart.png" width="228px" height="255px" style="position:absolute">
-				<div id="sampleROM">Load a Sample ROM</div>
-				<div class="cartText" id="romname">No File Selected</div>
-				<div class="cartText" id="batteryname">Last Saved Battery</div>
-				<button id="romBut" class="cartBut"></button>
-				<button id="battBut" class="cartBut"></button>
-				<button id="cartCancel" class="loadBut"></button>
-				<button id="cartLoad" class="loadBut"></button>
-				<input type="file" id="rominput"></input>
-				<input type="file" id="battinput"></input>
-			</div>
-			<div id="controltmp" class="menuCtr">
-				<div id="controlHide" class="menuHide">
-					<img src="images/control/bg.png" width="320px" height="288px" style="position:absolute">
-					<img src="images/control/0n.png" class="c0 ctrbg" id="0n">
-					<img src="images/control/0s.png" class="c0 ctrbg cs" id="0s">
-					<img src="images/control/1n.png" class="c1 ctrbg" id="1n">
-					<img src="images/control/1s.png" class="c1 ctrbg cs" id="1s">
-					<img src="images/control/2n.png" class="c2 ctrbg" id="2n">
-					<img src="images/control/2s.png" class="c2 ctrbg cs" id="2s">
-					<img src="images/control/3n.png" class="c3 ctrbg" id="3n">
-					<img src="images/control/3s.png" class="c3 ctrbg cs" id="3s">
-					<img src="images/control/4n.png" class="c4 ctrbg" id="4n">
-					<img src="images/control/4s.png" class="c4 ctrbg cs" id="4s">
-					<img src="images/control/5n.png" class="c5 ctrbg" id="5n">
-					<img src="images/control/5s.png" class="c5 ctrbg cs" id="5s">
-					<img src="images/control/6n.png" class="c6 ctrbg" id="6n">
-					<img src="images/control/6s.png" class="c6 ctrbg cs" id="6s">
-					<img src="images/control/7n.png" class="c7 ctrbg" id="7n">
-					<img src="images/control/7s.png" class="c7 ctrbg cs" id="7s">
-					<div id="0t" class="c0 contTxt">backspace</div>
-					<div id="1t" class="c1 contTxt">backspace</div>
-					<div id="2t" class="c2 contTxt">backspace</div>
-					<div id="3t" class="c3 contTxt">backspace</div>
-					<div id="4t" class="c4 contTxt">backspace</div>
-					<div id="5t" class="c5 contTxt">backspace</div>
-					<div id="6t" class="c6 contTxt">backspace</div>
-					<div id="7t" class="c7 contTxt">backspace</div>
+			<div id="external">
+				<div class="menuHead">
+					<img class="backBtn" src="iphone/back.svg" onclick="closeBrowser()">
+					<div class="menuTitle">Download a ROM...</div>
 				</div>
-			</div>
-			<div id="optionstmp" class="menuCtr">
-				<div id="optionsHide" class="menuHide">
-					<div class="Minfotext" style="top:132px; width:320px">Options currently Unavailable.</div>
-				</div>
-			</div>
-			<div id="toolstmp" class="menuCtr">
-				<div id="toolsHide" class="menuHide">
-					<div class="Minfotext" style="top:132px; width:320px">Tools currently Unavailable.</div>
+				<div class="menuCont">
+					<div id="iframeWrap">
+						<iframe seamless="seamless" id="extiFrame"></iframe>
+					</div>
 				</div>
 			</div>
 
-			<div id="blkcover"></div>
+			<div class="menuCtr" id="fileCtr">
+
+				<div id="submenus"> <!-- begin submenus -->
+					<div class="submenu">
+						<div class="menuHead">
+							<img class="backBtn mbackBtn" src="iphone/back.svg">
+							<img class="rTopBtn" id="editROM" src="iphone/edit.svg">
+							<div class="menuTitle">Select A ROM</div>
+						</div>
+						<div class="menuCont">
+							<div id="selRomScroll">
+								<div class="fileEntry" onclick="chooseURL();">
+									<img src="iphone/upload.svg" class="entryIcon" width="50" height="50">
+									<span class="entryText">Choose From This Device</span>
+								</div>
+								<div class="fileEntry" onclick="Dropbox.choose({success:dropboxChoose, linkType:'direct'});">
+									<img src="dropbox.svg" class="entryIcon" width="50" height="50">
+									<span class="entryText">Choose From Dropbox</span>
+								</div>
+								<div class="fileEntry" onclick="chooseURL();">
+									<img src="URL.svg" class="entryIcon" width="50" height="50">
+									<span class="entryText">Download from URL</span>
+								</div>
+								<div class="sectDivider">Recent Files</div>
+								<div id="rFCont">
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="submenu" style="left:100%">
+						<div class="menuHead" style="background-color:#B90546">
+							<div class="menuTitle">States</div>
+							<img class="backBtn mbackBtn" src="iphone/back.svg">
+							<img class="rTopBtn" id="editState" src="iphone/edit.svg">
+						</div>
+						<div class="menuCont">
+							<div id="selRomScroll">
+								<div class="fileEntry" onclick="saveCurrentState();" id="addState">
+									<img src="iphone/add.svg" class="entryIcon" width="50" height="50">
+									<span class="entryText">Save Current State</span>
+								</div>
+								<div id="stateCont"></div>
+								<div class="menuPad"></div>
+							</div>
+						</div>
+					</div>
+
+					<div class="submenu" style="left:200%">
+						<div class="menuHead" style="background-color:#DDB10A">
+							<img class="backBtn mbackBtn" src="iphone/back.svg">
+							<div class="menuTitle">Controls</div>
+						</div>
+						<div class="menuCont">
+							<div id="selRomScroll">
+								<div id="controlsMain">
+
+									<div id="thumbsCont">
+										<div class="device" id="pThumbBorder">
+											<img src="iphone/portPT.svg"><br>
+											<canvas width="75" height="133" style="background-color:white" id="portraitThumb"></canvas><br>
+											<img src="iphone/homeBtn.svg">
+										</div>
+										<div class="device" id="lThumbBorder">
+											<img src="iphone/landPT.svg" style="vertical-align: middle;"><canvas width="133" height="75" style="vertical-align: middle; background-color:white" id="landscapeThumb"></canvas><img src="iphone/homeBtn.svg" style="vertical-align: middle;">
+										</div>
+									</div>
+
+									<div id="cDropPad">
+										<select class="controlDrop" id="controlsDrop" onchange="changeControls();">
+											<option>Default</option>
+											<option>Test Controls</option>
+										</select>
+									</div>
+
+								</div>
+
+								<div class="sectDivider" style="background-color:#DDB10A">Edit Control Schemes</div>
+
+								<div class="fileEntry" onclick="downloadStyle()">
+									<img src="iphone/downControls.svg" class="entryIcon" width="50" height="50" >
+									<span class="entryText">Download From URL</span>
+								</div>
+
+								<div class="fileEntry" onclick="renameStyle()">
+									<img src="iphone/renameControls.svg" class="entryIcon" width="50" height="50">
+									<span class="entryText">Rename Current Scheme</span>
+								</div>
+
+								<div class="fileEntry" onclick="deleteStyle()">
+									<img src="iphone/deleteControls.svg" class="entryIcon" width="50" height="50">
+									<span class="entryText">Delete Current Scheme</span>
+								</div>
+
+								<div class="menuPad"></div>
+
+							</div>
+						</div>
+					</div>
+
+					<div class="submenu" style="left:300%">
+						<div class="menuHead" style="background-color:#79AD36">
+							<img class="backBtn mbackBtn" src="iphone/back.svg">
+							<div class="menuTitle">Options</div>
+						</div>
+						<div class="menuCont">
+							Currently Not Available
+						</div>
+					</div>
+
+				</div> <!-- end submenus -->
+
+				<div id="menuBtmBar">
+
+					<div class="btmButton" style="left:15%" id="mb1">
+						<div class="buttonbg" id="bb1"></div>
+						<img src="iphone/ROMs.svg" style="position:absolute;">
+					</div>
+					<div class="btmButton" style="left:38.3%" id="mb2">
+						<div class="buttonbg" id="bb2"></div>
+						<img src="iphone/States.svg" style="position:absolute;">
+					</div>
+					<div class="btmButton" style="left:61.7%" id="mb3">
+						<div class="buttonbg" id="bb3"></div>
+						<img src="iphone/Controls.svg" style="position:absolute;">
+					</div>
+					<div class="btmButton" style="left:85%" id="mb4">
+						<div class="buttonbg" id="bb4"></div>
+						<img src="iphone/Options.svg" style="position:absolute;">
+					</div>
+
+				</div>
+			</div>
 		</div>
-
-		<div id="gameboys">
-		</div>
-
-		<div id="footer">amebo by <a href="https://twitter.com/riperiperi">riperiperi</a> - <a href="iphone.html">Mobile Web App</a> - <a href="gbsplayer.html">.gbs player</a></div>
 		<script src="amebo.js"></script>
-		<script src="index/appcontroller.js"></script>
 		<script src="iosJSnode.js"></script>
+
+		<script src="jszip/jszip.js"></script>
+		<script src="jszip/jszip-inflate.js"></script>
+		<script src="jszip/jszip-deflate.js"></script>
+		<script src="jszip/jszip-load.js"></script>
+
+		<script src="iphone/scrollfix.js"></script>
+		<script type="text/javascript" src="iphone/script.js"></script>
 	</body>
 </html>

@@ -324,7 +324,6 @@ function drawUIThumbs() {
 }
 
 function resizeGB(zoom) {
-  console.log(zoom)
   var gb = gameboy;
   if (typeof gb.ctx.webkitImageSmoothingEnabled != "undefined") {
     gb.canvas.width = 160*zoom;
@@ -580,6 +579,10 @@ function chooseURL() {
 
 function downloadStyle() {
   var url = prompt("Enter the URL of the Style you wish to install:");
+  if (!url)
+  {
+    return;
+  }
   var xhr = new XMLHttpRequest();
   xhr.open("GET", url);
   xhr.responseType = "text";
@@ -597,6 +600,11 @@ function downloadStyle() {
 
 function renameStyle() {
   var newName = prompt("What do you want to rename this style to?");
+  if (!newName)
+  {
+    return;
+  }
+
   db.transaction(function (tx) {
     tx.executeSql('UPDATE styles SET name = ? WHERE id = ?', [newName, localStorage["currentStyle"]], function (tx, results) {
       populateControlsDrop();
@@ -674,7 +682,12 @@ function loadState(id, rom_id) {
 
 function renameState(i, menuID, oldName) {
   var newName = prompt("What do you want to rename the state "+oldName+" to?", oldName);
-  if ((newName != oldName) && (newName != null)) {
+  if (!newName)
+  {
+    return;
+  }
+
+  if (newName != oldName) {
     db.transaction(function (tx) {
       tx.executeSql('UPDATE states SET name = ? WHERE id = ?', [newName, i], function (tx, results) {
         populateStates();
@@ -762,6 +775,10 @@ function expandEdit(i) {
 
 function renameFile(i, menuID, oldName) {
   var newName = prompt("What do you want to rename "+oldName+" to?", oldName);
+  if (!newName)
+  {
+    return;
+  }
   if ((newName != oldName) && (newName != null)) {
     db.transaction(function (tx) {
       tx.executeSql('UPDATE roms SET name = ? WHERE id = ?', [newName, i], function (tx, results) {
@@ -892,7 +909,7 @@ function saveCurrentState() {
   var d = new Date();
   var suggestedName = gameboy.ROMname+" - "+d.getDate()+"/"+d.getMonth()+"/"+d.getFullYear()+" - "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
   var name = prompt("What would you like to name the state?", suggestedName)
-  if (name == null) return;
+  if (!name) return;
   var state = JSON.stringify(gameboy.saveState());
 
   db.transaction(function (tx) {
@@ -907,10 +924,22 @@ function saveCurrentState() {
 }
 
 function loadURL(url) {
+  if (!url)
+  {
+    return;
+  }
+
   gameboy.onload = function() {
     addROM(gameboy.filename, byteToString(gameboy.game), populateRecentFiles);
   }
-  gameboy.loadROM(url);
+  try
+  {
+    gameboy.loadROM(url);
+  }
+  catch(err)
+  {
+    throw err;
+  }
   backButtonDisp("block");
   closeFileSelect();
   gameboy.paused = true;

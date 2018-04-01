@@ -87,7 +87,7 @@ window.gb = function(file, canvas, options) {
 		loadfile.onerror = function() {
       loadfile.open("POST", url);
       loadfile.onerror = function() {
-        console.error("Failed to load "+url+"! Are CORS requests enabled on the server?")
+        console.log("Failed to load "+url+"! Are CORS requests enabled on the server?");
       }
       loadfile.send();
 		}
