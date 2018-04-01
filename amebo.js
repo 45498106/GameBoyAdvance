@@ -65,6 +65,10 @@ window.gb = function(file, canvas, options) {
 		loadfile.open("GET", url);
 		loadfile.responseType = "arraybuffer";
 
+    if (!url)
+    {
+      throw 'URL is empty';
+    }
 		var filename = url.split("/");
 		GBObj.filename = filename[filename.length-1];
 		GBObj.paused = true;
@@ -2402,7 +2406,7 @@ window.gb = function(file, canvas, options) {
 				}
 			}
 
-			if ((ZRAM[0x7F]&0x2) && interruptCycles[1]<skipTo) skipTo = interruptCycles[1];
+			if ((ZRAM[0x7F]&0x2) && interruptCycles[1] < skipTo) skipTo = interruptCycles[1];
 		}
 
 		//now we have our predictions...
@@ -3296,3 +3300,4 @@ window.gb = function(file, canvas, options) {
 
 	// ----- END INSTRUCTIONS -----
 }
+

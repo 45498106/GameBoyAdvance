@@ -102,12 +102,11 @@ function loadStyle(id, failed, callback) {
   db.transaction(function (tx) {
     tx.executeSql('SELECT data, id FROM styles WHERE id = ?', [id], function (tx, results) {
       if (results.rows.length > 0) {
-
         mainUI = new gbTouchUI(JSON.parse(results.rows.item(0).data), results.rows.item(0).id, callback);
         mainUI.onload = function() {mainUI.setBG(document.getElementById("container")); renderUI();};
       } else if (typeof failed == "function") failed();
     },
-      function(tx, err){console.log(err)});
+      function(tx, err){console.error(err)});
   });
 }
 
@@ -123,7 +122,7 @@ function gbTouchUI(input, id, callback) {
   db.transaction(function (tx) {
     tx.executeSql('SELECT res_id, data FROM styleres WHERE style_id = ?', [id], function (tx, results) {
       for (var i=0; i<results.rows.length; i++) {
-        console.log(i)
+        console.log(results.rows.item(i))
         item = results.rows.item(i);
         var img = new Image();
         img.src = item.data;
@@ -342,6 +341,7 @@ function resizeGB(zoom) {
 }
 
 function renderUI() {
+  console.log('Rendering UI');
   scrollTo(0, 0);
   var ratio = window.devicePixelRatio || 1;
   UIcanvas.width = document.body.clientWidth*ratio;
@@ -378,10 +378,10 @@ var aROMname = "";
 
 function createDB() {
   db.transaction(function (tx) {
-    tx.executeSql('CREATE TABLE IF NOT EXISTS roms (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME);', [], function(){console.log("yes")}, function(t, e){console.log(e)});
-    tx.executeSql('CREATE TABLE IF NOT EXISTS styles (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar);', [], function(){console.log("yes")}, function(t, e){console.log(e)});
-    tx.executeSql('CREATE TABLE IF NOT EXISTS styleres (id integer PRIMARY KEY AUTOINCREMENT, res_id integer, style_id integer, data varchar);', [], function(){console.log("yes")}, function(t, e){console.log(e)});
-    tx.executeSql('CREATE TABLE IF NOT EXISTS states (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME, rom_id integer, rom_name varchar);', [], function(){console.log("yes")}, function(t, e){console.log(e)});
+    tx.executeSql('CREATE TABLE IF NOT EXISTS roms (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME);', [], function(){console.log("yes")}, function(t, e){console.log(t, e)});
+    tx.executeSql('CREATE TABLE IF NOT EXISTS styles (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar);', [], function(){console.log("yes")}, function(t, e){console.log(t, e)});
+    tx.executeSql('CREATE TABLE IF NOT EXISTS styleres (id integer PRIMARY KEY AUTOINCREMENT, res_id integer, style_id integer, data varchar);', [], function(){console.log("yes")}, function(t, e){console.log(t, e)});
+    tx.executeSql('CREATE TABLE IF NOT EXISTS states (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME, rom_id integer, rom_name varchar);', [], function(){console.log("yes")}, function(t, e){console.log(t, e)});
   });
 }
 
@@ -403,7 +403,19 @@ window.addEventListener('load', function(evt) {
   db = openDatabase('amebo2', '1.0', 'amebo state and rom store', 2 * 1024 * 1024); //, createDB
   createDB();
 
-  loadStyle(localStorage["currentStyle"], function(){installStyle(defaultControls, function(id){localStorage["currentStyle"] = id; loadStyle(id, showUI, function(){alert("why")})})}, showUI)
+  loadStyle(localStorage["currentStyle"],
+    function(){
+      installStyle(defaultControls, function(id) {
+        localStorage["currentStyle"] = id;
+        console.log('style', id);
+        loadStyle(id, showUI, function(){
+          loadStyle(0, showUI, function(){
+            console.error('Load style error');
+          });
+        });
+      })
+    }, showUI
+  );
   UIcanvas = document.getElementById("ui");
   UIctx = UIcanvas.getContext("2d");
 
@@ -572,7 +584,10 @@ function downloadStyle() {
   xhr.open("GET", url);
   xhr.responseType = "text";
   xhr.onload = function() {
-    installStyle(JSON.parse(xhr.responseText), function(id){localStorage["currentStyle"] = id; loadStyle(id, showUI, function(){alert("Failed to load Style")})})
+    installStyle(JSON.parse(xhr.responseText), function(id){
+      localStorage["currentStyle"] = id;
+      loadStyle(id, showUI, function(){alert("Failed to load Style")});
+    });
   }
   xhr.onerror = function() {
     alert("Could not download Style.")
