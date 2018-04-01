@@ -423,12 +423,16 @@ window.addEventListener('load', function(evt) {
   setUpButtons();
   //populateRecentFiles();
 
+  // Selections
+  initROMSelection();
+
   setTimeout(function(){setActiveMenu(1)}, 16);
 
   setInterval(periodicState, 1000);
 
+  // Event Handle
   var ui = document.getElementById('ui');
-  // ui.addEventListener('touchmove', handleTouch);
+  ui.addEventListener('touchmove', handleTouch);
   ui.addEventListener('touchstart', handleTouch);
   ui.addEventListener('touchend', handleTouch);
   ui.addEventListener('mousedown', handleMouse);
@@ -509,7 +513,6 @@ function scrollFix() {
 
 var isMouseClicked = false;
 function handleMouse(evt) { //fallback for non touch devices
-  console.log(evt);
   if (evt.type === 'mousedown')
   {
     isMouseClicked = true;
@@ -1043,12 +1046,44 @@ document.getElementById('chooseFile').onchange = function (e) {
     addROM(file.name, byteToString(gameboy.game), populateRecentFiles);
   }
   reader.onload = function(e) {
-    var gb = e.target.gb;
     e.target.gb.loadROMBuffer(e.target.result, e.target.result);
-    // backButtonDisp("block");
-    // closeFileSelect();
-    // gameboy.paused = true;
   };
   reader.readAsArrayBuffer(file);
 };
+
+function initROMSelection()
+{
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", './roms.json');
+  xhr.responseType = 'json';
+  xhr.onload = function() {
+    console.log(xhr);
+    var res = xhr.response;
+    var parent = document.getElementById('chooseROMSelection');
+    var selection = parent.getElementsByTagName('select')[0];
+    var options_html = '<option disabled selected>---</option>';
+    for (var i = 0; i < res.length; i++)
+    {
+      var filename = res[i].split('/');
+      options_html += '<option value="'
+        + res[i]
+        + '">'
+        + filename[filename.length - 1]
+        + '</option>'
+    }
+    if (res.length)
+    {
+      selection.innerHTML = options_html;
+      parent.style.display = 'block';
+    }
+  };
+  xhr.send();
+}
+
+function chooseROMSelection()
+{
+  var parent = document.getElementById('chooseROMSelection');
+  var selection = parent.getElementsByTagName('select')[0];
+  loadURL(selection.value);
+}
 

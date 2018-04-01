@@ -360,6 +360,15 @@ html {
 	border-bottom: 1px solid #BBBBBB;
 }
 
+.fileEntry .selection {
+	vertical-align: top;
+	width: 80vw;
+	margin-left: 10px;
+	margin-top: 7px;
+	padding-left: 10px;
+	border-color: #009489;
+}
+
 /* .fileEntry:before { */
 /* content: " "; */
 /* position: absolute; */
