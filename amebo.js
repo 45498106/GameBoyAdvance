@@ -2,7 +2,7 @@
 //"use strict"; despite my code conforming to strict mode, i'll keep it off because it just adds stupid extra checks which might slow things down
 
 window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
-	alert(errorMsg+" on line "+lineNumber);
+	console.log(errorMsg+" on line "+lineNumber);
 }
 
 window.GBMasterClass = function() {
@@ -87,7 +87,7 @@ window.gb = function(file, canvas, options) {
 		loadfile.onerror = function() {
       loadfile.open("POST", url);
       loadfile.onerror = function() {
-        alert("Failed to load "+url+"! Are CORS requests enabled on the server?")
+        console.log("Failed to load "+url+"! Are CORS requests enabled on the server?")
       }
       loadfile.send();
 		}
@@ -97,7 +97,7 @@ window.gb = function(file, canvas, options) {
 	this.loadROMBuffer = function(buffer, battery) { //battery is an optional parameter
 		if (buffer instanceof ArrayBuffer) game = new Uint8Array(buffer);
 		else if (buffer instanceof Uint8Array) game = buffer;
-		else alert(buffer);
+		else console.log(buffer);
 		GBObj.game = game;
 		gameLoaded = true;
 		if (battery != null) {
@@ -209,7 +209,7 @@ window.gb = function(file, canvas, options) {
 	this.keyConfig = keyConfig; //allow public access
 
 	var controlKeyConfig = {
-		STATES: [112, 113, 114, 115, 116, 117, 118, 119, 120, 121]
+		STATES: [112, 113, 114, 115, /* 116,  */117, 118, 119, 120, 121]
 	}
 
 	if (file != null) this.loadROM(file);
@@ -246,8 +246,8 @@ window.gb = function(file, canvas, options) {
 	for (var i=0; i<256; i++) {
 		keysArray[i] = 1;
 	}
-	document.addEventListener("keydown", keyDownHandler, false);
-	document.addEventListener("keyup", keyUpHandler, false);
+	window.addEventListener("keydown", keyDownHandler, false);
+	window.addEventListener("keyup", keyUpHandler, false);
 
 	function keyDownHandler(evt) {
 		keysArray[evt.keyCode] = 0;
@@ -2020,7 +2020,7 @@ window.gb = function(file, canvas, options) {
 		img.onload = function() {
 			internalCtx.drawImage(img, 68, 51);
 			ctx.drawImage(internalCanvas, 0, 0, canvas.width, canvas.height);
-			alert("Something went horribly wrong! Here's the stack trace:\n"+err.stack);
+			console.log("Something went horribly wrong! Here's the stack trace:\n"+err.stack);
 		}
 	}
 
