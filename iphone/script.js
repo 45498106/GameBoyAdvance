@@ -945,3 +945,20 @@ function loadURL(url) {
   gameboy.paused = true;
 }
 
+document.getElementById('chooseFile').onchange = function (e) {
+  var gb = gameboy;
+  var file = e.target.files[0];
+  var reader = new FileReader();
+  reader.gb = gb;
+  reader.onload = function(e) {
+    var gb = e.target.gb;
+    e.target.gb.loadROMBuffer(e.target.result, e.target.result);
+    backButtonDisp("block");
+    closeFileSelect();
+    gameboy.paused = true;
+  };
+  reader.readAsArrayBuffer(file);
+  console.log(e);
+  // loadURL(e.target.)
+};
+

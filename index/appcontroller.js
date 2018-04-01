@@ -151,7 +151,7 @@ function processCartDialog(gb, load) {
 	if (gb.GUI.cartS != 1) return;
 	if (load) {
 		if (gb.GUI.romName.innerHTML == "No File Selected") {
-			console.warn("No ROM File Selected!")
+			alert("No ROM File Selected!")
 			return;
 		}
 

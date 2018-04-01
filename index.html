@@ -49,9 +49,10 @@
 						</div>
 						<div class="menuCont">
 							<div id="selRomScroll">
-								<div class="fileEntry" onclick="chooseURL();">
+								<div class="fileEntry" style="position:relative;">
 									<img src="iphone/upload.svg" class="entryIcon" width="50" height="50">
 									<span class="entryText">Choose From This Device</span>
+									<input type="file" accept=".gb,.gbc" id="chooseFile" style="opacity:0;position:absolute;left:0;top:0;width:100%;height:100%;" />
 								</div>
 								<div class="fileEntry" onclick="Dropbox.choose({success:dropboxChoose, linkType:'direct'});">
 									<img src="dropbox.svg" class="entryIcon" width="50" height="50">
