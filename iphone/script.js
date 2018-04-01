@@ -429,7 +429,9 @@ window.addEventListener('load', function(evt) {
   document.body.addEventListener('touchmove', handleTouch);
   document.body.addEventListener('touchstart', handleTouch);
   document.body.addEventListener('touchend', handleTouch);
-  document.body.addEventListener('click', handleClick);
+  document.body.addEventListener('mousedown', handleClick);
+  document.body.addEventListener('mouseup', handleClick);
+  document.body.addEventListener('mousemove', handleClick);
   window.addEventListener('resize', renderUI);
   window.addEventListener('scroll', scrollFix);
   window.addEventListener('orientationchange', scrollFix);
@@ -501,16 +503,29 @@ function scrollFix() {
   window.scrollTo(0, 0)
 }
 
+var isMouseClicked = false;
 function handleClick(evt) { //fallback for non touch devices
-  if (takeInput) {
+  if (evt.type === 'mousedown')
+  {
+    isMouseClicked = true;
+  }
+  if (takeInput)
+  {
     evt.preventDefault();
-    mainUI.getButtons([{pageX: evt.pageX, pageY: evt.pageY}], UIcanvas);
+    var pos = [{pageX: evt.pageX, pageY: evt.pageY}];
+    if ((evt.type === 'mouseup') || !isMouseClicked)
+    {
+      pos = [];
+      isMouseClicked = false;
+    }
+    mainUI.getButtons(pos, UIcanvas);
   }
 }
 
 function handleTouch(evt) {
   if (takeInput) {
     evt.preventDefault();
+    console.log(evt.touches);
     mainUI.getButtons(evt.touches, UIcanvas);
   }
 }
