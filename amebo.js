@@ -1,10 +1,6 @@
 //amebo gameboy colour emulator by riperiperi
 //"use strict"; despite my code conforming to strict mode, i'll keep it off because it just adds stupid extra checks which might slow things down
 
-window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
-	console.error(errorMsg+" on line "+lineNumber);
-}
-
 window.GBMasterClass = function() {
 
 	var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
@@ -435,10 +431,12 @@ window.gb = function(file, canvas, options) {
 		audioSyncFrames = 0;
 		cyclesForSample = (4194304*CPUSpeed)/audioSampleRate;
 
-		palettes.set(readDMGPalette(0), 0);
-		palettes.set(readDMGPalette(1), 16);
-		palettes.set(readDMGPalette(2), 32);
-
+    if (palettes)
+    {
+      palettes.set(readDMGPalette(0), 0);
+      palettes.set(readDMGPalette(1), 16);
+      palettes.set(readDMGPalette(2), 32);
+    }
 	}
 
 	function restorePal(reg, dest) {
@@ -489,7 +487,13 @@ window.gb = function(file, canvas, options) {
 	}
 
 	function restoreAudioEngine(obj) {
-		for (var i=0; i<4; i++) {
+    if (!AudioEngine)
+    {
+      console.warn('Can not restore AudioEngine');
+      return;
+    }
+    for (var i = 0; i < 4; i++)
+    {
 			AudioEngine[i].frequency = obj[i].frequency;
 			AudioEngine[i].duty = obj[i].duty;
 			AudioEngine[i].phase = obj[i].phase;

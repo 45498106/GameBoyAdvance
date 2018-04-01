@@ -56,7 +56,7 @@ html {
 	padding-right: 44px;
 	height: 34px;
 	background-color: white;
-	background: url("iphone/dropdown.svg") no-repeat right white;
+	background: url("dropdown.svg") no-repeat right white;
 	font-family: "Gill Sans", "Gill Sans MT", "SansGuiltMB", sans-serif;
 	font-size: 20px;
 }
@@ -128,7 +128,7 @@ html {
 .sEditControls {
 	width: 90px;
 	height: 50px;
-	background-image: url("iphone/editbgr.svg");
+	background-image: url("editbgr.svg");
 	margin-left: -90px;
 	display: inline-block;
 
@@ -148,7 +148,7 @@ html {
 .fEditControls {
 	width: 90px;
 	height: 50px;
-	background-image: url("iphone/editbgb.svg");
+	background-image: url("editbgb.svg");
 	margin-left: -90px;
 	display: inline-block;
 
