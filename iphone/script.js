@@ -1053,6 +1053,25 @@ document.getElementById('chooseFile').onchange = function (e) {
 
 function initROMSelection()
 {
+  if (1)
+  {
+    function jsonp(url, callback) {
+      var callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        document.body.removeChild(script);
+        callback(data);
+      };
+
+      var script = document.createElement('script');
+      script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + callbackName;
+      document.body.appendChild(script);
+    }
+
+    jsonp('https://script.google.com/macros/s/AKfycbzzoS36cl8dSCYExKyyzpnLEMeUfclfno0hA37nbFTF8tuKFeRV/exec', function(data) {
+      console.log(data);
+    });
+  }
   var xhr = new XMLHttpRequest();
   xhr.open("GET", './roms.json');
   xhr.responseType = 'json';
