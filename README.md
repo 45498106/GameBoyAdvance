@@ -1,6 +1,6 @@
 ![image](https://cdn.discordapp.com/attachments/157873776040607744/361574334096998400/logo.png)
 
-Frontend: http://riperiperi.github.io/amebo/
+Frontend: https://gba-dev.github.io/amebo/index.html
 
 amebo is a javascript Gameboy Colour emulator (DMG/GBC). The future focus is to improve accuracy and clean up the API while maintaining solid performance on relevant devices.
 
@@ -25,7 +25,7 @@ gameboyObj.loadROMBuffer(buffer, battery); //load a rom from an ArrayBuffer
 gameboyObj.onload = func; //calls this when the ROM loads
 gameboyObj.onstart = func; //calls this when the ROM starts emulating
 
-gameboyObj.setButtonByte(b); //sets the input byte to the specified value. 
+gameboyObj.setButtonByte(b); //sets the input byte to the specified value.
 gameboyObj.prepareButtonByte(); //called internally to generate the next input. Overwrite this with something that uses the above to implement a custom input system.
 ```
 
@@ -33,13 +33,13 @@ gameboyObj.prepareButtonByte(); //called internally to generate the next input. 
 <img src="https://cdn.discordapp.com/attachments/157873776040607744/361569999820816386/image.png" width=200><img src="https://cdn.discordapp.com/attachments/157873776040607744/361569816416616448/unknown.png" width=200><img src="https://cdn.discordapp.com/attachments/157873776040607744/361569052373549056/image.png" width=200><img src="https://cdn.discordapp.com/attachments/157873776040607744/361569011411976199/image.png" width=200>
 
 In addition to the desktop frontend included above, I also made an experimental mobile frontend targetted at the webapp functionality for iOS safari. To try it out, simply go to this url and add to homescreen:
-http://riperiperi.github.io/amebo/iphone.html
+https://gba-dev.github.io/amebo/iphone.html
 
 ## GBS Player
 ![image](https://cdn.discordapp.com/attachments/157873776040607744/361571899828076544/unknown.png)
 
 This repo also contains a .gbs audio player that uses amebo to provide its emulation.
-http://riperiperi.github.io/amebo/gbsplayer.html
+https://gba-dev.github.io/amebo/gbsplayer.html
 
 ## Features:
 
@@ -50,7 +50,7 @@ http://riperiperi.github.io/amebo/gbsplayer.html
 - Saves using localStorage
 - Cycle Accurate Instruction Timings
 - Realtime audio emulation using the Web Audio API
-- Mobile Client: http://riperiperi.github.io/amebo/iphone.html , runs full speed on iPhone 5 and up
+- Mobile Client: https://gba-dev.github.io/amebo/iphone.html , runs full speed on iPhone 5 and up
 - RUNS POKEMON! (obviously the most important feature)
 
 ## In future:
