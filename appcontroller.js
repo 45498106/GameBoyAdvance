@@ -119,7 +119,7 @@ function setZoom(gb) {
 }
 
 function fileInHandler(gb, ftype) {
-	
+
 	if (ftype == "rom") {
 		var filename = gb.GUI.romInput.value.split("\\").pop();
 		if (filename == "") filename = "No File Selected"
@@ -151,7 +151,7 @@ function processCartDialog(gb, load) {
 	if (gb.GUI.cartS != 1) return;
 	if (load) {
 		if (gb.GUI.romName.innerHTML == "No File Selected") {
-			alert("No ROM File Selected!")
+			console.warn("No ROM File Selected!")
 			return;
 		}
 
@@ -273,14 +273,14 @@ function controlChoose(evt) {
 	}
 }
 
-var keyNames = 
+var keyNames =
 {
-	8: "backspace", 9: "tab", 13: "enter", 16: "shift", 17: "ctrl", 18: "alt", 19: "pause/break", 20: "caps lock", 
-	27: "escape", 32: "space", 33: "page up", 34: "page down", 35: "end", 36: "home", 37: "left arrow", 38: "up arrow", 
-	39: "right arrow", 40: "down arrow", 45: "insert", 46: "delete", 91: "windows left", 92: "windows right", 
-	93: "select", 96: "numpad 0", 97: "numpad 1", 98: "numpad 2", 99: "numpad 3", 100: "numpad 4", 101: "numpad 5", 
-	102: "numpad 6", 103: "numpad 7", 104: "numpad 8", 105: "numpad 9", 106: "multiply", 107: "add", 109: "subtract", 
-	110: "decimal point", 111: "divide", 112: "f1", 113: "f2", 114: "f3", 115: "f4", 116: "f5", 117: "f6", 118: "f7", 
+	8: "backspace", 9: "tab", 13: "enter", 16: "shift", 17: "ctrl", 18: "alt", 19: "pause/break", 20: "caps lock",
+	27: "escape", 32: "space", 33: "page up", 34: "page down", 35: "end", 36: "home", 37: "left arrow", 38: "up arrow",
+	39: "right arrow", 40: "down arrow", 45: "insert", 46: "delete", 91: "windows left", 92: "windows right",
+	93: "select", 96: "numpad 0", 97: "numpad 1", 98: "numpad 2", 99: "numpad 3", 100: "numpad 4", 101: "numpad 5",
+	102: "numpad 6", 103: "numpad 7", 104: "numpad 8", 105: "numpad 9", 106: "multiply", 107: "add", 109: "subtract",
+	110: "decimal point", 111: "divide", 112: "f1", 113: "f2", 114: "f3", 115: "f4", 116: "f5", 117: "f6", 118: "f7",
 	119: "f8", 120: "f9", 121: "f10", 122: "f11", 123: "f12", 144: "num lock", 145: "scroll lock",
 }
 

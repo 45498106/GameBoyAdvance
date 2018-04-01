@@ -2,7 +2,7 @@
 //"use strict"; despite my code conforming to strict mode, i'll keep it off because it just adds stupid extra checks which might slow things down
 
 window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
-	console.log(errorMsg+" on line "+lineNumber);
+	console.error(errorMsg+" on line "+lineNumber);
 }
 
 window.GBMasterClass = function() {
@@ -87,7 +87,7 @@ window.gb = function(file, canvas, options) {
 		loadfile.onerror = function() {
       loadfile.open("POST", url);
       loadfile.onerror = function() {
-        console.log("Failed to load "+url+"! Are CORS requests enabled on the server?")
+        console.error("Failed to load "+url+"! Are CORS requests enabled on the server?")
       }
       loadfile.send();
 		}
@@ -123,7 +123,7 @@ window.gb = function(file, canvas, options) {
 	} else if (typeof ctx.imageSmoothingEnabled != "undefined") {
 		ctx.imageSmoothingEnabled = false;
 	} else {
-		console.log("imageSmoothingEnabled not supported, falling back to css scaling")
+		console.warn("imageSmoothingEnabled not supported, falling back to css scaling")
 		canvas.style.width = canvas.width+"px";
 		canvas.style.height = canvas.height+"px";
 		canvas.width = 160;
@@ -253,11 +253,14 @@ window.gb = function(file, canvas, options) {
 		keysArray[evt.keyCode] = 0;
 
 		var stateNum = controlKeyConfig.STATES.indexOf(evt.keyCode)
-		if (stateNum != -1) {
+		if (stateNum !== -1) {
 			evt.preventDefault();
-			if (keysArray[16] == 0) {
+      if (keysArray[16] === 0)
+      {
 				localStorage["states/"+stateNum] = JSON.stringify(saveState());
-			} else {
+      }
+      else
+      {
 				var tstate = localStorage["states/"+stateNum];
 				if (typeof tstate != "undefined") loadState(JSON.parse(tstate));
 			}
@@ -352,6 +355,7 @@ window.gb = function(file, canvas, options) {
 	}
 
 	function saveState() {
+    console.info('State is Saving...');
 		return {
 			VRAM: byteToString(VRAM),
 			RAM: byteToString(RAM),
@@ -388,10 +392,10 @@ window.gb = function(file, canvas, options) {
 
 			AudioEngine: objectifyAudioEngine()
 		};
-
 	}
 
 	function loadState(obj) {
+    console.info('State is loading...');
 		VRAM = stringToByte(obj.VRAM);
 		RAM = stringToByte(obj.RAM);
 		OAM = stringToByte(obj.OAM);
@@ -978,7 +982,7 @@ window.gb = function(file, canvas, options) {
 		if (!(IORAM[0x26]&4)) {
 			IORAM[b] = a;
 		} else if (true) { //DMG only, CGB is always accessable
-			console.log("illegal WRAM change!")
+			// console.log("illegal WRAM change!")
 			IORAM[0x30+(Math.floor(AudioEngine[2].phase/2))] = a
 		}
 	}
@@ -2291,7 +2295,7 @@ window.gb = function(file, canvas, options) {
 				else RAM[(pointer-0xD000)+0x1000*IORAM[0x70]] = value;
 			} else RAM[pointer-0xC000] = value;
 		} else if (pointer < 0xFE00) {
-			console.log("writing to shadow ram?")
+			// console.log("writing to shadow ram?")
 			debugger;
 			if (CGB) {
 				if (pointer < 0xF000) RAM[pointer-0xE000] = value;
@@ -3072,10 +3076,10 @@ window.gb = function(file, canvas, options) {
 		if (CGB && (IORAM[0x4D]&1)) {
 			if (CPUSpeed == 1) {
 				CPUSpeed = 2;
-				console.log("doublespeed!")
+				// console.log("doublespeed!")
 			} else {
 				CPUSpeed = 1;
-				console.log("singlespeed!")
+				// console.log("singlespeed!")
 			}
 			cyclesForSample = (4194304*CPUSpeed)/audioSampleRate;
 			IORAM[0x4D] = 0;
