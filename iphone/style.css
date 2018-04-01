@@ -3,6 +3,18 @@
 	src: url("SansGuiltMB.otf");
 }
 
+body {
+	font-family: "Gill Sans", "Gill Sans MT", "SansGuiltMB", sans-serif;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #000;
+}
+
+html {
+	overflow: hidden;
+}
+
 .device {
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
@@ -367,16 +379,6 @@
 	#gameboy { left: 124px; }
 }
 
-body {
-	font-family: "Gill Sans", "Gill Sans MT", "SansGuiltMB", sans-serif;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	background-color: black;
-}
-html {
-	overflow: hidden;
-}
 #gameboy {
 	position: absolute;
 

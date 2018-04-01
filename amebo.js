@@ -68,7 +68,6 @@ window.gb = function(file, canvas, options) {
 		var loadfile = new XMLHttpRequest();
 		loadfile.open("GET", url);
 		loadfile.responseType = "arraybuffer";
-		loadfile.send();
 
 		var filename = url.split("/");
 		GBObj.filename = filename[filename.length-1];
@@ -86,8 +85,13 @@ window.gb = function(file, canvas, options) {
 			} else GBObj.loadROMBuffer(loadfile.response);
 		}
 		loadfile.onerror = function() {
-			alert("Failed to load "+url+"! Are CORS requests enabled on the server?")
+      loadfile.open("POST", url);
+      loadfile.onerror = function() {
+        alert("Failed to load "+url+"! Are CORS requests enabled on the server?")
+      }
+      loadfile.send();
 		}
+		loadfile.send();
 	}
 
 	this.loadROMBuffer = function(buffer, battery) { //battery is an optional parameter

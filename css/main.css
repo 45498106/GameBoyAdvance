@@ -2,6 +2,9 @@ body {
 	font-family: "Gill Sans MT", "Gill Sans", Calibri, sans-serif;
 	margin:0;
 	padding: 0;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
 }
 
 #footer {
@@ -23,7 +26,7 @@ body {
 	image-rendering: -webkit-optimize-contrast;
 	image-rendering: optimize-contrast;
 	-ms-interpolation-mode: nearest-neighbor;
-	z-index: 1;	
+	z-index: 1;
 	position: absolute;
 	background-color: #FFFFFF;
 	width: 320px;
