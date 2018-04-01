@@ -811,7 +811,11 @@ function populateStates() {
         var renameStr = 'renameState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
         var deleteStr = 'deleteState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
 
-        var temp = '<div class="fileEntry"><div class="entryText">'+htmlSafe(row.name)+'</div></div><div class="expandDiv" onclick="stateMenu('+row.id+', '+row.rom_id+', '+i+')"><img src="iphone/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.preventDefault();" ontouchstart="expandSEdit('+i+'); event.preventDefault();"><div class="sEditControls" id="seC'+i+'"><img src="iphone/rename.svg" class="rename" ontouchstart="'+renameStr+'"><img src="iphone/bin.svg" class="delete" ontouchstart="'+deleteStr+'"></div></div>'
+        var temp = '<div class="fileEntry" onclick="stateMenu('+row.id+', '+row.rom_id+', '+i+')">'
+          + '<div class="entryText">'+htmlSafe(row.name)+'</div>'
+          + '<div class="expandDiv"><img src="iphone/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.preventDefault();" ontouchstart="expandSEdit('+i+'); event.preventDefault();"><div class="sEditControls" id="seC'+i+'"><img src="iphone/rename.svg" class="rename" ontouchstart="'+renameStr+'"><img src="iphone/bin.svg" class="delete" ontouchstart="'+deleteStr+'"></div>'
+          + '</div>';
+          + '</div>'
 
         if (row.rom_id == activeROM) {
           thisRomHTML += temp;
