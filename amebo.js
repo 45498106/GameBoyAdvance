@@ -15,7 +15,7 @@ window.GBMasterClass = function() {
     var gbl = gameboys.length;
     if (gbl > 1)
       multiGBUpdate();
-    else if (gbl == 1)
+    else if (gbl === 1)
       gameboys[0].audioSyncUpdate();
 		window.requestAnimationFrame(update);
 	}
@@ -30,20 +30,23 @@ window.GBMasterClass = function() {
       }
 		}
 		var mostCycles = 0;
-		while (mostCycles<70224) {
-			for (gbn = 0; gbn < gbl; gbn++) {
+    while (mostCycles < 70224)
+    {
+      for (gbn = 0; gbn < gbl; gbn++)
+      {
         while (gameboys[gbn].frameCycles <= Math.min(mostCycles, 70223))
           gameboys[gbn].cycle();
 				mostCycles = gameboys[gbn].frameCycles
 			}
 		}
-		for (var gbn=0; gbn<gbl; gbn++) {
+    for (gbn = 0; gbn < gbl; gbn++)
+    {
 			gameboys[gbn].frameCycles -= 70224;
 		}
 	}
 
 	window.requestAnimationFrame(update);
-}
+};
 
 function byteToString(byteArray, noBase64) {
   if (typeof byteArray == "undefined") return;
@@ -142,13 +145,14 @@ window.gb = function(file, canvas, options) {
 
 		GBObj.game = game;
 		gameLoaded = true;
-    if (battery != null)
+    if (battery !== null)
     {
 			ROMID = generateUniqueName();
 			CRAM = new Uint8Array(battery);
 			saveBattery();
 		}
-    if (biosLoaded == 2){
+    if (biosLoaded === 2)
+    {
       init();
     };
 	}
@@ -179,7 +183,8 @@ window.gb = function(file, canvas, options) {
   }
   // = internalCanvas.getContext("webgl");
 
-	if (canvas == null) canvas = internalCanvas; //if we have no output, display to self.
+  canvas = canvas || internalCanvas; //if we have no output, display to self.
+
 	this.canvas = canvas; //output canvas
   var ctx;
   try
@@ -529,7 +534,8 @@ window.gb = function(file, canvas, options) {
 		var obj = {}
 		if (typeof AudioEngine == "undefined") return null;
 
-		for (var i=0; i<4; i++) {
+    var i;
+		for (i = 0; i < 4; i++) {
 			obj[i] = {
 				frequency: AudioEngine[i].frequency,
 				duty: AudioEngine[i].duty,
@@ -3370,5 +3376,5 @@ window.gb = function(file, canvas, options) {
 	}
 
 	// ----- END INSTRUCTIONS -----
-}
+};
 
