@@ -497,6 +497,7 @@ window.addEventListener('load', function(evt) {
   {
     gbSettings.enableLoadBios = e.target.checked;
     localStorage.setItem('GameBoySettings', JSON.stringify(gbSettings));
+    alert('You must restart / refresh this app to apply setting');
   }
 
   gameboy = new gb(null, document.getElementById('gameboy'), {
