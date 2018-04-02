@@ -15,7 +15,7 @@ function addGB(gameboyDiv) {
 	gbContainer.style.width = "320px";
 	gbContainer.style.height = "288px";
 	gameboyDiv.appendChild(gbContainer);
-	gameboys.push(new gb('default.gbc', gbCanvas, {rootDir: "/"}));
+  gameboys.push(new gb('./bin/default.gbc', gbCanvas, {rootDir: "/"}));
 	var thisGB = gameboys[gameboys.length-1];
 	thisGB.GUI = {};
 	thisGB.GUI.container = gbContainer

@@ -2,21 +2,26 @@
 //"use strict"; despite my code conforming to strict mode, i'll keep it off because it just adds stupid extra checks which might slow things down
 
 window.GBMasterClass = function() {
-
-	var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-								window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-	window.requestAnimationFrame = requestAnimationFrame;
+  window.requestAnimationFrame = window.requestAnimationFrame ||
+    window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame ||
+    window.msRequestAnimationFrame
+  ;
 
 	this.gameboys = [];
 
 	var gameboys = this.gameboys;
 
-	function update() {
+  function update()
+  {
     var gbl = gameboys.length;
     if (gbl > 1)
+    {
       multiGBUpdate();
+    }
     else if (gbl === 1)
+    {
       gameboys[0].audioSyncUpdate();
+    }
 		window.requestAnimationFrame(update);
 	}
 
@@ -35,7 +40,9 @@ window.GBMasterClass = function() {
       for (gbn = 0; gbn < gbl; gbn++)
       {
         while (gameboys[gbn].frameCycles <= Math.min(mostCycles, 70223))
+        {
           gameboys[gbn].cycle();
+        }
 				mostCycles = gameboys[gbn].frameCycles
 			}
 		}
@@ -304,7 +311,7 @@ window.gb = function(file, canvas, options) {
 	if (file != null) this.loadROM(file);
 
 	var loadbios = new XMLHttpRequest();
-  loadbios.open("GET", "./dmgbios.bin");
+  loadbios.open("GET", "./bin/dmgbios.bin");
 	loadbios.responseType = "arraybuffer";
 	loadbios.send();
 	loadbios.onload = function() {
@@ -318,7 +325,7 @@ window.gb = function(file, canvas, options) {
 	}
 
 	var loadCGBbios = new XMLHttpRequest();
-  loadCGBbios.open("GET", "./gbcbios.bin");
+  loadCGBbios.open("GET", "./bin/gbcbios.bin");
 	loadCGBbios.responseType = "arraybuffer";
 	loadCGBbios.send();
 	loadCGBbios.onload = function() {
