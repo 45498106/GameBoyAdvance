@@ -1,13 +1,13 @@
 var defaultControls = {
   "images": [
-    "styles/default/abtn.svg",
-    "styles/default/bbtn.svg",
-    "styles/default/start.svg",
-    "styles/default/select.svg",
-    "styles/default/dpad.svg",
-    "styles/default/bg.svg",
-    "styles/default/menu.svg",
-    "styles/default/indent.svg"
+    "assets/styles/default/abtn.svg",
+    "assets/styles/default/bbtn.svg",
+    "assets/styles/default/start.svg",
+    "assets/styles/default/select.svg",
+    "assets/styles/default/dpad.svg",
+    "assets/styles/default/bg.svg",
+    "assets/styles/default/menu.svg",
+    "assets/styles/default/indent.svg"
   ],
 
   "name": "Default",
@@ -315,14 +315,14 @@ function drawUIThumbs() {
   var smallest = Math.min(width, height);
   var newLarge = (largest/smallest)*75
 
-  var lC = document.getElementById("landscapeThumb");7
+  var lC = document.getElementById("landscapeThumb");
   lC.width = newLarge*ratio;
   lC.height = 75*ratio;
   lC.style.width = newLarge;
   lC.style.height = 75;
   mainUI.drawUI(lC.getContext("2d"));
 
-  var pC = document.getElementById("portraitThumb");7
+  var pC = document.getElementById("portraitThumb");
   pC.height = newLarge*ratio;
   pC.width = 75*ratio;
   pC.style.height = newLarge;
@@ -810,7 +810,7 @@ function populateStates() {
 
         var temp = '<div class="fileEntry" onclick="stateMenu('+row.id+', '+row.rom_id+', '+i+')">'
           + '<div class="entryText">'+htmlSafe(row.name)+'</div>'
-          + '<div class="expandDiv"><img src="iphone/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.preventDefault();" ontouchstart="expandSEdit('+i+'); event.preventDefault();"><div class="sEditControls" id="seC'+i+'"><img src="iphone/rename.svg" class="rename" ontouchstart="'+renameStr+'"><img src="iphone/bin.svg" class="delete" ontouchstart="'+deleteStr+'"></div>'
+          + '<div class="expandDiv"><img src="assets/index/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.preventDefault();" ontouchstart="expandSEdit('+i+'); event.preventDefault();"><div class="sEditControls" id="seC'+i+'"><img src="assets/index"/rename.svg" class="rename" ontouchstart="'+renameStr+'"><img src="assets/index"/bin.svg" class="delete" ontouchstart="'+deleteStr+'"></div>'
           + '</div>'
           + '</div>'
         ;
@@ -935,10 +935,10 @@ function populateRecentFiles() {
         html += '<div class="fileEntry" onclick="'+loadStr+'">'
           + '<div class="entryText">'+filename+'</div>'
           + '<div class="expandDiv">'
-          + '<img src="iphone/expandb.svg" class="expBut fileEx" id="FExp'+i+'" onclick="expandEdit('+i+'); event.preventDefault();" ontouchstart="expandEdit('+i+'); event.preventDefault();" />'
+          + '<img src="assets/index/expandb.svg" class="expBut fileEx" id="FExp'+i+'" onclick="expandEdit('+i+'); event.preventDefault();" ontouchstart="expandEdit('+i+'); event.preventDefault();" />'
           + '<div class="fEditControls" id="feC'+i+'">'
-          + '<img src="iphone/rename.svg" class="rename" onclick="'+renameStr+'" />'
-          + '<img src="iphone/bin.svg" class="delete" onclick="'+deleteStr+'" />'
+          + '<img src="assets/index/rename.svg" class="rename" onclick="'+renameStr+'" />'
+          + '<img src="assets/index/bin.svg" class="delete" onclick="'+deleteStr+'" />'
           + '</div>'
           + '</div>'
           + '</div>';

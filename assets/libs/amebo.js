@@ -307,10 +307,17 @@ window.gb = function(file, canvas, options) {
 		STATES: [112, 113, 114, 115, /* 116,  */117, 118, 119, 120, 121]
 	}
 
-	if (file != null) this.loadROM(file);
+	if (file)
+  {
+    this.loadROM(file);
+  }
+
+  var amebo_script_filepath = document.getElementById('amebo_script').src.split('/');
+  amebo_script_filepath.pop();
+  var amebo_script_dir = amebo_script_filepath.join('/');
 
 	var loadbios = new XMLHttpRequest();
-  loadbios.open("GET", "./bin/dmgbios.bin");
+  loadbios.open("GET", amebo_script_dir + '/bin/dmgbios.bin');
 	loadbios.responseType = "arraybuffer";
 	loadbios.send();
 	loadbios.onload = function() {
@@ -324,7 +331,7 @@ window.gb = function(file, canvas, options) {
 	}
 
 	var loadCGBbios = new XMLHttpRequest();
-  loadCGBbios.open("GET", "./bin/gbcbios.bin");
+  loadCGBbios.open("GET", amebo_script_dir + '/bin/gbcbios.bin');
 	loadCGBbios.responseType = "arraybuffer";
 	loadCGBbios.send();
 	loadCGBbios.onload = function() {
