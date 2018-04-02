@@ -426,7 +426,36 @@ window.addEventListener('load', function(evt) {
 
   // end UI init
 
-  gameboy = new gb(null, document.getElementById('gameboy'), {cButByte: true, rootDir:""});
+  // Enable Load Bios
+  var gbSettings = localStorage.getItem('GameBoySettings');
+  if (!gbSettings)
+  {
+    gbSettings = {
+      audioEngineVolume: 0.5,
+      enableLoadBios: true,
+    };
+  }
+  else
+  {
+    gbSettings = JSON.parse(gbSettings);
+  }
+  console.log(gbSettings);
+
+  var enableLoadBiosController = document.getElementById('enableLoadBiosControl');
+  var currentEnableLoadBios = gbSettings.enableLoadBios;
+  enableLoadBiosController.checked = currentEnableLoadBios;
+  enableLoadBiosController.onchange = function (e)
+  {
+    gbSettings.enableLoadBios = e.target.checked;
+    localStorage.setItem('GameBoySettings', JSON.stringify(gbSettings));
+    console.log(gbSettings, e.target.checked);
+  }
+
+  gameboy = new gb(null, document.getElementById('gameboy'), {
+    cButByte: true,
+    rootDir: '',
+    enableLoadBios: currentEnableLoadBios,
+  });
   backButtonDisp("none");
   setUpButtons();
   //populateRecentFiles();
@@ -438,10 +467,11 @@ window.addEventListener('load', function(evt) {
   var volumeController = document.getElementById('audioEngineVolumeControl');
   volumeController.onchange = function(e)
   {
-    localStorage['audioEngineVolume'] = e.target.value;
-    gameboy.setAudioEngineVolume(localStorage['audioEngineVolume']);
+    gbSettings.audioEngineVolume = e.target.value;
+    gameboy.setAudioEngineVolume(gbSettings.audioEngineVolume);
+    localStorage.setItem('GameBoySettings', JSON.stringify(gbSettings));
   }
-  var currentVolume = localStorage['audioEngineVolume'] || 0.5;
+  var currentVolume = gbSettings.audioEngineVolume;
   volumeController.value = currentVolume;
   gameboy.setAudioEngineVolume(currentVolume);
 

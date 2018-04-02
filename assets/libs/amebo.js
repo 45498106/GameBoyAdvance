@@ -63,6 +63,7 @@ window.gb = function(file, canvas, options) {
   {
     var options = {
       rootDir: '',
+      enableLoadBios: true,
     }
 	}
 	this.options = options;
@@ -288,37 +289,46 @@ window.gb = function(file, canvas, options) {
     this.loadROM(file);
   }
 
-  var amebo_script_filepath = document.getElementById('amebo_script').src.split('/');
-  amebo_script_filepath.pop();
-  var amebo_script_dir = amebo_script_filepath.join('/');
+  if (options.enableLoadBios)
+  {
+    var amebo_script_filepath = document.getElementById('amebo_script').src.split('/');
+    amebo_script_filepath.pop();
+    var amebo_script_dir = amebo_script_filepath.join('/');
 
-	var loadbios = new XMLHttpRequest();
-  loadbios.open("GET", amebo_script_dir + '/bin/dmgbios.bin');
-	loadbios.responseType = "arraybuffer";
-	loadbios.send();
-	loadbios.onload = function() {
-		if (loadbios.status == 200) bios = new Uint8Array(loadbios.response);
-		biosLoaded++;
-		if (gameLoaded && (biosLoaded == 2)) init();
-	}
-	loadbios.onerror = function() {
-		biosLoaded++;
-		if (gameLoaded && (biosLoaded == 2)) init();
-	}
+    var loadbios = new XMLHttpRequest();
+    loadbios.open("GET", amebo_script_dir + '/bin/dmgbios.bin');
+    loadbios.responseType = "arraybuffer";
+    loadbios.send();
+    loadbios.onload = function() {
+      if (loadbios.status == 200) bios = new Uint8Array(loadbios.response);
+      biosLoaded++;
+      if (gameLoaded && (biosLoaded == 2)) init();
+    }
+    loadbios.onerror = function() {
+      biosLoaded++;
+      if (gameLoaded && (biosLoaded == 2)) init();
+    }
 
-	var loadCGBbios = new XMLHttpRequest();
-  loadCGBbios.open("GET", amebo_script_dir + '/bin/gbcbios.bin');
-	loadCGBbios.responseType = "arraybuffer";
-	loadCGBbios.send();
-	loadCGBbios.onload = function() {
-		if (loadCGBbios.status == 200) CGBbios = new Uint8Array(loadCGBbios.response);
-		biosLoaded++;
-		if (gameLoaded && (biosLoaded == 2)) init();
-	}
-	loadCGBbios.onerror = function() {
-		biosLoaded++;
-		if (gameLoaded && (biosLoaded == 2)) init();
-	}
+    var loadCGBbios = new XMLHttpRequest();
+    loadCGBbios.open("GET", amebo_script_dir + '/bin/gbcbios.bin');
+    loadCGBbios.responseType = "arraybuffer";
+    loadCGBbios.send();
+    loadCGBbios.onload = function() {
+      if (loadCGBbios.status == 200) CGBbios = new Uint8Array(loadCGBbios.response);
+      biosLoaded++;
+      if (gameLoaded && (biosLoaded == 2)) init();
+    }
+    loadCGBbios.onerror = function() {
+      biosLoaded++;
+      if (gameLoaded && (biosLoaded == 2)) init();
+    }
+  }
+  else
+  {
+    biosLoaded++;
+    biosLoaded++;
+    if (gameLoaded && (biosLoaded == 2)) init();
+  }
 
 	var keysArray = new Array(256);
 	for (var i=0; i<256; i++) {
@@ -2384,7 +2394,7 @@ window.gb = function(file, canvas, options) {
 			} else RAM[pointer-0xC000] = value;
 		} else if (pointer < 0xFE00) {
 			// console.log("writing to shadow ram?")
-			debugger;
+			// debugger;
 			if (CGB) {
 				if (pointer < 0xF000) RAM[pointer-0xE000] = value;
 				else RAM[(pointer-0xF000)+0x1000*IORAM[0x70]] = value;
