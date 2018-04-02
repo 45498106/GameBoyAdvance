@@ -1,3 +1,10 @@
+var indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB,
+  IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction,
+  dbVersion = 1.0;
+
+var idxDB = indexedDB.open('idxdbgba', dbVersion);
+var db = openDatabase('amebo2', '1.0', 'amebo state and rom store', 2 * 1024 * 1024); //, createDB
+
 var defaultControls = {
   "images": [
     "assets/styles/default/abtn.svg",
@@ -382,6 +389,50 @@ var activeROM = -1;
 var aROMname = "";
 
 function createDB() {
+  // IndexedDB
+  open.onupgradeneeded = function() {
+    console.log(1);
+    var db = open.result;
+    var store = db.createObjectStore(
+      "MyObjectStore",
+      {keyPath: "id"}
+    );
+    var index = store.createIndex(
+      "NameIndex",
+      ["name.last", "name.first"]
+    );
+  };
+
+  open.onsuccess = function() {
+    // Start a new transaction
+    var db = open.result;
+    var tx = db.transaction("MyObjectStore", "readwrite");
+    var store = tx.objectStore("MyObjectStore");
+    var index = store.index("NameIndex");
+
+    // Add some data
+    store.put({id: 12345, name: {first: "John", last: "Doe"}, age: 42});
+    store.put({id: 67890, name: {first: "Bob", last: "Smith"}, age: 35});
+
+    // Query the data
+    var getJohn = store.get(12345);
+    var getBob = index.get(["Smith", "Bob"]);
+
+    getJohn.onsuccess = function() {
+      console.log(getJohn.result.name.first);  // => "John"
+    };
+
+    getBob.onsuccess = function() {
+      console.log(getBob.result.name.first);   // => "Bob"
+    };
+
+    // Close the db when the transaction is done
+    tx.oncomplete = function() {
+      db.close();
+    };
+  }
+
+  // Web SQL
   db.transaction(function (tx) {
     tx.executeSql('CREATE TABLE IF NOT EXISTS roms (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME);', [], function(){}, function(t, e){console.log(t, e)});
     tx.executeSql('CREATE TABLE IF NOT EXISTS styles (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar);', [], function(){}, function(t, e){console.log(t, e)});
@@ -405,7 +456,6 @@ function handleMessage(e) {
 window.addEventListener('load', function(evt) {
   // UI Init
 
-  db = openDatabase('amebo2', '1.0', 'amebo state and rom store', 2 * 1024 * 1024); //, createDB
   createDB();
 
   loadStyle(localStorage["currentStyle"],
@@ -439,7 +489,6 @@ window.addEventListener('load', function(evt) {
   {
     gbSettings = JSON.parse(gbSettings);
   }
-  console.log(gbSettings);
 
   var enableLoadBiosController = document.getElementById('enableLoadBiosControl');
   var currentEnableLoadBios = gbSettings.enableLoadBios;
@@ -448,7 +497,6 @@ window.addEventListener('load', function(evt) {
   {
     gbSettings.enableLoadBios = e.target.checked;
     localStorage.setItem('GameBoySettings', JSON.stringify(gbSettings));
-    console.log(gbSettings, e.target.checked);
   }
 
   gameboy = new gb(null, document.getElementById('gameboy'), {
@@ -1089,6 +1137,35 @@ function loadURL(url) {
 
 function initROMSelection()
 {
+  function renderChooseROMSelection(data) {
+    romList = data;
+    var parent = document.getElementById('chooseROMSelection');
+    var selection = parent.getElementsByTagName('select')[0];
+    var options_html = '<option disabled selected>---</option>';
+    var i;
+    var rl = romList.length;
+    for (i = 0; i < rl; i++)
+    {
+      var filename = romList[i].split('/');
+      options_html += '<option value="'
+        + romList[i]
+        + '">'
+        + filename[filename.length - 1]
+        + '</option>'
+    }
+    if (rl)
+    {
+      selection.innerHTML = options_html;
+      parent.style.display = 'block';
+      localStorage.setItem('RomList', JSON.stringify(romList));
+    }
+  }
+  var romList = localStorage.getItem('RomList') || [];
+  if (typeof romList === 'string')
+  {
+    renderChooseROMSelection(JSON.parse(romList))
+  }
+
   function jsonp(url, callback) {
     var callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
     window[callbackName] = function(data) {
@@ -1104,28 +1181,7 @@ function initROMSelection()
 
   var GoogleAppScript_ID = 'AKfycbzzoS36cl8dSCYExKyyzpnLEMeUfclfno0hA37nbFTF8tuKFeRV';
 
-  jsonp('https://script.google.com/macros/s/' + GoogleAppScript_ID + '/exec', function(data) {
-    var res = data;
-    var parent = document.getElementById('chooseROMSelection');
-    var selection = parent.getElementsByTagName('select')[0];
-    var options_html = '<option disabled selected>---</option>';
-    var i;
-    var rl = res.length;
-    for (i = 0; i < rl; i++)
-    {
-      var filename = res[i].split('/');
-      options_html += '<option value="'
-        + res[i]
-        + '">'
-        + filename[filename.length - 1]
-        + '</option>'
-    }
-    if (rl)
-    {
-      selection.innerHTML = options_html;
-      parent.style.display = 'block';
-    }
-  });
+  jsonp('https://script.google.com/macros/s/' + GoogleAppScript_ID + '/exec', renderChooseROMSelection);
   // var xhr = new XMLHttpRequest();
   // xhr.open("GET", './roms.json');
   // xhr.responseType = 'json';
