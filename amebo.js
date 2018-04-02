@@ -12,15 +12,18 @@ window.GBMasterClass = function() {
 	var gameboys = this.gameboys;
 
 	function update() {
-		if (gameboys.length > 1) multiGBUpdate();
-		else if (gameboys.length == 1) gameboys[0].audioSyncUpdate();
+    var gbl = gameboys.length;
+    if (gbl > 1)
+      multiGBUpdate();
+    else if (gbl == 1)
+      gameboys[0].audioSyncUpdate();
 		window.requestAnimationFrame(update);
 	}
 
 	function multiGBUpdate() {
 		var gbl = gameboys.length
-
-		for (var gbn=0; gbn<gbl; gbn++) {
+    var gbn;
+		for (gbn = 0; gbn < gbl; gbn++) {
 			if (!(gameboys[gbn].options.cButByte))
       {
         gameboys[gbn].prepareButtonByte();
@@ -28,8 +31,9 @@ window.GBMasterClass = function() {
 		}
 		var mostCycles = 0;
 		while (mostCycles<70224) {
-			for (var gbn=0; gbn<gbl; gbn++) {
-				while (gameboys[gbn].frameCycles <= Math.min(mostCycles, 70223)) gameboys[gbn].cycle();
+			for (gbn = 0; gbn < gbl; gbn++) {
+        while (gameboys[gbn].frameCycles <= Math.min(mostCycles, 70223))
+          gameboys[gbn].cycle();
 				mostCycles = gameboys[gbn].frameCycles
 			}
 		}
@@ -40,6 +44,30 @@ window.GBMasterClass = function() {
 
 	window.requestAnimationFrame(update);
 }
+
+function byteToString(byteArray, noBase64) {
+  if (typeof byteArray == "undefined") return;
+  var string = ""
+  var i;
+  var bal = byteArray.length;
+  for (var i=0; i < bal; i++) {
+    string += String.fromCharCode(byteArray[i]);
+  }
+  return (noBase64 || false) ? string : btoa(string); //i have to base64 encode because JSON.stringify encodes unusual characters like \u1234
+}
+
+function stringToByte(string, noBase64) {
+  var string = (noBase64||false)?string:atob(string);
+  if (typeof string == "undefined") return; //so incomplete states don't cause errors.
+  var byteArray = new Uint8Array(string.length)
+  var i;
+  var bal = byteArray.length;
+  for (i = 0; i < bal; i++) {
+    byteArray[i] = string.charCodeAt(i);
+  }
+  return byteArray;
+}
+
 
 window.gb = function(file, canvas, options) {
 
@@ -248,7 +276,6 @@ window.gb = function(file, canvas, options) {
 	var registerDebug, instCount;
 
 	GBScreen = internalCtx.createImageData(160, 144);
-  console.log(GBScreen);
 	var EmptyImageBuffer = new Uint8Array(GBScreen.data.length);
 	var GBScreenInt32 = new Uint32Array(GBScreen.data.buffer);
 
@@ -340,11 +367,12 @@ window.gb = function(file, canvas, options) {
 
 	function generateUniqueName() {
 		var sum = 0;
-		for (var i=0; i<game.length; i++) {
+    var i;
+		for (i = 0; i < game.length; i++) {
 			sum = (sum + game[i])%4294967295
 		}
 		var name = "";
-		for (var i=0x134; i<=0x143; i++) {
+		for (i = 0x134; i<=0x143; i++) {
 			name += String.fromCharCode(game[i])
 		}
 		return name+sum;
@@ -391,25 +419,6 @@ window.gb = function(file, canvas, options) {
 	]
 
 	// ----- State Load/Save -----
-
-	function byteToString(byteArray, noBase64) {
-		if (typeof byteArray == "undefined") return;
-		var string = ""
-		for (var i=0; i<byteArray.length; i++) {
-			string += String.fromCharCode(byteArray[i]);
-		}
-		return (noBase64||false)?string:btoa(string); //i have to base64 encode because JSON.stringify encodes unusual characters like \u1234
-	}
-
-	function stringToByte(string, noBase64) {
-		var string = (noBase64||false)?string:atob(string);
-		if (typeof string == "undefined") return; //so incomplete states don't cause errors.
-		var byteArray = new Uint8Array(string.length)
-		for (var i=0; i<byteArray.length; i++) {
-			byteArray[i] = string.charCodeAt(i);
-		}
-		return byteArray;
-	}
 
 	function saveState() {
     console.info('State is Saving...');
@@ -616,7 +625,7 @@ window.gb = function(file, canvas, options) {
 	}
 
 	IOWriteFunctions[0x44] = function(a, b){
-		console.log("writing to LCDY??? what are you even doing")
+		console.log("writing to LCDY??? what are you even doing");
 		//IORAM[b] = 0;
 	}
 
@@ -1861,7 +1870,7 @@ window.gb = function(file, canvas, options) {
 		if (!MBC) return;
 		if (MBC.hardware.indexOf("BATTERY") == -1) return;
 		var battery = "";
-		for (var i=0; i<CRAM.length; i++) {
+		for (var i = 0; i < CRAM.length; i++) {
 			battery += String.fromCharCode(CRAM[i]);
 		}
 		localStorage["battery/"+ROMID] = battery;
@@ -2026,24 +2035,29 @@ window.gb = function(file, canvas, options) {
 		if (getGamepads) { //gamepad support present!
 			//if (navigator.webkitGetGamepads) var gamepads = navigator.webkitGetGamepads();
 			//if (navigator.webkitGamepads) var gamepads = navigator.webkitGamepads();
-			if (navigator.getGamepads) var gamepads = navigator.getGamepads();
-			for (var i=0; i<gamepads.length; i++) {
-				if (gamepads[i] != null) {
-					var j = gamepads[i];
+      if (navigator.getGamepads)
+      {
+        var gamepads = navigator.getGamepads();
+        var gpl = gamepads.length;
+        var i;
+        for (i = 0; i < gpl; i++) {
+          if (gamepads[i] != null) {
+            var j = gamepads[i];
 
-					//TODO: custom bindings for controllers
+            //TODO: custom bindings for controllers
 
-					if (j.axes[0] > 0.5 || j.buttons[15].pressed) buttonByte ^= 1<<0; //right
-					if (j.axes[0] < -0.5 || j.buttons[14].pressed) buttonByte ^= 1<<1; //left
-					if (j.axes[1] > 0.5 || j.buttons[13].pressed) buttonByte ^= 1<<3; //down
-					if (j.axes[1] < -0.5 || j.buttons[12].pressed) buttonByte ^= 1<<2; //up
+            if (j.axes[0] > 0.5 || j.buttons[15].pressed) buttonByte ^= 1<<0; //right
+            if (j.axes[0] < -0.5 || j.buttons[14].pressed) buttonByte ^= 1<<1; //left
+            if (j.axes[1] > 0.5 || j.buttons[13].pressed) buttonByte ^= 1<<3; //down
+            if (j.axes[1] < -0.5 || j.buttons[12].pressed) buttonByte ^= 1<<2; //up
 
-					if (j.buttons[9].pressed) buttonByte ^= 1<<7; //start
-					if (j.buttons[8].pressed) buttonByte ^= 1<<6; //select
-					if (j.buttons[0].pressed) buttonByte ^= 1<<5; //B
-					if (j.buttons[1].pressed) buttonByte ^= 1<<4; //A
-				}
-			}
+            if (j.buttons[9].pressed) buttonByte ^= 1<<7; //start
+            if (j.buttons[8].pressed) buttonByte ^= 1<<6; //select
+            if (j.buttons[0].pressed) buttonByte ^= 1<<5; //B
+            if (j.buttons[1].pressed) buttonByte ^= 1<<4; //A
+          }
+        }
+      }
 
 		}
 	}

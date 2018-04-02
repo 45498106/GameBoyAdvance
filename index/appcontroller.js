@@ -222,7 +222,7 @@ function prepareControlsDialogs(gb, num, controls) {
 	}
 	gb.GUI.ctrTxt = [];
 	gb.GUI.ctrSel = [];
-	for (var i=0;i<8;i++) {
+	for (var i = 0;i < 8; i++) {
 		var text = getChildById(i+"t", gb.GUI.cHide)
 		text.innerHTML = controlsArray[num][numberToControl[i]][1]
 		gb.keyConfig[numberToControl[i]] = controlsArray[num][numberToControl[i]][0];
@@ -258,7 +258,6 @@ function controlChoose(evt) {
 	for (var i=0; i<gameboys.length; i++) {
 		var gui = gameboys[i].GUI
 		if (gui.selCont != -1) {
-      console.log(1111);
 			evt.preventDefault();
       if (evt.keyCode != 27)
       {

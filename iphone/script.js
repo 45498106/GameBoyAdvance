@@ -1,60 +1,59 @@
-var defaultControls =
-  {
-    "images": [
-      "styles/default/abtn.svg",
-      "styles/default/bbtn.svg",
-      "styles/default/start.svg",
-      "styles/default/select.svg",
-      "styles/default/dpad.svg",
-      "styles/default/bg.svg",
-      "styles/default/menu.svg",
-      "styles/default/indent.svg"
-    ],
+var defaultControls = {
+  "images": [
+    "styles/default/abtn.svg",
+    "styles/default/bbtn.svg",
+    "styles/default/start.svg",
+    "styles/default/select.svg",
+    "styles/default/dpad.svg",
+    "styles/default/bg.svg",
+    "styles/default/menu.svg",
+    "styles/default/indent.svg"
+  ],
 
-    "name": "Default",
-    "bgColour": "#313123",
-    "background": 5,
-    "gbborder": 7,
-    "l_halign": "center",
-    "l_valign": "center",
-    "p_halign": "center",
-    "p_valign": "top",
-    "indent": 8,
+  "name": "Default",
+  "bgColour": "#313123",
+  "background": 5,
+  "gbborder": 7,
+  "l_halign": "center",
+  "l_valign": "center",
+  "p_halign": "center",
+  "p_valign": "top",
+  "indent": 8,
 
-    "landscape": [
-      {"type": "button", "x":-12, "y":45, "mask":16, "radius":17, "halign":"right", "image":0, "imgwidth":18.3333333, "imgheight":18.3333333}, // A Button
-      {"type": "button", "x":-29, "y":61, "mask":32, "radius":17, "halign":"right", "image":1, "imgwidth":18.3333333, "imgheight":18.3333333},// B Button
-      {"type": "dpad", "x":20, "y":53, "radius":29, "halign":"left", "image":4, "imgwidth":35, "imgheight":35,
-        "segments": [
-          {"mask":1, "start":0.7853981633974483, "end":2.356194490192345}, 	//start: (Math.PI/4), end: (3*Math.PI/4)
-          {"mask":2, "start":-2.356194490192345, "end":-0.7853981633974483}, 	//start: (3*Math.PI/(-4)), end: (Math.PI/(-4))
-          {"mask":4, "start":2.356194490192345, "end":200}, 					//start: (3*Math.PI/4), end: infinity
-          {"mask":4, "start":-200, "end":-2.356194490192345},					//start: -infinity, end: (3*Math.PI/(-4))
-          {"mask":8, "start":-0.7853981633974483, "end":0.7853981633974483} 	//start: (Math.PI/(-4)), end: (Math.PI/4)
-        ]
-      },
-      {"type": "recbutton", "x":-21, "y":93, "imgwidth":18.33333333, "imgheight":8.33333333, "width": 40, "height":10, "halign":"right", "mask":128, "image":2}, //start
-      {"type": "recbutton", "x":21, "y":93, "imgwidth":18.33333333, "imgheight":8.33333333, "width": 40, "height":10, "halign":"left", "mask":64, "image":3}, //select
-      {"type": "specialbutton", "btype": "menu", "y":16, "x":-20, "image":6, "imgheight":16.6666667, "imgwidth":16.6666667, "halign":"right", "radius":10}
-    ],
+  "landscape": [
+    {"type": "button", "x":-12, "y":45, "mask":16, "radius":17, "halign":"right", "image":0, "imgwidth":18.3333333, "imgheight":18.3333333}, // A Button
+    {"type": "button", "x":-29, "y":61, "mask":32, "radius":17, "halign":"right", "image":1, "imgwidth":18.3333333, "imgheight":18.3333333},// B Button
+    {"type": "dpad", "x":20, "y":53, "radius":29, "halign":"left", "image":4, "imgwidth":35, "imgheight":35,
+      "segments": [
+        {"mask":1, "start":0.7853981633974483, "end":2.356194490192345}, 	//start: (Math.PI/4), end: (3*Math.PI/4)
+        {"mask":2, "start":-2.356194490192345, "end":-0.7853981633974483}, 	//start: (3*Math.PI/(-4)), end: (Math.PI/(-4))
+        {"mask":4, "start":2.356194490192345, "end":200}, 					//start: (3*Math.PI/4), end: infinity
+        {"mask":4, "start":-200, "end":-2.356194490192345},					//start: -infinity, end: (3*Math.PI/(-4))
+        {"mask":8, "start":-0.7853981633974483, "end":0.7853981633974483} 	//start: (Math.PI/(-4)), end: (Math.PI/4)
+      ]
+    },
+    {"type": "recbutton", "x":-21, "y":93, "imgwidth":18.33333333, "imgheight":8.33333333, "width": 40, "height":10, "halign":"right", "mask":128, "image":2}, //start
+    {"type": "recbutton", "x":21, "y":93, "imgwidth":18.33333333, "imgheight":8.33333333, "width": 40, "height":10, "halign":"left", "mask":64, "image":3}, //select
+    {"type": "specialbutton", "btype": "menu", "y":16, "x":-20, "image":6, "imgheight":16.6666667, "imgwidth":16.6666667, "halign":"right", "radius":10}
+  ],
 
-    "portrait": [
-      {"type": "button", "x":-16.25, "y":111, "mask":16, "radius":17, "halign":"right", "image":0, "imgwidth":18.3333333, "imgheight":18.3333333}, // A Button
-      {"type": "button", "x":-31.875, "y":126.25, "mask":32, "radius":17, "halign":"right", "image":1, "imgwidth":18.3333333, "imgheight":18.3333333},// B Button
-      {"type": "dpad", "x":25.625, "y":118.4375, "radius":29, "halign":"left", "image":4, "imgwidth":35, "imgheight":35,
-        "segments": [
-          {"mask":1, "start":0.7853981633974483, "end":2.356194490192345}, 	//start: (Math.PI/4), end: (3*Math.PI/4)
-          {"mask":2, "start":-2.356194490192345, "end":-0.7853981633974483}, 	//start: (3*Math.PI/(-4)), end: (Math.PI/(-4))
-          {"mask":4, "start":2.356194490192345, "end":200}, 					//start: (3*Math.PI/4), end: infinity
-          {"mask":4, "start":-200, "end":-2.356194490192345},					//start: -infinity, end: (3*Math.PI/(-4))
-          {"mask":8, "start":-0.7853981633974483, "end":0.7853981633974483} 	//start: (Math.PI/(-4)), end: (Math.PI/4)
-        ]
-      },
-      {"type": "recbutton", "x":-40, "y":151.25, "imgwidth":18.33333333, "imgheight":8.33333333, "width": 40, "height":10, "halign":"right", "mask":128, "image":2}, //start
-      {"type": "recbutton", "x":40, "y":151.25, "imgwidth":18.33333333, "imgheight":8.33333333, "width": 40, "height":10, "halign":"left", "mask":64, "image":3}, //select
-      {"type": "specialbutton", "btype": "menu", "y":151.25, "x":-14, "image":6, "imgheight":16.6666667, "imgwidth":16.6666667, "halign":"right", "radius":10}
-    ]
-  };
+  "portrait": [
+    {"type": "button", "x":-16.25, "y":111, "mask":16, "radius":17, "halign":"right", "image":0, "imgwidth":18.3333333, "imgheight":18.3333333}, // A Button
+    {"type": "button", "x":-31.875, "y":126.25, "mask":32, "radius":17, "halign":"right", "image":1, "imgwidth":18.3333333, "imgheight":18.3333333},// B Button
+    {"type": "dpad", "x":25.625, "y":118.4375, "radius":29, "halign":"left", "image":4, "imgwidth":35, "imgheight":35,
+      "segments": [
+        {"mask":1, "start":0.7853981633974483, "end":2.356194490192345}, 	//start: (Math.PI/4), end: (3*Math.PI/4)
+        {"mask":2, "start":-2.356194490192345, "end":-0.7853981633974483}, 	//start: (3*Math.PI/(-4)), end: (Math.PI/(-4))
+        {"mask":4, "start":2.356194490192345, "end":200}, 					//start: (3*Math.PI/4), end: infinity
+        {"mask":4, "start":-200, "end":-2.356194490192345},					//start: -infinity, end: (3*Math.PI/(-4))
+        {"mask":8, "start":-0.7853981633974483, "end":0.7853981633974483} 	//start: (Math.PI/(-4)), end: (Math.PI/4)
+      ]
+    },
+    {"type": "recbutton", "x":-40, "y":151.25, "imgwidth":18.33333333, "imgheight":8.33333333, "width": 40, "height":10, "halign":"right", "mask":128, "image":2}, //start
+    {"type": "recbutton", "x":40, "y":151.25, "imgwidth":18.33333333, "imgheight":8.33333333, "width": 40, "height":10, "halign":"left", "mask":64, "image":3}, //select
+    {"type": "specialbutton", "btype": "menu", "y":151.25, "x":-14, "image":6, "imgheight":16.6666667, "imgwidth":16.6666667, "halign":"right", "radius":10}
+  ]
+};
 
 function installStyle(style, callback) {
   var imgdata = []
@@ -62,7 +61,7 @@ function installStyle(style, callback) {
   var loaded = 0;
   var toLoad = obj.images.length;
 
-  for (var i=0; i<obj.images.length; i++) {
+  for (var i = 0; i < obj.images.length; i++) {
     (function(i){
       var mime = ""
       var xhr = new XMLHttpRequest();
@@ -120,7 +119,9 @@ function gbTouchUI(input, id, callback) {
 
   db.transaction(function (tx) {
     tx.executeSql('SELECT res_id, data FROM styleres WHERE style_id = ?', [id], function (tx, results) {
-      for (var i=0; i<results.rows.length; i++) {
+      var i;
+      var rl = results.rows.length;
+      for (i = 0; i < rl; i++) {
         item = results.rows.item(i);
         var img = new Image();
         img.src = item.data;
@@ -207,9 +208,10 @@ function gbTouchUI(input, id, callback) {
 
     ctx.scale(scale, scale);
 
+    var i;
     var elems = (canvas.width > height)?obj.landscape:obj.portrait;
-
-    for (var i=0; i<elems.length; i++) {
+    var elmsl = elems.length;
+    for (i=0; i < elmsl; i++) {
       var t = elems[i]
       var img = images[t.image];
       ctx.save();
@@ -233,7 +235,9 @@ function gbTouchUI(input, id, callback) {
   this.getButtons = function(touches) {
     var buttonByte = 0;
 
-    for (var i=0; i<touches.length; i++) {
+    var i;
+    var tl = touches.length;
+    for (i = 0; i < tl; i++) {
       var x = touches[i].pageX;
       var y = touches[i].pageY;
 
@@ -252,7 +256,9 @@ function gbTouchUI(input, id, callback) {
 
       var elems = (width > height)?obj.landscape:obj.portrait;
 
-      for (var j=0; j<elems.length; j++) {
+      var j;
+      var elmsl = elems.length;
+      for (j = 0; j < elmsl; j++) {
         var t = elems[j]
 
         var rx = x;
@@ -265,7 +271,9 @@ function gbTouchUI(input, id, callback) {
           case "dpad":
             if (Math.sqrt(Math.pow(x-t.x, 2)+Math.pow(y-t.y, 2)) < t.radius) {
               var angle = Math.atan2(x-t.x, y-t.y)
-              for (var k=0; k<t.segments.length; k++) {
+              var k;
+              var sgml = t.segments.length;
+              for (k = 0; k < sgml; k++) {
                 var seg = t.segments[k];
                 if (angle > (seg.start) && angle < (seg.end)) buttonByte |= seg.mask;
               }
@@ -470,34 +478,38 @@ function setUpButtons() {
   document.getElementById("editState").onclick = eval("(function(){triggerEdit(true)})");
 
   var back = document.getElementsByClassName("mbackBtn");
-  for (var i=0; i<back.length; i++) {
+  var i;
+  var bl = back.length;
+  for (i = 0; i < bl; i++) {
     back[i].onclick = closeFileSelect;
     back[i].ontouchstart = closeFileSelect;
   }
 }
 
 function triggerEdit(state) {
-  if (state) {
-    var expands = document.getElementsByClassName("stateEx");
-    var fEdit = document.getElementsByClassName("sEditControls");
-  } else {
-    var expands = document.getElementsByClassName("fileEx");
-    var fEdit = document.getElementsByClassName("fEditControls");
+  var expands = document.getElementsByClassName("fileEx");
+  var fEdit = document.getElementsByClassName("fEditControls");
+  if (state)
+  {
+    expands = document.getElementsByClassName("stateEx");
+    fEdit = document.getElementsByClassName("sEditControls");
   }
 
   var trigger = state? editingStates:editingFiles;
+  var i;
+  var epsl = expands.length;
   if (trigger) {
-    for (var i = 0; i < expands.length; i++) {
+    for (i = 0; i < epsl; i++) {
       expands[i].style.opacity = 0;
       applyTransform(expands[i], "translate(30px, 0)");
     };
-    for (var i = 0; i < fEdit.length; i++) {
+    for (i = 0; i < fEdit.length; i++) {
       applyTransform(fEdit[i], "translate(90px, 0)");
       if (state) statesState[i].editing = false;
       else recentFilesState[i].editing = false;
     };
   } else {
-    for (var i = 0; i < expands.length; i++) {
+    for (i = 0; i < epsl; i++) {
       expands[i].style.opacity = 1;
       applyTransform(expands[i], "translate(0, 0)");
     };
@@ -507,7 +519,8 @@ function triggerEdit(state) {
 
 }
 
-function scrollFix() {
+function scrollFix()
+{
   window.scrollTo(0, 0)
 }
 
@@ -719,25 +732,6 @@ function addROM(name, data, callback) {
         });
     });
   });
-}
-
-function byteToString(byteArray, noBase64) {
-  if (typeof byteArray == "undefined") return;
-  var string = ""
-  for (var i=0; i<byteArray.length; i++) {
-    string += String.fromCharCode(byteArray[i]);
-  }
-  return (noBase64||false)?string:btoa(string); //i have to base64 encode because JSON.stringify encodes unusual characters like \u1234
-}
-
-function stringToByte(string, noBase64) {
-  var string = (noBase64||false)?string:atob(string);
-  if (typeof string == "undefined") return; //so incomplete states don't cause errors.
-  var byteArray = new Uint8Array(string.length)
-  for (var i=0; i<byteArray.length; i++) {
-    byteArray[i] = string.charCodeAt(i);
-  }
-  return byteArray;
 }
 
 function loadState(id, rom_id) {
@@ -1074,7 +1068,9 @@ function initROMSelection()
     var parent = document.getElementById('chooseROMSelection');
     var selection = parent.getElementsByTagName('select')[0];
     var options_html = '<option disabled selected>---</option>';
-    for (var i = 0; i < res.length; i++)
+    var i;
+    var rl = res.length;
+    for (i = 0; i < rl; i++)
     {
       var filename = res[i].split('/');
       options_html += '<option value="'
@@ -1083,7 +1079,7 @@ function initROMSelection()
         + filename[filename.length - 1]
         + '</option>'
     }
-    if (res.length)
+    if (rl)
     {
       selection.innerHTML = options_html;
       parent.style.display = 'block';
