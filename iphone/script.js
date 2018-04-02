@@ -817,8 +817,9 @@ function populateStates() {
         var temp = '<div class="fileEntry" onclick="stateMenu('+row.id+', '+row.rom_id+', '+i+')">'
           + '<div class="entryText">'+htmlSafe(row.name)+'</div>'
           + '<div class="expandDiv"><img src="iphone/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.preventDefault();" ontouchstart="expandSEdit('+i+'); event.preventDefault();"><div class="sEditControls" id="seC'+i+'"><img src="iphone/rename.svg" class="rename" ontouchstart="'+renameStr+'"><img src="iphone/bin.svg" class="delete" ontouchstart="'+deleteStr+'"></div>'
-          + '</div>';
           + '</div>'
+          + '</div>'
+        ;
 
         if (row.rom_id == activeROM) {
           thisRomHTML += temp;
@@ -1053,31 +1054,24 @@ document.getElementById('chooseFile').onchange = function (e) {
 
 function initROMSelection()
 {
-  if (1)
-  {
-    function jsonp(url, callback) {
-      var callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-      window[callbackName] = function(data) {
-        delete window[callbackName];
-        document.body.removeChild(script);
-        callback(data);
-      };
+  function jsonp(url, callback) {
+    var callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+    window[callbackName] = function(data) {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      callback(data);
+    };
 
-      var script = document.createElement('script');
-      script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + callbackName;
-      document.body.appendChild(script);
-    }
-
-    jsonp('https://script.google.com/macros/s/AKfycbzzoS36cl8dSCYExKyyzpnLEMeUfclfno0hA37nbFTF8tuKFeRV/exec', function(data) {
-      console.log(data);
-    });
+    var script = document.createElement('script');
+    script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + callbackName;
+    document.body.appendChild(script);
   }
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", './roms.json');
-  xhr.responseType = 'json';
-  xhr.onload = function() {
-    console.log(xhr);
-    var res = xhr.response;
+
+  var GoogleAppScript_ID = 'AKfycbzzoS36cl8dSCYExKyyzpnLEMeUfclfno0hA37nbFTF8tuKFeRV';
+
+  jsonp('https://script.google.com/macros/s/' + GoogleAppScript_ID + '/exec', function(data) {
+    console.log(data[0]);
+    var res = data;
     var parent = document.getElementById('chooseROMSelection');
     var selection = parent.getElementsByTagName('select')[0];
     var options_html = '<option disabled selected>---</option>';
@@ -1095,8 +1089,32 @@ function initROMSelection()
       selection.innerHTML = options_html;
       parent.style.display = 'block';
     }
-  };
-  xhr.send();
+  });
+  // var xhr = new XMLHttpRequest();
+  // xhr.open("GET", './roms.json');
+  // xhr.responseType = 'json';
+  // xhr.onload = function() {
+  //   console.log(xhr);
+  //   var res = xhr.response;
+  //   var parent = document.getElementById('chooseROMSelection');
+  //   var selection = parent.getElementsByTagName('select')[0];
+  //   var options_html = '<option disabled selected>---</option>';
+  //   for (var i = 0; i < res.length; i++)
+  //   {
+  //     var filename = res[i].split('/');
+  //     options_html += '<option value="'
+  //       + res[i]
+  //       + '">'
+  //       + filename[filename.length - 1]
+  //       + '</option>'
+  //   }
+  //   if (res.length)
+  //   {
+  //     selection.innerHTML = options_html;
+  //     parent.style.display = 'block';
+  //   }
+  // };
+  // xhr.send();
 }
 
 function chooseROMSelection()

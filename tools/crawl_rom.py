@@ -15,7 +15,7 @@ for file in data['tree']:
       continue
   roms.append(dl_url + fpath)
 
-f = open('roms.json', 'w')
+f = open('../roms.json', 'w')
 f.write(json.dumps(roms))
 f.close()
 
