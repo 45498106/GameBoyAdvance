@@ -1070,7 +1070,6 @@ function initROMSelection()
   var GoogleAppScript_ID = 'AKfycbzzoS36cl8dSCYExKyyzpnLEMeUfclfno0hA37nbFTF8tuKFeRV';
 
   jsonp('https://script.google.com/macros/s/' + GoogleAppScript_ID + '/exec', function(data) {
-    console.log(data[0]);
     var res = data;
     var parent = document.getElementById('chooseROMSelection');
     var selection = parent.getElementsByTagName('select')[0];

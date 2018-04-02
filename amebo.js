@@ -45,12 +45,15 @@ window.gb = function(file, canvas, options) {
 
 	//alert(checkEndian());
 
-	if (options == null) {
-		var options = {rootDir:""}
+  if (!options)
+  {
+    var options = {
+      rootDir: '',
+    }
 	}
 	this.options = options;
 
-	if (typeof window.GBMaster == "undefined") window.GBMaster = new window.GBMasterClass();
+  window.GBMaster = window.GBMaster || (new window.GBMasterClass());
 
 	var sadGB = "data:image/gif;base64,R0lGODlhGQArAIAAAP///wAAACH5BAAHAP8ALAAAAAAZACsAAAKORI6pewYPo5yvGYZRDTf721Gi1mjiRHKmKrFhaTkolIYOF7m1eeawTaugfjwarkWM9Taq5pGpfDlzSGMTeMLtor2tJwNSUI5i2BcD6pwTmyG4ulxy43D6iPy0x+aj9iLuVdQSlFY4FrWXN1NnN9R493gY6Xg4JaSlKHdjqCfDl7X5CYqZqeck6IYKxUBRAAA7";
 	//image used for errors, takes up space but you've got to love it tho
@@ -60,7 +63,7 @@ window.gb = function(file, canvas, options) {
 	this.loadState = loadState;
 	this.saveState = saveState;
 
-	window.addEventListener("unload", saveBattery)
+	window.addEventListener("unload", saveBattery);
 	var GBObj = this;
 
 	this.loadROM = function(url, pauseAfter) {
@@ -77,7 +80,9 @@ window.gb = function(file, canvas, options) {
 		GBObj.paused = true;
 
 		loadfile.onprogress = drawProgress;
-		loadfile.onreadystatechange = function() {this.mime = this.getResponseHeader('content-type');};
+    loadfile.onreadystatechange = function() {
+      this.mime = this.getResponseHeader('content-type');
+    };
 		loadfile.onload = function() {
 			GBObj.paused = (pauseAfter||false);
 			if ((loadfile.mime == "application/zip") && (JSZip != null)) {
@@ -124,11 +129,50 @@ window.gb = function(file, canvas, options) {
 	internalCanvas.width = 160;
 	internalCanvas.height = 144;
 	this.internalCanvas = internalCanvas;
-	var internalCtx = internalCanvas.getContext("2d");
+  var internalCtx;
+  try
+  {
+    internalCtx = internalCanvas.getContext('webkit-3d');
+  }
+  catch (ex)
+  {
+    try
+    {
+      internalCtx = internalCanvas.getContext('moz-webgl');
+    }
+    catch (ex)
+    {
+      internalCtx = internalCanvas.getContext('webgl');
+    }
+  }
+  finally
+  {
+    internalCtx = internalCtx || internalCanvas.getContext('2d');
+  }
+  // = internalCanvas.getContext("webgl");
 
 	if (canvas == null) canvas = internalCanvas; //if we have no output, display to self.
 	this.canvas = canvas; //output canvas
-	var ctx = canvas.getContext("2d");
+  var ctx;
+  try
+  {
+    ctx = canvas.getContext('webkit-3d');
+  }
+  catch (ex)
+  {
+    try
+    {
+      ctx = canvas.getContext('moz-webgl');
+    }
+    catch (ex)
+    {
+      ctx = canvas.getContext('webgl');
+    }
+  }
+  finally
+  {
+    ctx = ctx || canvas.getContext('2d');
+  }
 
 	if (typeof ctx.webkitImageSmoothingEnabled !== 'undefined') {
 		ctx.webkitImageSmoothingEnabled = false;
@@ -204,6 +248,7 @@ window.gb = function(file, canvas, options) {
 	var registerDebug, instCount;
 
 	GBScreen = internalCtx.createImageData(160, 144);
+  console.log(GBScreen);
 	var EmptyImageBuffer = new Uint8Array(GBScreen.data.length);
 	var GBScreenInt32 = new Uint32Array(GBScreen.data.buffer);
 
