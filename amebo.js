@@ -171,24 +171,23 @@ window.gb = function(file, canvas, options) {
   var internalCtx;
   try
   {
-    internalCtx = internalCanvas.getContext('webkit-3d');
+    // internalCtx = internalCanvas.getContext('webkit-3d');
   }
   catch (ex)
   {
     try
     {
-      internalCtx = internalCanvas.getContext('moz-webgl');
+      // internalCtx = internalCanvas.getContext('moz-webgl');
     }
     catch (ex)
     {
-      internalCtx = internalCanvas.getContext('webgl');
+      // internalCtx = internalCanvas.getContext('webgl');
     }
   }
   finally
   {
     internalCtx = internalCtx || internalCanvas.getContext('2d');
   }
-  // = internalCanvas.getContext("webgl");
 
   canvas = canvas || internalCanvas; //if we have no output, display to self.
 
@@ -196,17 +195,17 @@ window.gb = function(file, canvas, options) {
   var ctx;
   try
   {
-    ctx = canvas.getContext('webkit-3d');
+    // ctx = canvas.getContext('webkit-3d');
   }
   catch (ex)
   {
     try
     {
-      ctx = canvas.getContext('moz-webgl');
+      // ctx = canvas.getContext('moz-webgl');
     }
     catch (ex)
     {
-      ctx = canvas.getContext('webgl');
+      // ctx = canvas.getContext('webgl');
     }
   }
   finally
