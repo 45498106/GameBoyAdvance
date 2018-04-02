@@ -55,30 +55,6 @@ window.GBMasterClass = function() {
 	window.requestAnimationFrame(update);
 };
 
-function byteToString(byteArray, noBase64) {
-  if (typeof byteArray == "undefined") return;
-  var string = ""
-  var i;
-  var bal = byteArray.length;
-  for (var i=0; i < bal; i++) {
-    string += String.fromCharCode(byteArray[i]);
-  }
-  return (noBase64 || false) ? string : btoa(string); //i have to base64 encode because JSON.stringify encodes unusual characters like \u1234
-}
-
-function stringToByte(string, noBase64) {
-  var string = (noBase64||false)?string:atob(string);
-  if (typeof string == "undefined") return; //so incomplete states don't cause errors.
-  var byteArray = new Uint8Array(string.length)
-  var i;
-  var bal = byteArray.length;
-  for (i = 0; i < bal; i++) {
-    byteArray[i] = string.charCodeAt(i);
-  }
-  return byteArray;
-}
-
-
 window.gb = function(file, canvas, options) {
 
 	//alert(checkEndian());
@@ -542,6 +518,11 @@ window.gb = function(file, canvas, options) {
 	function testLoadState() {
 		loadState(JSON.parse(savewhatever));
 	}
+
+  var audioEngineVolume = 0x1;
+  this.setAudioEngineVolume = function (v) {
+    audioEngineVolume = v;
+  };
 
 	function objectifyAudioEngine() {
 		var obj = {}
@@ -1261,6 +1242,14 @@ window.gb = function(file, canvas, options) {
 		AudioEngine.avgVol = 0;
 	}
 
+  // this.setAudioEngineVolume = function (value)
+  // {
+    // audioEngineVolume = value;
+    // AudioEngine.lVolume = 0;
+    // AudioEngine.rVolume = 0;
+    // AudioEngine.avgVol = 0;
+  // }
+
 	// ----- END WEB AUDIO API BACKEND -----
 
 	var duties = [0.125, 0.25, 0.5, 0.75]
@@ -1365,13 +1354,14 @@ window.gb = function(file, canvas, options) {
 
 	function soundMasterGain() {
 		if ((IORAM[0x26]>>7) == 1) {
-			AudioEngine.lVolume=((IORAM[0x24]>>4)&7)/7
-			AudioEngine.rVolume=(IORAM[0x24]&7)/7
-			AudioEngine.avgVol=(AudioEngine.lVolume+AudioEngine.rVolume)/2
+      // Use mute or not first - this time
+			AudioEngine.lVolume = audioEngineVolume * (((IORAM[0x24]>>4)&7)/7);
+			AudioEngine.rVolume = audioEngineVolume * ((IORAM[0x24]&7)/7);
+			AudioEngine.avgVol = (AudioEngine.lVolume + AudioEngine.rVolume)/2
 		} else {
-			AudioEngine.lVolume=0
-			AudioEngine.rVolume=0
-			AudioEngine.avgVol=0
+			AudioEngine.lVolume = 0
+			AudioEngine.rVolume = 0
+			AudioEngine.avgVol = 0
 		}
 	}
 
@@ -3390,4 +3380,27 @@ window.gb = function(file, canvas, options) {
 
 	// ----- END INSTRUCTIONS -----
 };
+
+function byteToString(byteArray, noBase64) {
+  if (typeof byteArray == "undefined") return;
+  var string = ""
+  var i;
+  var bal = byteArray.length;
+  for (var i=0; i < bal; i++) {
+    string += String.fromCharCode(byteArray[i]);
+  }
+  return (noBase64 || false) ? string : btoa(string); //i have to base64 encode because JSON.stringify encodes unusual characters like \u1234
+}
+
+function stringToByte(string, noBase64) {
+  var string = (noBase64||false)?string:atob(string);
+  if (typeof string == "undefined") return; //so incomplete states don't cause errors.
+  var byteArray = new Uint8Array(string.length)
+  var i;
+  var bal = byteArray.length;
+  for (i = 0; i < bal; i++) {
+    byteArray[i] = string.charCodeAt(i);
+  }
+  return byteArray;
+}
 

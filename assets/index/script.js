@@ -434,6 +434,35 @@ window.addEventListener('load', function(evt) {
   // Selections
   initROMSelection();
 
+  // Volume
+  var volumeController = document.getElementById('audioEngineVolumeControl');
+  volumeController.onchange = function(e)
+  {
+    localStorage['audioEngineVolume'] = e.target.value;
+    gameboy.setAudioEngineVolume(localStorage['audioEngineVolume']);
+  }
+  var currentVolume = localStorage['audioEngineVolume'] || 0.5;
+  volumeController.value = currentVolume;
+  gameboy.setAudioEngineVolume(currentVolume);
+
+  document.getElementById('chooseFile').onchange = function (e) {
+    if (!e.target.files.length)
+    {
+      return;
+    }
+    var gb = gameboy;
+    var file = e.target.files[0];
+    var reader = new FileReader();
+    reader.gb = gb;
+    gameboy.onload = function() {
+      addROM(file.name, byteToString(gameboy.game), populateRecentFiles);
+    }
+    reader.onload = function(e) {
+      e.target.gb.loadROMBuffer(e.target.result, e.target.result);
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
   setTimeout(function(){setActiveMenu(1)}, 16);
 
   setInterval(periodicState, 1000);
@@ -1027,24 +1056,6 @@ function loadURL(url) {
   closeFileSelect();
   gameboy.paused = true;
 }
-
-document.getElementById('chooseFile').onchange = function (e) {
-  if (!e.target.files.length)
-  {
-    return;
-  }
-  var gb = gameboy;
-  var file = e.target.files[0];
-  var reader = new FileReader();
-  reader.gb = gb;
-  gameboy.onload = function() {
-    addROM(file.name, byteToString(gameboy.game), populateRecentFiles);
-  }
-  reader.onload = function(e) {
-    e.target.gb.loadROMBuffer(e.target.result, e.target.result);
-  };
-  reader.readAsArrayBuffer(file);
-};
 
 function initROMSelection()
 {
