@@ -58,22 +58,16 @@
 									<span class="entryText">Choose From This Device</span>
 									<input type="file" accept=".gb,.gbc,.gba,.zip" id="chooseFile" style="opacity:0;position:absolute;left:0;top:0;width:100%;height:100%;" />
 								</div>
-								<!-- <div class="fileEntry" onclick="Dropbox.choose({success:dropboxChoose, linkType:'direct'});"> -->
-									<!-- 	<img src="dropbox.svg" class="entryIcon" width="50" height="50"> -->
-									<!-- 	<span class="entryText">Choose From Dropbox</span> -->
-									<!-- </div> -->
 								<div class="fileEntry" id="chooseROMSelection" style="display: none;">
 									<img src="assets/images/blank-file.svg" class="entryIcon" width="50" height="50" />
-									<div class="entryElm">
-										<section id="chooseROMSelectSection">
-											<select class="controlDrop" onchange="chooseROMSelection()" style="border-color: #009489;padding-left:10px;width: 85%;"></select>
-											<img src="assets/images/expand-button.svg" width="20" height="20" style="vertical-align: text-bottom;" onclick="chooseROMSearchSectionToggle(event)" />
-										</section>
-										<section id="chooseROMSearchSection" style="display:none;">
-											<input type="text" oninput="chooseROMSearchOnInput(event);" />
-											<div id="chooseROMSearchResult"></div>
-										</section>
+									<div class="entryElm" id="chooseROMSelectSection">
+										<select class="controlDrop" onchange="chooseROMSelection()" style="border-color: #009489;width: 85%;"></select>
+										<img src="assets/images/expand-button.svg" width="20" height="20" style="vertical-align: text-bottom;" onclick="chooseROMSearchSectionToggle(event)" />
 									</div>
+									<section id="chooseROMSearchSection" style="display:none; padding: 10px;">
+										<input type="text" class="textControl" placeholder="Type name of ROM..." style="border-color: #009489;" oninput="chooseROMSearchOnInput(event);" />
+										<div id="chooseROMSearchResult"></div>
+									</section>
 								</div>
 								<div class="fileEntry" onclick="chooseURL();">
 									<img src="assets/images/URL.svg" class="entryIcon" width="50" height="50">

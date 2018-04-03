@@ -49,18 +49,24 @@ html {
 	width: 100%;
 }
 
-.controlDrop {
+.textControl,
+.controlDrop
+{
+	box-sizing: border-box;
 	-webkit-appearance: none;
 	border-radius: 10px;
 	border-color: #DDB10A;
 	border-width: 3px;
+	padding: 5px;
 	width: 100%;
-	padding-right: 44px;
-	height: 34px;
 	background-color: white;
-	background: url("../images/dropdown.svg") no-repeat right white;
 	font-family: "Gill Sans", "Gill Sans MT", "SansGuiltMB", sans-serif;
 	font-size: 20px;
+}
+
+.controlDrop {
+	background: url("../images/dropdown.svg") no-repeat right white;
+	padding-right: 44px;
 }
 
 #cDropPad {
