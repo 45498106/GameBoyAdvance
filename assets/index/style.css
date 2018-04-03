@@ -356,17 +356,16 @@ html {
 .fileEntry {
 	position: relative;
 	width: 100%;
-	height: 50px;
+	/* height: 50px; */
 	border-bottom: 1px solid #BBBBBB;
 }
 
-.fileEntry .selection {
+.fileEntry .entryElm {
 	vertical-align: top;
 	width: 80vw;
 	margin-left: 10px;
 	margin-top: 7px;
-	padding-left: 10px;
-	border-color: #009489;
+	display: inline-block;
 }
 
 /* .fileEntry:before { */

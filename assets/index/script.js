@@ -1226,3 +1226,23 @@ function chooseROMSelection()
   loadURL(selection.value);
 }
 
+function chooseROMSearchSectionToggle(event)
+{
+  var section = document.getElementById('chooseROMSearchSection');
+  if (section.style.display === 'block')
+  {
+    section.style.display = 'none';
+    applyTransform(event.target, 'scaleY(1)');
+  }
+  else
+  {
+    section.style.display = 'block';
+    applyTransform(event.target, 'scaleY(-1)');
+  }
+}
+
+function chooseROMSearchOnInput(event)
+{
+  console.log(event);
+}
+
