@@ -35,7 +35,7 @@ window.GBMasterClass = function() {
       }
 		}
 		var mostCycles = 0;
-    while (mostCycles < 0x11250)
+    while (mostCycles < 70224)
     {
       for (gbn = 0; gbn < gbl; gbn++)
       {
@@ -48,7 +48,7 @@ window.GBMasterClass = function() {
 		}
     for (gbn = 0; gbn < gbl; gbn++)
     {
-			gameboys[gbn].frameCycles -= 0x11250;
+			gameboys[gbn].frameCycles -= 70224;
 		}
 	}
 
@@ -246,15 +246,14 @@ window.gb = function(file, canvas, options) {
 		}
 	}
 
-	// window.addEventListener('touchstart', function() {
-	// 	var buffer = GBAudioContext.createBuffer(1, 1, 22050);
-	// 	var source = GBAudioContext.createBufferSource();
-	// 	source.buffer = buffer;
-  //
-	// 	source.connect(GBAudioContext.destination);
-	// 	source.start(0);
-  //
-	// }, false);
+	window.addEventListener('touchstart', function(evt) {
+		var buffer = GBAudioContext.createBuffer(1, 1, 22050);
+		var source = GBAudioContext.createBufferSource();
+		source.buffer = buffer;
+
+		source.connect(GBAudioContext.destination);
+		source.start(0);
+	}, false);
 
 	this.scopeEval = function(code) {return eval(code)}
 
@@ -1123,7 +1122,7 @@ window.gb = function(file, canvas, options) {
 		targ.bufferRead = (read+1)%AudioEngine.buffers
 
 		//if (targ.bufferWrite == read) targ.bufferWrite = targ.bufferRead
-		if (!GBObj.paused) audioSyncFrames += (bufferSize/audioSampleRate)/(0x11250/4194304) //lots of bs values
+		if (!GBObj.paused) audioSyncFrames += (bufferSize/audioSampleRate)/(70224/4194304) //lots of bs values
 	}
 
 	function noiseNode(channel) {
@@ -2098,11 +2097,11 @@ window.gb = function(file, canvas, options) {
 			while ((firstFrame) || audioSyncFrames >= 2) {
 				firstFrame = false;
 
-        while (GBObj.frameCycles < 0x11250)
+        while (GBObj.frameCycles < 70224)
         {
 					cycle();
 				}
-				GBObj.frameCycles -= 0x11250;
+				GBObj.frameCycles -= 70224;
 
 				audioSyncFrames--;
 				if (Date.now()-frameStart > 16) {
@@ -2428,7 +2427,7 @@ window.gb = function(file, canvas, options) {
 			Infinity,
 		]
 
-		var skipTo = Infinity; //(0x11250-GBObj.frameCycles)*CPUSpeed; //max skip distance is the next frame
+		var skipTo = Infinity; //(70224-GBObj.frameCycles)*CPUSpeed; //max skip distance is the next frame
 
 		//timer prediction
 
@@ -2511,7 +2510,7 @@ window.gb = function(file, canvas, options) {
 		//set all interrupt flags that should be set
 		//advance the screen, audio and timer correctly.
 
-		var frameEnd = (0x11250-GBObj.frameCycles)*CPUSpeed;
+		var frameEnd = (70224-GBObj.frameCycles)*CPUSpeed;
 		if (frameEnd<skipTo) {
 			skipTo = frameEnd; //we will remain halted after we skip to the end of this frame
 			//todo: remember where we're meant to skip to?

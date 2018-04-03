@@ -157,7 +157,7 @@ html {
 
 .fEditControls {
 	width: 90px;
-	height: 50px;
+	height: 100%;
 	background-image: url("../images/editbgb.svg");
 	margin-left: -90px;
 	display: inline-block;
