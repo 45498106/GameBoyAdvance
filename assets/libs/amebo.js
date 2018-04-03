@@ -35,7 +35,7 @@ window.GBMasterClass = function() {
       }
 		}
 		var mostCycles = 0;
-    while (mostCycles < 70224)
+    while (mostCycles < 0x11250)
     {
       for (gbn = 0; gbn < gbl; gbn++)
       {
@@ -48,7 +48,7 @@ window.GBMasterClass = function() {
 		}
     for (gbn = 0; gbn < gbl; gbn++)
     {
-			gameboys[gbn].frameCycles -= 70224;
+			gameboys[gbn].frameCycles -= 0x11250;
 		}
 	}
 
@@ -88,7 +88,8 @@ window.gb = function(file, canvas, options) {
 
     if (!url)
     {
-      throw 'URL is empty';
+      errorScreen('URL is empty');
+      return;
     }
 		var filename = url.split("/");
 		GBObj.filename = filename[filename.length-1];
@@ -103,14 +104,19 @@ window.gb = function(file, canvas, options) {
 			if ((loadfile.mime == "application/zip") && (JSZip != null)) {
 				var zip = new JSZip(loadfile.response);
 				var file = zip.file(/.gb/)[0];
+        if (!file)
+        {
+          errorScreen('ROM not found');
+          return;
+        }
 				GBObj.filename = file.name;
 				GBObj.loadROMBuffer(file.asArrayBuffer()); //load first file with extension .gb or .gbc
 			} else GBObj.loadROMBuffer(loadfile.response);
 		}
 		loadfile.onerror = function() {
       loadfile.open("POST", url);
-      loadfile.onerror = function() {
-        throw 'Failed to load '+url+'! Are CORS requests enabled on the server?';
+      loadfile.onerror = function(err) {
+        errorScreen(err);
       }
       loadfile.send();
 		}
@@ -240,17 +246,15 @@ window.gb = function(file, canvas, options) {
 		}
 	}
 
-	window.addEventListener('touchstart', function() {
-
-		var buffer = GBAudioContext.createBuffer(1, 1, 22050);
-		var source = GBAudioContext.createBufferSource();
-		source.buffer = buffer;
-
-		source.connect(GBAudioContext.destination);
-		source.start(0);
-
-	}, false);
-
+	// window.addEventListener('touchstart', function() {
+	// 	var buffer = GBAudioContext.createBuffer(1, 1, 22050);
+	// 	var source = GBAudioContext.createBufferSource();
+	// 	source.buffer = buffer;
+  //
+	// 	source.connect(GBAudioContext.destination);
+	// 	source.start(0);
+  //
+	// }, false);
 
 	this.scopeEval = function(code) {return eval(code)}
 
@@ -1119,7 +1123,7 @@ window.gb = function(file, canvas, options) {
 		targ.bufferRead = (read+1)%AudioEngine.buffers
 
 		//if (targ.bufferWrite == read) targ.bufferWrite = targ.bufferRead
-		if (!GBObj.paused) audioSyncFrames += (bufferSize/audioSampleRate)/(70224/4194304) //lots of bs values
+		if (!GBObj.paused) audioSyncFrames += (bufferSize/audioSampleRate)/(0x11250/4194304) //lots of bs values
 	}
 
 	function noiseNode(channel) {
@@ -2094,10 +2098,11 @@ window.gb = function(file, canvas, options) {
 			while ((firstFrame) || audioSyncFrames >= 2) {
 				firstFrame = false;
 
-				while (GBObj.frameCycles<70224) {
+        while (GBObj.frameCycles < 0x11250)
+        {
 					cycle();
 				}
-				GBObj.frameCycles -= 70224;
+				GBObj.frameCycles -= 0x11250;
 
 				audioSyncFrames--;
 				if (Date.now()-frameStart > 16) {
@@ -2107,7 +2112,6 @@ window.gb = function(file, canvas, options) {
 				frameskip = true;
 			}
 		} catch (err) {
-			console.error(err.stack);
 			errorScreen(err);
 		}
 	}
@@ -2122,7 +2126,10 @@ window.gb = function(file, canvas, options) {
 		img.onload = function() {
 			internalCtx.drawImage(img, 68, 51);
 			ctx.drawImage(internalCanvas, 0, 0, canvas.width, canvas.height);
-			console.log("Something went horribly wrong! Here's the stack trace:\n"+err.stack);
+      if (err)
+      {
+        console.error(err);
+      }
 		}
 	}
 
@@ -2162,15 +2169,15 @@ window.gb = function(file, canvas, options) {
 
 	function printDebug() {
 		var text = ""
-		text += "A: "+ registers[0] +"<br>";
-		text += "B: "+ registers[1] +"<br>";
-		text += "C: "+ registers[2] +"<br>";
-		text += "D: "+ registers[3] +"<br>";
-		text += "E: "+ registers[4] +"<br>";
-		text += "H: "+ registers[5] +"<br>";
-		text += "L: "+ registers[6] +"<br>";
-		text += "PC: "+ PC +"<br>";
-		text += "SP: "+ SP +"<br>";
+    text += "A: "+ registers[0] +"<br />";
+    text += "B: "+ registers[1] +"<br />";
+    text += "C: "+ registers[2] +"<br />";
+    text += "D: "+ registers[3] +"<br />";
+    text += "E: "+ registers[4] +"<br />";
+    text += "H: "+ registers[5] +"<br />";
+    text += "L: "+ registers[6] +"<br />";
+    text += "PC: "+ PC +"<br />";
+    text += "SP: "+ SP +"<br />";
 		document.getElementById("debug").innerHTML = text;
 	}
 
@@ -2421,7 +2428,7 @@ window.gb = function(file, canvas, options) {
 			Infinity,
 		]
 
-		var skipTo = Infinity; //(70224-GBObj.frameCycles)*CPUSpeed; //max skip distance is the next frame
+		var skipTo = Infinity; //(0x11250-GBObj.frameCycles)*CPUSpeed; //max skip distance is the next frame
 
 		//timer prediction
 
@@ -2504,7 +2511,7 @@ window.gb = function(file, canvas, options) {
 		//set all interrupt flags that should be set
 		//advance the screen, audio and timer correctly.
 
-		var frameEnd = (70224-GBObj.frameCycles)*CPUSpeed;
+		var frameEnd = (0x11250-GBObj.frameCycles)*CPUSpeed;
 		if (frameEnd<skipTo) {
 			skipTo = frameEnd; //we will remain halted after we skip to the end of this frame
 			//todo: remember where we're meant to skip to?

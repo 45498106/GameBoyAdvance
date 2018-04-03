@@ -1168,13 +1168,13 @@ function initROMSelection(event, update)
       localStorage.setItem('romList', JSON.stringify(romList));
     }
   }
-  var romList = localStorage.getItem('romList') || [];
+  var romList = localStorage.getItem('romList');
   if (typeof romList === 'string')
   {
     renderChooseROMSelection(JSON.parse(romList));
   }
 
-  if (update || (!romList))
+  if (update || (romList ? false : true))
   {
     if (event)
     {
