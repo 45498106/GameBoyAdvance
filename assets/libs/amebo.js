@@ -70,9 +70,6 @@ window.gb = function(file, canvas, options) {
 
   window.GBMaster = window.GBMaster || (new window.GBMasterClass());
 
-	var sadGB = "data:image/gif;base64,R0lGODlhGQArAIAAAP///wAAACH5BAAHAP8ALAAAAAAZACsAAAKORI6pewYPo5yvGYZRDTf721Gi1mjiRHKmKrFhaTkolIYOF7m1eeawTaugfjwarkWM9Taq5pGpfDlzSGMTeMLtor2tJwNSUI5i2BcD6pwTmyG4ulxy43D6iPy0x+aj9iLuVdQSlFY4FrWXN1NnN9R493gY6Xg4JaSlKHdjqCfDl7X5CYqZqeck6IYKxUBRAAA7";
-	//image used for errors, takes up space but you've got to love it tho
-
 	this.RSToff = 0; //used by gbs player
 	this.paused = false;
 	this.loadState = loadState;
@@ -2121,7 +2118,8 @@ window.gb = function(file, canvas, options) {
 		internalCtx.fillStyle = "#FFFFFF"
 		internalCtx.fillRect(0, 0, 160, 144);
 		var img = new Image();
-		img.src = sadGB;
+    //image used for errors, takes up space but you've got to love it tho
+		img.src = "data:image/gif;base64,R0lGODlhGQArAIAAAP///wAAACH5BAAHAP8ALAAAAAAZACsAAAKORI6pewYPo5yvGYZRDTf721Gi1mjiRHKmKrFhaTkolIYOF7m1eeawTaugfjwarkWM9Taq5pGpfDlzSGMTeMLtor2tJwNSUI5i2BcD6pwTmyG4ulxy43D6iPy0x+aj9iLuVdQSlFY4FrWXN1NnN9R493gY6Xg4JaSlKHdjqCfDl7X5CYqZqeck6IYKxUBRAAA7";
 		img.onload = function() {
 			internalCtx.drawImage(img, 68, 51);
 			ctx.drawImage(internalCanvas, 0, 0, canvas.width, canvas.height);
@@ -2131,8 +2129,6 @@ window.gb = function(file, canvas, options) {
       }
 		}
 	}
-
-
 
 	function drawProgress(e) {
 		var progressSeg = ["#B90546", "#5255A5", "#79AD36", "#DDB10A", "#009489"]
@@ -3421,5 +3417,20 @@ function stringToByte(string, noBase64)
     byteArray[i] = string.charCodeAt(i);
   }
   return byteArray;
+}
+
+function convertDataURIToBinary(dataURI) {
+  // https://gist.github.com/borismus/1032746
+  var BASE64_MARKER = ';base64,';
+  var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+  var base64 = dataURI.substring(base64Index);
+  var raw = window.atob(base64);
+  var rawLength = raw.length;
+  var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+  for(i = 0; i < rawLength; i++) {
+    array[i] = raw.charCodeAt(i);
+  }
+  return array;
 }
 
