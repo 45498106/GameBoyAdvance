@@ -3391,9 +3391,10 @@ window.gb = function(file, canvas, options) {
 	// ----- END INSTRUCTIONS -----
 };
 
-function byteToString(byteArray, noBase64) {
-  if (typeof byteArray == "undefined") return;
-  var string = ""
+function byteToString(byteArray, noBase64)
+{
+  if (typeof byteArray == 'undefined') return;
+  var string = ''
   var i;
   var bal = byteArray.length;
   for (var i=0; i < bal; i++) {
@@ -3402,13 +3403,15 @@ function byteToString(byteArray, noBase64) {
   return (noBase64 || false) ? string : btoa(string); //i have to base64 encode because JSON.stringify encodes unusual characters like \u1234
 }
 
-function stringToByte(string, noBase64) {
-  var string = (noBase64||false)?string:atob(string);
-  if (typeof string == "undefined") return; //so incomplete states don't cause errors.
+function stringToByte(string, noBase64)
+{
+  if (typeof string == 'undefined') return; //so incomplete states don't cause errors.
+  var string = (noBase64 || false) ? string : atob(string);
   var byteArray = new Uint8Array(string.length)
   var i;
   var bal = byteArray.length;
-  for (i = 0; i < bal; i++) {
+  for (i = 0; i < bal; i++)
+  {
     byteArray[i] = string.charCodeAt(i);
   }
   return byteArray;

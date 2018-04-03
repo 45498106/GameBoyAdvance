@@ -196,18 +196,19 @@
 		</div>
 		<script type="text/javascript">
 			window.onerror = function(e) {
-				console.error(e);
-				// alert(JSON.stringify(e));
+				var p = navigator.platform
+				if ((p === 'iPad') || (p === 'iPhone') || (p === 'iPod'))
+				{
+					alert(JSON.stringify(e));
+				}
 			}
 		</script>
-		<script type="text/javascript" id="amebo_script" src="assets/libs/amebo.js"></script>
+		<script type="text/javascript" src="assets/libs/amebo.js" id="amebo_script"></script>
 		<script type="text/javascript" src="assets/js/iosJSnode.js"></script>
-
-		<script type="text/javascript" src="assets/jszip/jszip.js"></script>
-		<script type="text/javascript" src="assets/jszip/jszip-inflate.js"></script>
-		<script type="text/javascript" src="assets/jszip/jszip-deflate.js"></script>
-		<script type="text/javascript" src="assets/jszip/jszip-load.js"></script>
-
+		<script type="text/javascript" src="assets/libs/jszip/jszip.js"></script>
+		<script type="text/javascript" src="assets/libs/jszip/jszip-inflate.js"></script>
+		<script type="text/javascript" src="assets/libs/jszip/jszip-deflate.js"></script>
+		<script type="text/javascript" src="assets/libs/jszip/jszip-load.js"></script>
 		<script type="text/javascript" src="assets/index/scrollfix.js"></script>
 		<script type="text/javascript" src="assets/index/script.js"></script>
 	</body>
