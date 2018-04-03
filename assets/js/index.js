@@ -1232,10 +1232,13 @@ function chooseROMSearchSectionToggle(event)
   }
   else
   {
+    var selection = document.getElementById('chooseROMSelection');
+    selection.parentElement.scrollTop = selection.offsetTop - selection.parentElement.offsetTop;
     selectControl.style.display = 'none';
     textControl.style.display = 'inline-block';
     searchResultSection.style.display = 'block';
     applyTransform(event.target, 'scaleY(-1)');
+    textControl.focus();
   }
 }
 
