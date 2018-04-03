@@ -425,7 +425,7 @@ window.gb = function(file, canvas, options) {
 	// ----- State Load/Save -----
 
 	function saveState() {
-    console.info('State is Saving...');
+    // console.info('State is Saving...');
 		return {
 			VRAM: byteToString(VRAM),
 			RAM: byteToString(RAM),

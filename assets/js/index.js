@@ -7,14 +7,14 @@ var db = openDatabase('amebo2', '1.0', 'amebo state and rom store', 2 * 1024 * 1
 
 var defaultControls = {
   "images": [
-    "assets/styles/default/abtn.svg",
-    "assets/styles/default/bbtn.svg",
-    "assets/styles/default/start.svg",
-    "assets/styles/default/select.svg",
-    "assets/styles/default/dpad.svg",
-    "assets/styles/default/bg.svg",
-    "assets/styles/default/menu.svg",
-    "assets/styles/default/indent.svg"
+    "assets/resources/styles/default/abtn.svg",
+    "assets/resources/styles/default/bbtn.svg",
+    "assets/resources/styles/default/start.svg",
+    "assets/resources/styles/default/select.svg",
+    "assets/resources/styles/default/dpad.svg",
+    "assets/resources/styles/default/bg.svg",
+    "assets/resources/styles/default/menu.svg",
+    "assets/resources/styles/default/indent.svg"
   ],
 
   "name": "Default",
@@ -919,10 +919,10 @@ function populateStates() {
         var temp = '<div class="fileEntry" onclick="stateMenu('+row.id+', '+row.rom_id+', '+i+'); event.preventDefault();">'
           + '<div class="entryText">'+htmlSafe(row.name)+'</div>'
           + '<div class="expandDiv">'
-          + '<img src="assets/index/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.stopPropagation();" />'
+          + '<img src="assets/images/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.stopPropagation();" />'
           + '<div class="sEditControls" id="seC'+i+'">'
-          + '<img src="assets/index/rename.svg" class="rename" onclick="'+renameStr+'" />'
-          + '<img src="assets/index/bin.svg" class="delete" onclick="'+deleteStr+'">'
+          + '<img src="assets/images/rename.svg" class="rename" onclick="'+renameStr+'" />'
+          + '<img src="assets/images/bin.svg" class="delete" onclick="'+deleteStr+'">'
           + '</div>'
           + '</div>'
           + '</div>'
@@ -1048,10 +1048,10 @@ function populateRecentFiles() {
         html += '<div class="fileEntry" onclick="'+loadStr+'">'
           + '<div class="entryText">'+filename+'</div>'
           + '<div class="expandDiv">'
-          + '<img src="assets/index/expandb.svg" class="expBut fileEx" id="FExp'+i+'" onclick="expandEdit('+i+'); event.preventDefault();" ontouchstart="expandEdit('+i+'); event.preventDefault();" />'
+          + '<img src="assets/images/expandb.svg" class="expBut fileEx" id="FExp'+i+'" onclick="expandEdit('+i+'); event.preventDefault();" ontouchstart="expandEdit('+i+'); event.preventDefault();" />'
           + '<div class="fEditControls" id="feC'+i+'">'
-          + '<img src="assets/index/rename.svg" class="rename" onclick="'+renameStr+'" />'
-          + '<img src="assets/index/bin.svg" class="delete" onclick="'+deleteStr+'" />'
+          + '<img src="assets/images/rename.svg" class="rename" onclick="'+renameStr+'" />'
+          + '<img src="assets/images/bin.svg" class="delete" onclick="'+deleteStr+'" />'
           + '</div>'
           + '</div>'
           + '</div>';
