@@ -381,6 +381,7 @@ function applyTransform(elem, trans) {
   elem.style.oTransform = trans;
   elem.style.msTransform = trans;
   elem.style.Transform = trans;
+  console.log(elem);
 }
 
 var takeInput = false;
@@ -888,8 +889,8 @@ function stateMenu(id, romid, menuID) {
   if (editingStates) {
     if (statesState[menuID].editing) {
       statesState[menuID].editing = false;
-      var e = document.getElementById("seC"+menuID)
-      applyTransform(e, "translate(90px, 0)");
+      // var e = document.getElementById("seC"+menuID)
+      // applyTransform(e, "translate(90px, 0)");
       return;
     } else {
       expandSEdit(menuID);
@@ -918,7 +919,12 @@ function populateStates() {
 
         var temp = '<div class="fileEntry" onclick="stateMenu('+row.id+', '+row.rom_id+', '+i+')">'
           + '<div class="entryText">'+htmlSafe(row.name)+'</div>'
-          + '<div class="expandDiv"><img src="assets/index/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.preventDefault();" ontouchstart="expandSEdit('+i+'); event.preventDefault();"><div class="sEditControls" id="seC'+i+'"><img src="assets/index"/rename.svg" class="rename" ontouchstart="'+renameStr+'"><img src="assets/index"/bin.svg" class="delete" ontouchstart="'+deleteStr+'"></div>'
+          + '<div class="expandDiv">'
+          + '<img src="assets/index/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.preventDefault();" />'
+          + '<div class="sEditControls" id="seC'+i+'">'
+          + '<img src="assets/index/rename.svg" class="rename" onclick="'+renameStr+'" />'
+          + '<img src="assets/index/bin.svg" class="delete" onclick="'+deleteStr+'">'
+          + '</div>'
           + '</div>'
           + '</div>'
         ;
@@ -944,7 +950,7 @@ function populateStates() {
 }
 
 function expandSEdit(i) {
-  var e = document.getElementById("seC"+i)
+  var e = document.getElementById("seC"+i);
   applyTransform(e, "translate(0, 0)");
   statesState[i].editing = true;
 }
@@ -1090,13 +1096,18 @@ function loadDownloaded(i) {
       closeFileSelect();
     },
       function(tx, err){
-        console.log("could not find rom!");
-        console.log(err);
+        console.error(err);
       });
   })
 }
 
 function saveCurrentState() {
+  console.log(gameboy);
+  if (gameboy.ROMname)
+  {
+    alert('You must play a game!');
+    return;
+  }
   var d = new Date();
   var suggestedName = gameboy.ROMname+" - "+d.getDate()+"/"+d.getMonth()+"/"+d.getFullYear()+" - "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
   var name = prompt("What would you like to name the state?", suggestedName)
