@@ -1,4 +1,3 @@
-var API_KEY = 'e309b0e9c14e4922c84f9c1d9e2006e971cf68e5';
 
 var REPO_LIST = [
   {
@@ -8,6 +7,10 @@ var REPO_LIST = [
   {
     repo: 'srojam/gba',
     branch: 'gh-pages',
+  },
+  {
+    repo: 'DV8FromTheWorld/Gameboy-Emulator',
+    branch: 'master',
   },
 ];
 
@@ -28,6 +31,7 @@ function doGet(e) {
     var result = JSON.parse(response.getContentText());
     if (!result || !result.tree)
     {
+      // listROM.push(result);
       continue;
     }
 
@@ -37,10 +41,13 @@ function doGet(e) {
       var filename = path.split('/');
       var fname = filename[filename.length - 1];
       var ext = fname.slice(-4);
-      if ((ext.indexOf('.zip') >= 0) || (ext.indexOf('.gb') >= 0) || (ext.indexOf('.gba') >= 0) || (ext.indexOf('.gbc') >= 0))
+      if ((ext.indexOf('.zip') >= 0) || (ext.indexOf('.gb') >= 0))
       {
-        var dl_url = 'https://raw.githubusercontent.com/' + repo.repo + '/' + repo.branch + '/' + path;
-        listROM.push(dl_url);
+        var rom = {
+          url: 'https://raw.githubusercontent.com/' + repo.repo + '/' + repo.branch + '/' + path,
+          filename: fname,
+        };
+        listROM.push(rom);
       }
     }
   }

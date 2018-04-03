@@ -510,7 +510,7 @@ window.addEventListener('load', function(evt) {
   //populateRecentFiles();
 
   // Selections
-  initROMSelection();
+  initROMSelection(null, false);
 
   // Volume
   var volumeController = document.getElementById('audioEngineVolumeControl');
@@ -1145,7 +1145,7 @@ function loadURL(url) {
   gameboy.paused = true;
 }
 
-function initROMSelection()
+function initROMSelection(event, update)
 {
   function renderChooseROMSelection(data) {
     romList = data;
@@ -1156,67 +1156,62 @@ function initROMSelection()
     var rl = romList.length;
     for (i = 0; i < rl; i++)
     {
-      var filename = romList[i].split('/');
       options_html += '<option value="'
-        + romList[i]
+        + romList[i].url
         + '">'
-        + filename[filename.length - 1]
+        + romList[i].filename
         + '</option>'
     }
     if (rl)
     {
       selection.innerHTML = options_html;
       parent.style.display = 'block';
-      localStorage.setItem('RomList', JSON.stringify(romList));
+      localStorage.setItem('romList', JSON.stringify(romList));
     }
   }
-  var romList = localStorage.getItem('RomList') || [];
+  var romList = localStorage.getItem('romList') || [];
   if (typeof romList === 'string')
   {
-    renderChooseROMSelection(JSON.parse(romList))
+    renderChooseROMSelection(JSON.parse(romList));
   }
 
-  function jsonp(url, callback) {
-    var callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-    window[callbackName] = function(data) {
-      delete window[callbackName];
-      document.body.removeChild(script);
-      callback(data);
-    };
+  if (update || (!romList))
+  {
+    if (event)
+    {
+      event.target.onclick = function(e) {
+        alert('Updating...');
+      };
+    }
+    function jsonp(url, callback) {
+      var callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        document.body.removeChild(script);
+        callback(data);
+      };
 
-    var script = document.createElement('script');
-    script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + callbackName;
-    document.body.appendChild(script);
+      var script = document.createElement('script');
+      script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + callbackName;
+      document.body.appendChild(script);
+    }
+
+    var GoogleAppScript_ID = 'AKfycbzzoS36cl8dSCYExKyyzpnLEMeUfclfno0hA37nbFTF8tuKFeRV';
+
+    jsonp('https://script.google.com/macros/s/' + GoogleAppScript_ID + '/exec', function(data){
+      renderChooseROMSelection(data);
+      if (event)
+      {
+        event.target.onclick = function(e) {
+          initROMSelection(e, update);
+        };
+      }
+      if (update)
+      {
+        alert('Updated ROM selection');
+      }
+    });
   }
-
-  var GoogleAppScript_ID = 'AKfycbzzoS36cl8dSCYExKyyzpnLEMeUfclfno0hA37nbFTF8tuKFeRV';
-
-  jsonp('https://script.google.com/macros/s/' + GoogleAppScript_ID + '/exec', renderChooseROMSelection);
-  // var xhr = new XMLHttpRequest();
-  // xhr.open("GET", './roms.json');
-  // xhr.responseType = 'json';
-  // xhr.onload = function() {
-  //   console.log(xhr);
-  //   var res = xhr.response;
-  //   var parent = document.getElementById('chooseROMSelection');
-  //   var selection = parent.getElementsByTagName('select')[0];
-  //   var options_html = '<option disabled selected>---</option>';
-  //   for (var i = 0; i < res.length; i++)
-  //   {
-  //     var filename = res[i].split('/');
-  //     options_html += '<option value="'
-  //       + res[i]
-  //       + '">'
-  //       + filename[filename.length - 1]
-  //       + '</option>'
-  //   }
-  //   if (res.length)
-  //   {
-  //     selection.innerHTML = options_html;
-  //     parent.style.display = 'block';
-  //   }
-  // };
-  // xhr.send();
 }
 
 function chooseROMSelection()
@@ -1243,6 +1238,8 @@ function chooseROMSearchSectionToggle(event)
 
 function chooseROMSearchOnInput(event)
 {
-  console.log(event);
+  var word = event.target.value;
+  console.log(word);
+  var romList = JSON.parse(localStorage.getItem('romList'));
 }
 
