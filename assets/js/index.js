@@ -826,7 +826,6 @@ function addROM(name, data, callback) {
     tx.executeSql('SELECT id FROM roms WHERE data = ?', [data], function(tx, result){
       if (result.rows.length)
       {
-        alert('ROM exists!');
         return;
       }
       tx.executeSql('INSERT INTO roms (name, data) VALUES (?, ?)', [name, data], function (tx, results) {
@@ -1214,23 +1213,27 @@ function initROMSelection(event, update)
   }
 }
 
-function chooseROMSelection()
+function chooseROMSelection(event)
 {
-  var parent = document.getElementById('chooseROMSelection');
-  var selection = parent.getElementsByTagName('select')[0];
-  loadURL(selection.value);
+  loadURL(event.target.value);
 }
 
 function chooseROMSearchSectionToggle(event)
 {
   var section = document.getElementById('chooseROMSearchSection');
+  var textControl = event.target.parentElement.getElementsByTagName('input')[0];
+  var selectControl = event.target.parentElement.getElementsByTagName('select')[0];
   if (section.style.display === 'block')
   {
+    textControl.style.display = 'none';
+    selectControl.style.display = 'inline-block';
     section.style.display = 'none';
     applyTransform(event.target, 'scaleY(1)');
   }
   else
   {
+    selectControl.style.display = 'none';
+    textControl.style.display = 'inline-block';
     section.style.display = 'block';
     applyTransform(event.target, 'scaleY(-1)');
   }
