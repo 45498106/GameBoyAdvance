@@ -175,7 +175,7 @@
 								</div>
 								<div class="fileEntry" onclick="initROMSelection(event, true);">
 									<img src="assets/images/update-arrows.svg" class="entryIcon" width="50" height="50">
-									<span class="entryText">Update ROMs in Selection</span>
+									<span class="entryText" onclick="event.target.parentElement.click();event.stopPropagation();">Update ROMs in Selection</span>
 								</div>
 								<div class="sectDivider" style="background-color:#79AD36">About</div>
 								<div class="fileEntry">
