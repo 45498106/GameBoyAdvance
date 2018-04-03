@@ -381,7 +381,6 @@ function applyTransform(elem, trans) {
   elem.style.oTransform = trans;
   elem.style.msTransform = trans;
   elem.style.Transform = trans;
-  console.log(elem);
 }
 
 var takeInput = false;
@@ -889,8 +888,8 @@ function stateMenu(id, romid, menuID) {
   if (editingStates) {
     if (statesState[menuID].editing) {
       statesState[menuID].editing = false;
-      // var e = document.getElementById("seC"+menuID)
-      // applyTransform(e, "translate(90px, 0)");
+      var e = document.getElementById("seC"+menuID)
+      applyTransform(e, "translate(90px, 0)");
       return;
     } else {
       expandSEdit(menuID);
@@ -917,10 +916,10 @@ function populateStates() {
         var renameStr = 'renameState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
         var deleteStr = 'deleteState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
 
-        var temp = '<div class="fileEntry" onclick="stateMenu('+row.id+', '+row.rom_id+', '+i+')">'
+        var temp = '<div class="fileEntry" onclick="stateMenu('+row.id+', '+row.rom_id+', '+i+'); event.preventDefault();">'
           + '<div class="entryText">'+htmlSafe(row.name)+'</div>'
           + '<div class="expandDiv">'
-          + '<img src="assets/index/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.preventDefault();" />'
+          + '<img src="assets/index/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.stopPropagation();" />'
           + '<div class="sEditControls" id="seC'+i+'">'
           + '<img src="assets/index/rename.svg" class="rename" onclick="'+renameStr+'" />'
           + '<img src="assets/index/bin.svg" class="delete" onclick="'+deleteStr+'">'
@@ -1102,8 +1101,7 @@ function loadDownloaded(i) {
 }
 
 function saveCurrentState() {
-  console.log(gameboy);
-  if (gameboy.ROMname)
+  if (!gameboy.ROMname)
   {
     alert('You must play a game!');
     return;
