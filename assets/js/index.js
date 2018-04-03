@@ -1220,29 +1220,62 @@ function chooseROMSelection(event)
 
 function chooseROMSearchSectionToggle(event)
 {
-  var section = document.getElementById('chooseROMSearchSection');
+  var searchResultSection = document.getElementById('chooseROMSearchResult');
   var textControl = event.target.parentElement.getElementsByTagName('input')[0];
   var selectControl = event.target.parentElement.getElementsByTagName('select')[0];
-  if (section.style.display === 'block')
+  if (searchResultSection.style.display === 'block')
   {
     textControl.style.display = 'none';
     selectControl.style.display = 'inline-block';
-    section.style.display = 'none';
+    searchResultSection.style.display = 'none';
     applyTransform(event.target, 'scaleY(1)');
   }
   else
   {
     selectControl.style.display = 'none';
     textControl.style.display = 'inline-block';
-    section.style.display = 'block';
+    searchResultSection.style.display = 'block';
     applyTransform(event.target, 'scaleY(-1)');
   }
 }
 
 function chooseROMSearchOnInput(event)
 {
-  var word = event.target.value;
-  console.log(word);
+  // https://www.quora.com/Algorithms/How-is-the-fuzzy-search-algorithm-in-Sublime-Text-designed-How-would-you-design-something-similar
   var romList = JSON.parse(localStorage.getItem('romList'));
+  var query = event.target.value;
+
+  var tokens = query.toLowerCase().split('');
+  var rsHTML = '<div style="margin:10px;max-height: 200px;overflow-x: hidden;border: 1px solid #ccc;">';
+  romList.forEach(function(rom) {
+    var tokenIndex = 0;
+    var stringIndex = -1;
+
+    string = rom.filename.toLowerCase();
+
+    while ((stringIndex++) < string.length) {
+      if (string[stringIndex] === tokens[tokenIndex])
+      {
+        tokenIndex++;
+        if (tokenIndex >= tokens.length)
+        {
+          rsHTML += romElm(rom);
+          break;
+        }
+      }
+    }
+  });
+  rsHTML += '</div>';
+
+  function romElm(rom) {
+    return '<div class="fileEntry" onclick="loadURL(\''+rom.url.replace(/'/g, "\\'")+'\');">'
+      + '<span style="padding-left:5px;">'
+      + rom.filename
+      + '</span>'
+      + '</div>'
+    ;
+  };
+
+  document.getElementById('chooseROMSearchResult').innerHTML = rsHTML;
 }
 

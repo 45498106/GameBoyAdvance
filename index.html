@@ -65,9 +65,7 @@
 										<input type="text" class="textControl" placeholder="Type name of ROM..." style="border-color: #009489;display:none;width: 85%;" oninput="chooseROMSearchOnInput(event);" />
 										<img src="assets/images/expand-button.svg" width="20" height="20" style="vertical-align: text-bottom;" onclick="chooseROMSearchSectionToggle(event)" />
 									</div>
-									<section id="chooseROMSearchSection" style="display:none; padding: 10px;">
-										<div id="chooseROMSearchResult"></div>
-									</section>
+									<div id="chooseROMSearchResult"></div>
 								</div>
 								<div class="fileEntry" onclick="chooseURL();">
 									<img src="assets/images/URL.svg" class="entryIcon" width="50" height="50">
@@ -107,14 +105,14 @@
 								<div id="controlsMain">
 									<div id="thumbsCont">
 										<div class="device" id="pThumbBorder">
-											<img src="assets/images/portPT.svg"><br>
+											<img src="assets/images/portPT.svg"><br />
 											<canvas width="75" height="133" style="background-color:white" id="portraitThumb"></canvas><br>
 											<img src="assets/images/homeBtn.svg">
 										</div>
 										<div class="device" id="lThumbBorder">
 											<img src="assets/images/landPT.svg" style="vertical-align: middle;" />
 											<canvas width="133" height="75" style="vertical-align: middle; background-color:white" id="landscapeThumb"></canvas>
-											<img src="assets/images/homeBtn.svg" style="vertical-align: middle;">
+											<img src="assets/images/homeBtn.svg" style="vertical-align: middle;" />
 										</div>
 									</div>
 									<div id="cDropPad">
@@ -175,7 +173,7 @@
 									Actions
 								</div>
 								<div class="fileEntry" onclick="initROMSelection(event, true);">
-									<img src="assets/images/engineer.svg" class="entryIcon" width="50" height="50">
+									<img src="assets/images/update-arrows.svg" class="entryIcon" width="50" height="50">
 									<span class="entryText">Update ROMs in Selection</span>
 								</div>
 								<div class="sectDivider" style="background-color:#79AD36">About</div>
