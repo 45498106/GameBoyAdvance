@@ -870,9 +870,13 @@ function downloadState(i, menuID, name) {
         return;
       }
       var state = result.rows[0].data;
-      var url = 'data:application/octet-stream;base64,' + encodeURI(state);
-      console.log(url);
-      window.open(url, 'Download ' + name);
+      if (window.URL) {
+        var url = window.URL.createObjectURL(new Blob([state], { type: 'application/json' }));
+        window.open(url);
+      } else {
+        var data = this.encodeBase64(sram.view);
+        window.open('data:application/octet-stream;base64,' + data, name + '.state');
+      }
     });
   });
 }
