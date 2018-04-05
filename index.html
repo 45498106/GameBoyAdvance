@@ -10,31 +10,32 @@
 		<meta name="viewport" content="initial-scale=1, maximum-scale=1.0, user-scalable=no" />
 
 		<!-- iPhone (Retina)
-		<link rel="apple-touch-startup-image" href="assets/index/start.png" media="(device-width: 320px) and (device-height: 480px)" >-->
+		<link rel="apple-touch-startup-image" href="assets/index/start.png" media="(device-width: 320px) and (device-height: 480px)" />-->
 
 		<!-- iPhone 5 -->
 
 		<link href="assets/images/5start.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
 
-		<!-- <link rel="apple-touch-startup-image" href="assets/images/5start.png"> -->
+		<!-- <link rel="apple-touch-startup-image" href="assets/images/5start.png" /> -->
 
 		<link rel="apple-touch-icon" href="assets/images/icon120.png" sizes="120x120" />
 
 		<link rel="stylesheet" href="assets/css/index.css" />
+		<title>GameBoy Advance</title>
 		<link rel="icon" href="./favicon.ico" />
 	</head>
 	<body>
 		<div id="debug"></div>
 		<div id="appcontainer">
 			<div id="splash">
-				<img src="assets/images/load.png" width="140" height"140" id="splashImg">
+				<img src="assets/images/load.png" width="140" height"140" id="splashImg" />
 			</div>
 			<div id="container">
 				<canvas id="ui"></canvas><canvas id="gameboy" width="320" height="288"></canvas>
 			</div>
 			<div id="external">
 				<div class="menuHead">
-					<img class="backBtn" src="assets/images/back.svg" onclick="closeBrowser()">
+					<img class="backBtn" src="assets/images/back.svg" onclick="closeBrowser()" />
 					<div class="menuTitle">Download a ROM...</div>
 				</div>
 				<div class="menuCont">
@@ -88,7 +89,7 @@
 						<div class="menuCont">
 							<div class="selRomScroll">
 								<div class="fileEntry" onclick="saveCurrentState();" id="addState">
-									<img src="assets/images/add.svg" class="entryIcon" width="50" height="50">
+									<img src="assets/images/add.svg" class="entryIcon" width="50" height="50" />
 									<span class="entryText">Save Current State</span>
 								</div>
 								<div id="stateCont"></div>
@@ -98,7 +99,7 @@
 
 					<div class="submenu" style="left:200%">
 						<div class="menuHead" style="background-color:#DDB10A">
-							<img class="backBtn mbackBtn" src="assets/images/back.svg">
+							<img class="backBtn mbackBtn" src="assets/images/back.svg" />
 							<div class="menuTitle">Controls</div>
 						</div>
 						<div class="menuCont">
@@ -221,7 +222,7 @@
 				}
 			}
 		</script>
-		<script type="text/javascript" src="assets/libs/amebo.js" id="amebo_script"></script>
+		<script type="text/javascript" src="assets/libs/amebo/amebo.js" id="amebo_script"></script>
 		<script type="text/javascript" src="assets/js/iosJSnode.js"></script>
 		<script type="text/javascript" src="assets/libs/jszip/jszip.js"></script>
 		<script type="text/javascript" src="assets/libs/jszip/jszip-inflate.js"></script>

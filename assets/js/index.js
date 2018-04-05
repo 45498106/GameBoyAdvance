@@ -4,6 +4,7 @@ var indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedD
 
 var idxDB = indexedDB.open('idxdbgba', dbVersion);
 var db = openDatabase('amebo2', '1.0', 'amebo state and rom store', 2 * 1024 * 1024); //, createDB
+var mainUI;
 
 var defaultControls = {
   "images": [
@@ -612,7 +613,7 @@ function triggerEdit(state) {
       applyTransform(expands[i], "translate(30px, 0)");
     };
     for (i = 0; i < fEdit.length; i++) {
-      applyTransform(fEdit[i], "translate(90px, 0)");
+      applyTransform(fEdit[i], "translate(100%, 0)");
       if (state) statesState[i].editing = false;
       else recentFilesState[i].editing = false;
     };
@@ -856,6 +857,26 @@ function loadState(id, rom_id) {
   });
 }
 
+function downloadState(i, menuID, name) {
+  if (!confirm('Download '+name+' ?'))
+  {
+    return;
+  }
+
+  db.transaction(function(tx){
+    tx.executeSql('SELECT data FROM states WHERE id=?', [i], function(tx, result) {
+      if (result.length <= 0)
+      {
+        return;
+      }
+      var state = result.rows[0].data;
+      var url = 'data:application/octet-stream;base64,' + encodeURI(state);
+      console.log(url);
+      window.open(url, 'Download ' + name);
+    });
+  });
+}
+
 function renameState(i, menuID, oldName) {
   var newName = prompt("What do you want to rename the state "+oldName+" to?", oldName);
   if (!newName)
@@ -888,7 +909,7 @@ function stateMenu(id, romid, menuID) {
     if (statesState[menuID].editing) {
       statesState[menuID].editing = false;
       var e = document.getElementById("seC"+menuID)
-      applyTransform(e, "translate(90px, 0)");
+      applyTransform(e, "translate(135px, 0)");
       return;
     } else {
       expandSEdit(menuID);
@@ -912,6 +933,7 @@ function populateStates() {
       for (var i=0; i<rows.length; i++) {
         var row = rows.item(i);
 
+        var downloadStr = 'downloadState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
         var renameStr = 'renameState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
         var deleteStr = 'deleteState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
 
@@ -920,8 +942,9 @@ function populateStates() {
           + '<div class="expandDiv">'
           + '<img src="assets/images/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.stopPropagation();" />'
           + '<div class="sEditControls" id="seC'+i+'">'
-          + '<img src="assets/images/rename.svg" class="rename" onclick="'+renameStr+'" />'
-          + '<img src="assets/images/bin.svg" class="delete" onclick="'+deleteStr+'">'
+          + '<img src="assets/images/download.svg" width="30" height="30" class="download" onclick="' + downloadStr + '" />'
+          + '<img src="assets/images/rename.svg" class="rename" onclick="' + renameStr + '" />'
+          + '<img src="assets/images/bin.svg" class="delete" onclick="' + deleteStr + '" />'
           + '</div>'
           + '</div>'
           + '</div>'
@@ -934,7 +957,10 @@ function populateStates() {
         }
         if (prevRomID != row.rom_id) {
           prevRomID = row.rom_id;
-          html += '<div class="sectDivider" style="background-color:#B90546">'+htmlSafe(row.rom_name)+'</div>'
+          html += '<div class="sectDivider" style="background-color:#B90546">'
+            +htmlSafe(row.rom_name)
+            +'</div>'
+          ;
         }
         html += temp;
         statesState.push({editing:false});
