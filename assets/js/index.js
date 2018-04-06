@@ -144,9 +144,13 @@ function gbTouchUI(input, id, callback) {
 
   this.drawBG = function(ctx, ratio) {
     var img = images[obj.background];
+    if (!img)
+    {
+      return;
+    }
 
-    var canvas = ctx.canvas
-    ctx.fillStyle = obj.bgColour || "#313123"
+    var canvas = ctx.canvas;
+    ctx.fillStyle = obj.bgColour || "#313123";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.save();
@@ -459,6 +463,7 @@ function handleMessage(e) {
 window.addEventListener('load', function(evt) {
   // UI Init
 
+  window.URL = window.URL || window.webkitURL;
   createDB();
 
   loadStyle(localStorage["currentStyle"],
@@ -881,8 +886,9 @@ function uploadState(event, rom_id)
 
     db.transaction(function (tx) {
       var name = file.name.slice(0, file.name.indexOf('.gba-state'));
-      tx.executeSql('SELECT name FROM roms WHERE id=?', [rom_id], function (tx, results) {
-        var row = results.rows[0] || results.rows;
+      tx.executeSql('SELECT name FROM roms WHERE id=?', [rom_id], function (tx, result) {
+        console.log(result);
+        var row = results.rows.item(0);
         var rom_name = row.rom_name;
         tx.executeSql('INSERT INTO states (name, data, rom_id, rom_name) VALUES (?, ?, ?, ?)', [name, state, rom_id, rom_name], function (tx, results) {
         }, function(tx, err) {
@@ -908,12 +914,12 @@ function downloadState(i, menuID, name) {
   }
 
   db.transaction(function(tx){
-    tx.executeSql('SELECT data FROM states WHERE id=?', [i], function(tx, result) {
+    tx.executeSql('SELECT data FROM states WHERE id = ?', [i], function(tx, result) {
       if (result.rows.length <= 0)
       {
         return;
       }
-      var row = result.rows[0] || result.rows;
+      var row = result.rows.item(0);
       var state = row.data;
       var url = window.URL.createObjectURL(
         new Blob([state], { type: 'application/octet-stream' })
@@ -925,6 +931,7 @@ function downloadState(i, menuID, name) {
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
     });
   });
 }
