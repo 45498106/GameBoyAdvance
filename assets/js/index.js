@@ -880,7 +880,8 @@ function uploadState(event, rom_id)
     }
 
     db.transaction(function (tx) {
-      tx.executeSql('INSERT INTO states (name, data, rom_id, rom_name) VALUES (?, ?, ?, ?)', [file.name, state, rom_id, ''], function (tx, results) {
+      var name = file.name.slice(0, file.name.indexOf('.gba-state'));
+      tx.executeSql('INSERT INTO states (name, data, rom_id, rom_name) VALUES (?, ?, ?, ?)', [name, state, rom_id, ''], function (tx, results) {
       },
         function(tx, err) {
           console.log(err);
@@ -964,19 +965,20 @@ function stateMenu(id, romid, menuID) {
 }
 
 function populateStates() {
-  var html = '';
-  var thisRomHTML = '';
-  function uploadStateHTML(rom_id){
-    return '<div>'
-      + 'Upload State: '
-      + '<input type="file" onchange="uploadState(event, \''+rom_id+'\')" accept=".gba-state" />'
-      + '</div>'
-    ;
-  }
   db.transaction(function (tx) {
-    tx.executeSql('SELECT id, name, rom_name, rom_id FROM states ORDER BY rom_name', [], function (tx, results) {
+    tx.executeSql('SELECT id, name, rom_name, rom_id FROM states ORDER BY rom_id', [], function (tx, results) {
+      var stateCont = document.getElementById('stateCont');
+      var html = '';
+      var thisRomHTML = '';
+      function uploadStateHTML(rom_id){
+        return '<div>'
+          + 'Upload State: '
+          + '<input type="file" onchange="uploadState(event, \''+rom_id+'\')" accept=".gba-state" />'
+          + '</div>'
+        ;
+      }
+      console.log(results);
       editingStates = false;
-      var stateCont = document.getElementById("stateCont");
       var rows = results.rows
       var prevRomID = -1;
       statesState = [];
@@ -1001,8 +1003,9 @@ function populateStates() {
           + '</div>'
         ;
 
-        if (row.rom_id == activeROM)
+        if (row.rom_id == parseInt(activeROM))
         {
+          console.log(row.rom_id);
           thisRomHTML += temp;
           statesState.push({editing:false});
           continue;
@@ -1018,21 +1021,19 @@ function populateStates() {
         html += temp;
         statesState.push({editing:false});
       }
-
+      if ((thisRomHTML.length > 0) || (parseInt(activeROM) >= 0))
+      {
+        thisRomHTML = '<div class="sectDivider" style="background-color:#B90546">'
+          + 'For Current Game ('+htmlSafe(aROMname)+')'
+          + uploadStateHTML(activeROM)
+          + '</div>'
+          + thisRomHTML
+        ;
+      }
+      stateCont.innerHTML = thisRomHTML + html;
     },
       function(tx, err){console.log(err)});
   });
-  if ((thisRomHTML.length > 0) || (activeROM >= 0))
-  {
-    thisRomHTML = '<div class="sectDivider" style="background-color:#B90546">'
-      + 'For Current Game ('+htmlSafe(aROMname)+')'
-      + uploadStateHTML(activeROM)
-      + '</div>'
-      + thisRomHTML
-    ;
-  }
-
-  stateCont.innerHTML = thisRomHTML + html;
 }
 
 function expandSEdit(i) {
