@@ -977,7 +977,6 @@ function populateStates() {
           + '</div>'
         ;
       }
-      console.log(results);
       editingStates = false;
       var rows = results.rows
       var prevRomID = -1;
@@ -1005,7 +1004,6 @@ function populateStates() {
 
         if (row.rom_id == parseInt(activeROM))
         {
-          console.log(row.rom_id);
           thisRomHTML += temp;
           statesState.push({editing:false});
           continue;
@@ -1032,7 +1030,7 @@ function populateStates() {
       }
       stateCont.innerHTML = thisRomHTML + html;
     },
-      function(tx, err){console.log(err)});
+      function(tx, err){console.error(err)});
   });
 }
 
