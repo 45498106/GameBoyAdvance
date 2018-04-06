@@ -1,8 +1,8 @@
 var indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB,
   IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction,
   dbVersion = 1.0;
-
 var idxDB = indexedDB.open('idxdbgba', dbVersion);
+
 var db = openDatabase('amebo2', '1.0', 'amebo state and rom store', 2 * 1024 * 1024); //, createDB
 var mainUI;
 
@@ -448,7 +448,9 @@ function handleMessage(e) {
   } catch (err) {
     return;
   }
-  if (data.type == "ROMURL") {
+
+  if (data.type === 'ROMURL')
+  {
     loadURL(data.url); //.replace("http://dl.coolrom.com", "http://fs1.coolrom.com"));
     closeBrowser();
   }
@@ -506,7 +508,7 @@ window.addEventListener('load', function(evt) {
     rootDir: '',
     enableLoadBios: currentEnableLoadBios,
   });
-  backButtonDisp("none");
+  backButtonDisp('none');
   setUpButtons();
   //populateRecentFiles();
 
@@ -515,12 +517,11 @@ window.addEventListener('load', function(evt) {
 
   // Volume
   var volumeController = document.getElementById('audioEngineVolumeControl');
-  volumeController.onchange = function(e)
-  {
+  volumeController.onchange = function(e) {
     gbSettings.audioEngineVolume = e.target.value;
     gameboy.setAudioEngineVolume(gbSettings.audioEngineVolume);
     localStorage.setItem('GameBoySettings', JSON.stringify(gbSettings));
-  }
+  };
   var currentVolume = gbSettings.audioEngineVolume;
   volumeController.value = currentVolume;
   gameboy.setAudioEngineVolume(currentVolume);
@@ -547,6 +548,11 @@ window.addEventListener('load', function(evt) {
 
   setInterval(periodicState, 1000);
 
+	window.addEventListener('unload', gameboy.saveBattery);
+	var p = navigator.platform;
+	var iOS = ( p === 'iPad' || p === 'iPhone' || p === 'iPod' );
+	if (iOS) setInterval(gameboy.saveBattery, 1000);
+
   // Event Handle
   var ui = document.getElementById('ui');
   ui.addEventListener('touchmove', handleTouch);
@@ -561,7 +567,7 @@ window.addEventListener('load', function(evt) {
   window.addEventListener('scroll', scrollFix);
   window.addEventListener('orientationchange', scrollFix);
   window.addEventListener('message', handleMessage);
-})
+});
 
 function showUI() {
   document.getElementById('splash').style.opacity = 0;
@@ -857,6 +863,37 @@ function loadState(id, rom_id) {
   });
 }
 
+function uploadState(event, rom_id)
+{
+  var file = event.target.files[0];
+  if (!file)
+  {
+    return;
+  }
+
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    var state = e.target.result;
+    if (!state)
+    {
+      return;
+    }
+
+    db.transaction(function (tx) {
+      tx.executeSql('INSERT INTO states (name, data, rom_id, rom_name) VALUES (?, ?, ?, ?)', [file.name, state, rom_id, ''], function (tx, results) {
+      },
+        function(tx, err) {
+          console.log(err);
+        });
+    });
+    alert('Upload successed!');
+    statesState.push({editing:false});
+    event.target.value = null;
+    populateStates();
+  };
+  reader.readAsText(file);
+}
+
 function downloadState(i, menuID, name) {
   if (!confirm('Download '+name+' ?'))
   {
@@ -870,13 +907,16 @@ function downloadState(i, menuID, name) {
         return;
       }
       var state = result.rows[0].data;
-      if (window.URL) {
-        var url = window.URL.createObjectURL(new Blob([state], { type: 'application/json' }));
-        window.open(url);
-      } else {
-        var data = this.encodeBase64(sram.view);
-        window.open('data:application/octet-stream;base64,' + data, name + '.state');
-      }
+      var url = window.URL.createObjectURL(
+        new Blob([state], { type: 'application/octet-stream' })
+      );
+      var a = document.createElement('a');
+      a.href = url;
+      a.style.display = 'none';
+      a.download = name + '.gba-state';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
     });
   });
 }
@@ -924,17 +964,24 @@ function stateMenu(id, romid, menuID) {
 }
 
 function populateStates() {
+  var html = '';
+  var thisRomHTML = '';
+  function uploadStateHTML(rom_id){
+    return '<div>'
+      + 'Upload State: '
+      + '<input type="file" onchange="uploadState(event, \''+rom_id+'\')" accept=".gba-state" />'
+      + '</div>'
+    ;
+  }
   db.transaction(function (tx) {
     tx.executeSql('SELECT id, name, rom_name, rom_id FROM states ORDER BY rom_name', [], function (tx, results) {
       editingStates = false;
       var stateCont = document.getElementById("stateCont");
       var rows = results.rows
-      var html = "";
-      var thisRomHTML = "";
       var prevRomID = -1;
       statesState = [];
 
-      for (var i=0; i<rows.length; i++) {
+      for (var i = 0; i < rows.length; i++) {
         var row = rows.item(i);
 
         var downloadStr = 'downloadState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
@@ -954,7 +1001,8 @@ function populateStates() {
           + '</div>'
         ;
 
-        if (row.rom_id == activeROM) {
+        if (row.rom_id == activeROM)
+        {
           thisRomHTML += temp;
           statesState.push({editing:false});
           continue;
@@ -962,19 +1010,29 @@ function populateStates() {
         if (prevRomID != row.rom_id) {
           prevRomID = row.rom_id;
           html += '<div class="sectDivider" style="background-color:#B90546">'
-            +htmlSafe(row.rom_name)
-            +'</div>'
+            + htmlSafe(row.rom_name)
+            + uploadStateHTML(row.rom_id)
+            + '</div>'
           ;
         }
         html += temp;
         statesState.push({editing:false});
       }
 
-      if (thisRomHTML.length > 0) thisRomHTML = '<div class="sectDivider" style="background-color:#B90546">For Current Game ('+htmlSafe(aROMname)+')</div>'+thisRomHTML;
-      stateCont.innerHTML = thisRomHTML+html;
     },
       function(tx, err){console.log(err)});
   });
+  if ((thisRomHTML.length > 0) || (activeROM >= 0))
+  {
+    thisRomHTML = '<div class="sectDivider" style="background-color:#B90546">'
+      + 'For Current Game ('+htmlSafe(aROMname)+')'
+      + uploadStateHTML(activeROM)
+      + '</div>'
+      + thisRomHTML
+    ;
+  }
+
+  stateCont.innerHTML = thisRomHTML + html;
 }
 
 function expandSEdit(i) {
@@ -1062,10 +1120,10 @@ function populateRecentFiles() {
   db.transaction(function (tx) {
     tx.executeSql('SELECT id, name FROM roms ORDER BY accessed DESC', [], function (tx, results) {
       editingFiles = false;
-      var rFCont = document.getElementById("rFCont");
+      var rFCont = document.getElementById('rFCont');
       recentFilesState = [];
       var rows = results.rows
-      var html = "";
+      var html = '';
       for (var i=0; i<rows.length; i++) {
         var row = rows.item(i);
         var filename = htmlSafe(row.name);
@@ -1083,7 +1141,8 @@ function populateRecentFiles() {
           + '<img src="assets/images/bin.svg" class="delete" onclick="'+deleteStr+'" />'
           + '</div>'
           + '</div>'
-          + '</div>';
+          + '</div>'
+        ;
         //i dont think u were ready
 
         recentFilesState.push({editing: false});
@@ -1130,7 +1189,7 @@ function loadDownloaded(i) {
 }
 
 function saveCurrentState() {
-  if (!gameboy.ROMname)
+  if (activeROM < 0)
   {
     alert('You must play a game!');
     return;
@@ -1148,7 +1207,7 @@ function saveCurrentState() {
       function(tx, err) {
         console.log(err)
       });
-  })
+  });
   populateStates();
 }
 

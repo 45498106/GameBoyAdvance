@@ -75,7 +75,6 @@ window.gb = function(file, canvas, options) {
 	this.loadState = loadState;
 	this.saveState = saveState;
 
-	window.addEventListener("unload", saveBattery);
 	var GBObj = this;
 
 	this.loadROM = function(url, pauseAfter) {
@@ -213,10 +212,6 @@ window.gb = function(file, canvas, options) {
 	var GBAudioContext = null;
 
 	var getGamepads = navigator.webkitGamepads || navigator.webkitGetGamepads || navigator.getGamepads;
-
-	var p = navigator.platform
-	var iOS = ( p === 'iPad' || p === 'iPhone' || p === 'iPod' );
-	if (iOS) setInterval(saveBattery, 1000);
 
 	var NoAudioAPI = false;
 	if (typeof AudioContext !== 'undefined') {
@@ -1874,22 +1869,27 @@ window.gb = function(file, canvas, options) {
 		}
 	}
 
-	function loadBattery() {
+  this.loadBattery = loadBattery;
+  function loadBattery() {
 		var battery = localStorage["battery/"+ROMID]
 		if (MBC.type == 5) CRAM = new Uint8Array(RAMsizesMBC5[Math.min(3, game[0x149])]);
 		else CRAM = new Uint8Array(RAMsizes[Math.min(3, game[0x149])]);
-		if (typeof battery != "undefined") {
-			for (var i=0; i<battery.length; i++) {
+    if (typeof battery != "undefined")
+    {
+      for (var i = 0; i<battery.length; i++)
+      {
 				CRAM[i] = battery.charCodeAt(i);
 			}
 		}
 	}
 
-	function saveBattery() {
+  this.saveBattery = saveBattery;
+  function saveBattery () {
 		if (!MBC) return;
 		if (MBC.hardware.indexOf("BATTERY") == -1) return;
 		var battery = "";
-		for (var i = 0; i < CRAM.length; i++) {
+    for (var i = 0; i < CRAM.length; i++)
+    {
 			battery += String.fromCharCode(CRAM[i]);
 		}
 		localStorage["battery/"+ROMID] = battery;
