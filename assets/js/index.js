@@ -881,11 +881,16 @@ function uploadState(event, rom_id)
 
     db.transaction(function (tx) {
       var name = file.name.slice(0, file.name.indexOf('.gba-state'));
-      tx.executeSql('INSERT INTO states (name, data, rom_id, rom_name) VALUES (?, ?, ?, ?)', [name, state, rom_id, ''], function (tx, results) {
-      },
-        function(tx, err) {
+      tx.executeSql('SELECT name FROM roms WHERE id=?', [rom_id], function (tx, results) {
+        var rom_name = results.rows[0].name;
+        tx.executeSql('INSERT INTO states (name, data, rom_id, rom_name) VALUES (?, ?, ?, ?)', [name, state, rom_id, rom_name], function (tx, results) {
+        }, function(tx, err) {
           console.log(err);
         });
+      }, function(tx, err) {
+        console.log(err);
+      });
+
     });
     alert('Upload successed!');
     statesState.push({editing:false});
