@@ -213,11 +213,15 @@
 			</div>
 		</div>
 		<script type="text/javascript">
-			window.onerror = function(e) {
+			window.onerror = function(errorMsg, url, lineNumber, column, errorObj) {
 				var p = navigator.platform
 				if ((p === 'iPad') || (p === 'iPhone') || (p === 'iPod'))
 				{
-					alert(JSON.stringify(e));
+					alert(
+						JSON.stringify(errorMsg)
+						+ ' line: '
+						+ lineNumber
+					);
 				}
 			}
 		</script>

@@ -908,11 +908,12 @@ function downloadState(i, menuID, name) {
 
   db.transaction(function(tx){
     tx.executeSql('SELECT data FROM states WHERE id=?', [i], function(tx, result) {
-      if (result.length <= 0)
+      if (result.rows.length <= 0)
       {
         return;
       }
-      var state = result.rows[0].data;
+      var row = result.rows[0] || result.rows;
+      var state = row.data;
       var url = window.URL.createObjectURL(
         new Blob([state], { type: 'application/octet-stream' })
       );
