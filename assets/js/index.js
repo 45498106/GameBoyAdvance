@@ -1,11 +1,3 @@
-var indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB,
-  IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction,
-  dbVersion = 1.0;
-var idxDB = indexedDB.open('idxdbgba', dbVersion);
-
-var db = openDatabase('amebo2', '1.0', 'amebo state and rom store', 2 * 1024 * 1024); //, createDB
-var mainUI;
-
 var defaultControls = {
   "images": [
     "assets/resources/styles/default/abtn.svg",
@@ -309,7 +301,15 @@ function gbTouchUI(input, id, callback) {
       }
     }
 
-    gameboy.setButtonByte(255-buttonByte);
+    if (currentGB.emu instanceof GameBoyAdvance)
+    {
+      gba.keypad.joypadHandler(buttonByte);
+    }
+    else
+    {
+      gameboy.setButtonByte(255-buttonByte);
+    }
+
   }
 
   function finishedLoading() {
@@ -343,18 +343,24 @@ function drawUIThumbs() {
 }
 
 function resizeGB(zoom) {
-  var gb = gameboy;
-  if (typeof gb.ctx.webkitImageSmoothingEnabled != "undefined") {
-    gb.canvas.width = 160*zoom;
-    gb.canvas.height = 144*zoom;
-    gb.ctx.webkitImageSmoothingEnabled = false;
-  } else if (typeof gb.ctx.imageSmoothingEnabled != "undefined") {
-    gb.canvas.width = 160*zoom;
-    gb.canvas.height = 144*zoom;
-    gb.ctx.imageSmoothingEnabled = false;
-  } else {
-    gb.canvas.style.width = 160*zoom;
-    gb.canvas.style.height = 144*zoom;
+  var width = 160;
+  var height = 144;
+  if (currentGB.emu instanceof GameBoyAdvance)
+  {
+    width = 240 / 1.5;
+    height = 160 / 1.5;
+  }
+
+  currentGB.canvas.width = width * zoom;
+  currentGB.canvas.height = height * zoom;
+
+  if (gb.ctx)
+  {
+    if (typeof gb.ctx.webkitImageSmoothingEnabled !== "undefined") {
+      gameboy.ctx.webkitImageSmoothingEnabled = false;
+    } else if (typeof gb.ctx.imageSmoothingEnabled !== "undefined") {
+      gameboy.ctx.imageSmoothingEnabled = false;
+    }
   }
 }
 
@@ -366,8 +372,10 @@ function renderUI() {
   UIctx.clearRect(0, 0, UIcanvas.width, UIcanvas.height);
   mainUI.drawUI(UIctx);
   resizeGB(mainUI.GBScale);
-  gameboy.canvas.style.left = mainUI.GBx+"px";
-  gameboy.canvas.style.top = mainUI.GBy+"px";
+  currentGB.canvas.style.left = mainUI.GBx+"px";
+  currentGB.canvas.style.top = mainUI.GBy+"px";
+  // gameboy.canvas.style.left = mainUI.GBx+"px";
+  // gameboy.canvas.style.top = mainUI.GBy+"px";
   var cont = document.getElementById("appcontainer");
   cont.style.width = document.body.clientWidth+"px";
   cont.style.height = document.body.clientHeight+"px";
@@ -508,7 +516,7 @@ window.addEventListener('load', function(evt) {
     alert('You must restart / refresh this app to apply setting');
   }
 
-  gameboy = new gb(null, document.getElementById('gameboy'), {
+  gameboy = new gb(null, currentGB.canvas, {
     cButByte: true,
     rootDir: '',
     enableLoadBios: currentEnableLoadBios,
@@ -553,10 +561,10 @@ window.addEventListener('load', function(evt) {
 
   setInterval(periodicState, 1000);
 
-	window.addEventListener('unload', gameboy.saveBattery);
-	var p = navigator.platform;
-	var iOS = ( p === 'iPad' || p === 'iPhone' || p === 'iPod' );
-	if (iOS) setInterval(gameboy.saveBattery, 1000);
+  window.addEventListener('unload', gameboy.saveBattery);
+  var p = navigator.platform;
+  var iOS = ( p === 'iPad' || p === 'iPhone' || p === 'iPod' );
+  if (iOS) setInterval(gameboy.saveBattery, 1000);
 
   // Event Handle
   var ui = document.getElementById('ui');
@@ -1234,13 +1242,20 @@ function loadURL(url) {
   var filename = url.split('/').pop();
   if ('.gba' === filename.slice(-4))
   {
+    gameboy.canvas = null;
+    gba.setCanvas(currentGB.canvas);
+    currentGB.emu = gba;
     loadRomFromUrl(url, function(result){
       gba.setRom(result);
+      gba.runStable();
       console.log('loaded');
     });
   }
   else
   {
+    gba.setCanvas(null);
+    gameboy.canvas = currentGB.canvas;
+    currentGB.emu = gameboy;
     gameboy.onload = function() {
       addROM(gameboy.filename, byteToString(gameboy.game), populateRecentFiles);
     }
@@ -1411,6 +1426,7 @@ function loadRomFromUrl(url, callback)
   var filename = url.split("/");
   loadfile.onload = function() {
     callback(loadfile.response);
+    renderUI();
   };
   loadfile.onerror = function() {
     loadfile.open("POST", url);

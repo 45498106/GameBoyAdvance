@@ -152,7 +152,54 @@ GameBoyAdvanceKeypad.prototype.pollGamepads = function() {
 	if (this.gamepads.length > 0) {
 		this.gamepadHandler(this.gamepads[0]);
 	}
+};
 
+GameBoyAdvanceKeypad.prototype.joypadHandler = function(btn) {
+	// if (this.eatInput) {
+  //   return;
+	// }
+  var toggle = false;
+  var value = 0;
+  switch (btn)
+  {
+    case 4:
+      value = this.UP;
+      break;
+    case 8:
+      value = this.DOWN;
+      break;
+    case 2:
+      value = this.LEFT;
+      break;
+    case 1:
+      value = this.RIGHT;
+      break;
+    case 16:
+      value = this.A;
+      break;
+    case 32:
+      value = this.B;
+      break;
+    case 192:
+      value = this.START;
+      break;
+    case 64:
+      value = this.SELECT;
+      break;
+    default:
+      toggle = true;
+  }
+
+	value = 1 << value;
+  if (toggle)
+  {
+    this.currentDown |= value;
+  }
+  else
+  {
+    this.currentDown &= ~value;
+  }
+  console.log(toggle, value);
 };
 
 GameBoyAdvanceKeypad.prototype.registerHandlers = function() {

@@ -383,14 +383,14 @@ html {
 }
 
 @media screen and (orientation:portrait) {
-	#gameboy { left: 0px; }
+	#emulator { left: 0px; }
 }
 
 @media screen and (orientation:landscape) {
-	#gameboy { left: 124px; }
+	#emulator { left: 124px; }
 }
 
-#gameboy {
+#emulator {
 	position: absolute;
 
 	top: 23.5px;

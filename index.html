@@ -34,8 +34,9 @@
 			</div>
 			<div id="container">
 				<canvas id="ui"></canvas>
-				<canvas id="gameboy" width="320" height="288"></canvas>
-				<canvas id="gba" width="480" height="320"></canvas>
+				<!-- <canvas id="gameboy" width="320" height="288"></canvas> -->
+				<!-- <canvas id="gba" width="480" height="320"></canvas> -->
+				<canvas id="emulator" width="480" height="320"></canvas>
 			</div>
 			<div id="external">
 				<div class="menuHead">
@@ -216,19 +217,7 @@
 				</div>
 			</div>
 		</div>
-		<script type="text/javascript">
-			window.onerror = function(errorMsg, url, lineNumber, column, errorObj) {
-				var p = navigator.platform
-				if ((p === 'iPad') || (p === 'iPhone') || (p === 'iPod'))
-				{
-					alert(
-						JSON.stringify(errorMsg)
-						+ ' line: '
-						+ lineNumber
-					);
-				}
-			}
-		</script>
+		<script type="text/javascript" src="assets/js/global.js"></script>
 		<script type="text/javascript" src="assets/libs/jszip/jszip.js"></script>
 		<script type="text/javascript" src="assets/libs/jszip/jszip-inflate.js"></script>
 		<script type="text/javascript" src="assets/libs/jszip/jszip-deflate.js"></script>

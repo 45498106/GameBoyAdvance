@@ -5,7 +5,7 @@ var runCommands = [];
 window.onload = function () {
   gba = new GameBoyAdvance();
   if (gba && FileReader) {
-    var canvas = document.getElementById('gba');
+    var canvas = currentGB.canvas;
     gba.setCanvas(canvas);
 
     gba.logLevel = gba.LOG_ERROR;

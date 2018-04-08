@@ -1,11 +1,11 @@
-//amebo gameboy colour emulator by riperiperi
 //"use strict"; despite my code conforming to strict mode, i'll keep it off because it just adds stupid extra checks which might slow things down
 
 window.GBMasterClass = function() {
-  window.requestAnimationFrame = window.requestAnimationFrame ||
+  var requestAnimationFrame = window.requestAnimationFrame ||
     window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame ||
     window.msRequestAnimationFrame
   ;
+  var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
 
 	this.gameboys = [];
 
@@ -14,15 +14,15 @@ window.GBMasterClass = function() {
   function update()
   {
     var gbl = gameboys.length;
-    if (gbl > 1)
-    {
-      multiGBUpdate();
-    }
-    else if (gbl === 1)
+    if (gbl === 1)
     {
       gameboys[0].audioSyncUpdate();
     }
-		window.requestAnimationFrame(update);
+    else if (gbl > 1)
+    {
+      multiGBUpdate();
+    }
+		requestAnimationFrame(update);
 	}
 
 	function multiGBUpdate() {
@@ -52,7 +52,7 @@ window.GBMasterClass = function() {
 		}
 	}
 
-	window.requestAnimationFrame(update);
+	requestAnimationFrame(update);
 };
 
 window.gb = function(file, canvas, options) {
@@ -2082,6 +2082,10 @@ window.gb = function(file, canvas, options) {
 	}
 
 	this.audioSyncUpdate = function() {
+    if (!this.canvas)
+    {
+      return;
+    }
 		//document.getElementById("debug").innerHTML = Instructions[MemRead(535)]+"<br><br>"+PrefixCBI[MemRead(536)];
 		//Cycles -= 8BI;
 		try {
