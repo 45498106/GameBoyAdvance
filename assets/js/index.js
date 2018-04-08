@@ -1253,7 +1253,7 @@ function loadURL(url) {
   }
   else
   {
-    gba.setCanvas(null);
+    gba.targetCanvas = null;
     gameboy.canvas = currentGB.canvas;
     currentGB.emu = gameboy;
     gameboy.onload = function() {
