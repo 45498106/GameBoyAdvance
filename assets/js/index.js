@@ -1137,7 +1137,8 @@ function populateRecentFiles() {
       recentFilesState = [];
       var rows = results.rows
       var html = '';
-      for (var i=0; i<rows.length; i++) {
+      for (var i=0; i<rows.length; i++)
+      {
         var row = rows.item(i);
         var filename = htmlSafe(row.name);
         var loadStr = 'loadMenu(\''+row.id+'\', '+i+'); event.preventDefault();'
@@ -1230,17 +1231,29 @@ function loadURL(url) {
     return;
   }
 
-  gameboy.onload = function() {
-    addROM(gameboy.filename, byteToString(gameboy.game), populateRecentFiles);
-  }
-  try
+  var filename = url.split('/').pop();
+  if ('.gba' === filename.slice(-4))
   {
-    gameboy.loadROM(url);
+    loadRomFromUrl(url, function(result){
+      gba.setRom(result);
+      console.log('loaded');
+    });
   }
-  catch(err)
+  else
   {
-    throw err;
+    gameboy.onload = function() {
+      addROM(gameboy.filename, byteToString(gameboy.game), populateRecentFiles);
+    }
+    try
+    {
+      gameboy.loadROM(url);
+    }
+    catch(err)
+    {
+      throw err;
+    }
   }
+
   backButtonDisp("block");
   closeFileSelect();
   gameboy.paused = true;
@@ -1383,4 +1396,29 @@ function chooseROMSearchOnInput(event)
 
   document.getElementById('chooseROMSearchResult').innerHTML = rsHTML;
 }
+
+function loadRomFromUrl(url, callback)
+{
+  var loadfile = new XMLHttpRequest();
+  loadfile.open("GET", url);
+  loadfile.responseType = "arraybuffer";
+
+  if (!url)
+  {
+    errorScreen('URL is empty');
+    return;
+  }
+  var filename = url.split("/");
+  loadfile.onload = function() {
+    callback(loadfile.response);
+  };
+  loadfile.onerror = function() {
+    loadfile.open("POST", url);
+    loadfile.onerror = function(err) {
+      // errorScreen(err);
+    }
+    loadfile.send();
+  }
+  loadfile.send();
+};
 

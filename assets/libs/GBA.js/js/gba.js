@@ -416,3 +416,4 @@ GameBoyAdvance.prototype.ASSERT = function(test, err) {
 		throw new Error("Assertion failed: " + err);
 	}
 };
+
