@@ -180,7 +180,7 @@ GameBoyAdvanceKeypad.prototype.joypadHandler = function(btn) {
     case 32:
       value = this.B;
       break;
-    case 192:
+    case 128:
       value = this.START;
       break;
     case 64:
@@ -190,16 +190,18 @@ GameBoyAdvanceKeypad.prototype.joypadHandler = function(btn) {
       toggle = true;
   }
 
-	value = 1 << value;
-  if (toggle)
-  {
-    this.currentDown |= value;
-  }
-  else
-  {
-    this.currentDown &= ~value;
-  }
-  console.log(toggle, value);
+	value |= 1 << value;
+
+	this.currentDown = ~value & 0x3FF;
+  // if (!toggle)
+  // {
+  //   this.currentDown |= value;
+  // }
+  // else
+  // {
+  //   this.currentDown &= ~value;
+  // }
+  console.log(toggle, value, btn);
 };
 
 GameBoyAdvanceKeypad.prototype.registerHandlers = function() {

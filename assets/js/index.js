@@ -309,7 +309,6 @@ function gbTouchUI(input, id, callback) {
     {
       gameboy.setButtonByte(255-buttonByte);
     }
-
   }
 
   function finishedLoading() {
@@ -374,15 +373,13 @@ function renderUI() {
   resizeGB(mainUI.GBScale);
   currentGB.canvas.style.left = mainUI.GBx+"px";
   currentGB.canvas.style.top = mainUI.GBy+"px";
-  // gameboy.canvas.style.left = mainUI.GBx+"px";
-  // gameboy.canvas.style.top = mainUI.GBy+"px";
   var cont = document.getElementById("appcontainer");
   cont.style.width = document.body.clientWidth+"px";
   cont.style.height = document.body.clientHeight+"px";
 }
 
 function periodicState() {
-  if (!(gameboy.paused) && gameboy.game) {
+  if (!(currentGB.isPaused) && gameboy.game) {
     if (activeROM != null) localStorage["lastState"] = JSON.stringify(gameboy.saveState());
     localStorage["lastROM"] = activeROM;
   }
@@ -744,7 +741,7 @@ function openFileSelect() {
   populateControlsDrop();
   var fs = document.getElementById("fileCtr");
   applyTransform(fs, "translate(-100%, 0)");
-  gameboy.paused = true;
+  currentGB.setPause(true);
   takeInput = false;
 
   drawUIThumbs();
@@ -778,7 +775,7 @@ function closeFileSelect() {
   var fs = document.getElementById("fileCtr");
   document.getElementById("container").className = ""
   applyTransform(fs, "translate(0, 0)");
-  gameboy.paused = false;
+  currentGB.setPause(false);
   takeInput = true;
 }
 
@@ -1257,7 +1254,7 @@ function loadURL(url) {
     gameboy.canvas = currentGB.canvas;
     currentGB.emu = gameboy;
     gameboy.onload = function() {
-      addROM(gameboy.filename, byteToString(gameboy.game), populateRecentFiles);
+      // addROM(gameboy.filename, byteToString(gameboy.game), populateRecentFiles);
     }
     try
     {
@@ -1271,7 +1268,7 @@ function loadURL(url) {
 
   backButtonDisp("block");
   closeFileSelect();
-  gameboy.paused = true;
+  currentGB.setPause(true);
 }
 
 function initROMSelection(event, update)
@@ -1415,21 +1412,23 @@ function chooseROMSearchOnInput(event)
 function loadRomFromUrl(url, callback)
 {
   var loadfile = new XMLHttpRequest();
-  loadfile.open("GET", url);
-  loadfile.responseType = "arraybuffer";
+  loadfile.open('GET', url);
+  loadfile.responseType = 'arraybuffer';
 
   if (!url)
   {
     errorScreen('URL is empty');
     return;
   }
-  var filename = url.split("/");
+  var filename = url.split('/').pop();
   loadfile.onload = function() {
-    callback(loadfile.response);
+    var fcontent = loadfile.response;
+    addROM(filename, byteToString(fcontent), populateRecentFiles);
+    callback(fcontent);
     renderUI();
   };
   loadfile.onerror = function() {
-    loadfile.open("POST", url);
+    loadfile.open('POST', url);
     loadfile.onerror = function(err) {
       // errorScreen(err);
     }

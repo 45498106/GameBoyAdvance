@@ -144,27 +144,3 @@ function setVolume(value) {
   gba.audio.masterVolume = Math.pow(2, value) - 1;
 }
 
-// In order to pause/resume the game when the user changes the website tab in the browser
-// add the 2 following listeners to the window !
-//
-// This feature is problematic/tricky to handle, so you can make it better if you need to
-window.onblur = function () {
-  if(gba.hasRom()){
-
-    if (!gba.paused) {
-      gba.pause();
-
-      console.log("Window Focused: the game has been paused");
-    }
-  }
-};
-
-window.onfocus = function () {
-  if(gba.hasRom()){
-    if (gba.paused) {
-      gba.runStable();
-      console.log("Window Focused: the game has been resumed");
-    }
-  }
-};
-
