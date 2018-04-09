@@ -36,7 +36,7 @@ function GameBoyAdvanceKeypad() {
 	this.currentDown = 0x03FF;
 	this.eatInput = false;
 
-  this.lastKey = 0;
+  this.lastKey = -1;
 
 	this.gamepads = [];
 };
@@ -160,13 +160,14 @@ GameBoyAdvanceKeypad.prototype.joypadHandler = function(btn) {
   var is_keydown = true;
   var toggle = 0;
 
-  if (btn === 0)
+  if ((btn === 0) && (this.lastKey >= 0))
   {
     btn = this.lastKey;
     is_keydown = false;
   }
 
   this.lastKey = btn;
+
   switch (btn)
   {
     case 4:
@@ -199,11 +200,11 @@ GameBoyAdvanceKeypad.prototype.joypadHandler = function(btn) {
 
   if (is_keydown)
   {
-    this.currentDown |= toggle;
+    this.currentDown &= ~toggle;
   }
   else
   {
-    this.currentDown &= ~toggle;
+    this.currentDown |= toggle;
   }
 
   console.log(is_keydown, toggle, btn);
