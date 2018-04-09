@@ -36,6 +36,8 @@ function GameBoyAdvanceKeypad() {
 	this.currentDown = 0x03FF;
 	this.eatInput = false;
 
+  this.lastKey = 0;
+
 	this.gamepads = [];
 };
 
@@ -155,53 +157,56 @@ GameBoyAdvanceKeypad.prototype.pollGamepads = function() {
 };
 
 GameBoyAdvanceKeypad.prototype.joypadHandler = function(btn) {
-	// if (this.eatInput) {
-  //   return;
-	// }
-  var toggle = false;
-  var value = 0;
+  var is_keydown = true;
+  var toggle = 0;
+
+  if (btn === 0)
+  {
+    btn = this.lastKey;
+    is_keydown = false;
+  }
+
+  this.lastKey = btn;
   switch (btn)
   {
     case 4:
-      value = this.UP;
+      toggle = this.UP;
       break;
     case 8:
-      value = this.DOWN;
+      toggle = this.DOWN;
       break;
     case 2:
-      value = this.LEFT;
+      toggle = this.LEFT;
       break;
     case 1:
-      value = this.RIGHT;
+      toggle = this.RIGHT;
       break;
     case 16:
-      value = this.A;
+      toggle = this.A;
       break;
     case 32:
-      value = this.B;
+      toggle = this.B;
       break;
     case 128:
-      value = this.START;
+      toggle = this.START;
       break;
     case 64:
-      value = this.SELECT;
+      toggle = this.SELECT;
       break;
-    default:
-      toggle = true;
   }
 
-	value |= 1 << value;
+	toggle = 1 << toggle;
 
-	this.currentDown = ~value & 0x3FF;
-  // if (!toggle)
-  // {
-  //   this.currentDown |= value;
-  // }
-  // else
-  // {
-  //   this.currentDown &= ~value;
-  // }
-  console.log(toggle, value, btn);
+  if (is_keydown)
+  {
+    this.currentDown |= toggle;
+  }
+  else
+  {
+    this.currentDown &= ~toggle;
+  }
+
+  console.log(is_keydown, toggle, btn);
 };
 
 GameBoyAdvanceKeypad.prototype.registerHandlers = function() {
