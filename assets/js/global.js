@@ -23,7 +23,23 @@ var currentGB = {
   setVolume: function (value)
   {
     gba.audio.masterVolume = Math.pow(2, value) - 1;
+    gameboy.setAudioEngineVolume(value);
   },
+
+  /**
+   * Set speed
+   * @param {float} Speed
+   */
+  setSpeed: function (speed)
+  {
+  },
+
+  /**
+   *
+   */
+  loadROM: function(rom)
+  {
+  }
 };
 
 window.onerror = function(errorMsg, url, lineNumber, column, errorObj) {
@@ -36,5 +52,5 @@ window.onerror = function(errorMsg, url, lineNumber, column, errorObj) {
       + lineNumber
     );
   }
-}
+};
 

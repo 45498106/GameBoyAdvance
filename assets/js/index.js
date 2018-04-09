@@ -529,22 +529,21 @@ window.addEventListener('load', function(evt) {
   var volumeController = document.getElementById('audioEngineVolumeControl');
   volumeController.onchange = function(e) {
     gbSettings.audioEngineVolume = e.target.value;
-    gameboy.setAudioEngineVolume(gbSettings.audioEngineVolume);
+    currentGB.setVolume(gbSettings.audioEngineVolume);
     localStorage.setItem('GameBoySettings', JSON.stringify(gbSettings));
   };
   var currentVolume = gbSettings.audioEngineVolume;
   volumeController.value = currentVolume;
-  gameboy.setAudioEngineVolume(currentVolume);
+  currentGB.setVolume(gbSettings.audioEngineVolume);
 
   document.getElementById('chooseFile').onchange = function (e) {
     if (!e.target.files.length)
     {
       return;
     }
-    var gb = gameboy;
     var file = e.target.files[0];
     var reader = new FileReader();
-    reader.gb = gb;
+    reader.gb = gameboy;
     gameboy.onload = function() {
       addROM(file.name, byteToString(gameboy.game), populateRecentFiles);
     }
@@ -722,7 +721,6 @@ function handleKeyboard(evt) {
     gameboy.setButtonByte(255 - btnByte);
   }
 }
-
 
 function dropboxChoose(files) {
   loadURL(files[0].link);
@@ -1243,6 +1241,7 @@ function loadURL(url) {
     gba.setCanvas(currentGB.canvas);
     currentGB.emu = gba;
     loadRomFromUrl(url, function(result){
+      addROM(filename, byteToString(result), populateRecentFiles);
       gba.setRom(result);
       gba.runStable();
       console.log('loaded');
@@ -1254,7 +1253,7 @@ function loadURL(url) {
     gameboy.canvas = currentGB.canvas;
     currentGB.emu = gameboy;
     gameboy.onload = function() {
-      // addROM(gameboy.filename, byteToString(gameboy.game), populateRecentFiles);
+      addROM(gameboy.filename, byteToString(gameboy.game), populateRecentFiles);
     }
     try
     {

@@ -206,8 +206,6 @@ GameBoyAdvanceKeypad.prototype.joypadHandler = function(btn) {
   {
     this.currentDown |= toggle;
   }
-
-  console.log(is_keydown, toggle, btn);
 };
 
 GameBoyAdvanceKeypad.prototype.registerHandlers = function() {
