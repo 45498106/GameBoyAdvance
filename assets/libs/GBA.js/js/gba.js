@@ -64,6 +64,7 @@ function GameBoyAdvance() {
 
 	var self = this;
 	window.queueFrame = function (f) {
+    console.log(f);
 		self.queue = window.setTimeout(f, self.throttle);
 	};
 

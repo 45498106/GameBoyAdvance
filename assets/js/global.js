@@ -13,8 +13,14 @@ var currentGB = {
   setPause: function (pause)
   {
     currentGB.isPaused = pause;
-    gameboy.paused = pause;
-    (pause ? gba.pause() : gba.runStable());
+    if (currentGB.emu instanceof GameBoyAdvance)
+    {
+      (pause ? gba.pause() : gba.runStable());
+    }
+    else if (currentGB.emu instanceof gb)
+    {
+      gameboy.paused = pause;
+    }
   },
 
   /**
@@ -52,5 +58,120 @@ window.onerror = function(errorMsg, url, lineNumber, column, errorObj) {
       + lineNumber
     );
   }
+};
+
+window.onload = function(evt) {
+  // UI Init
+
+  window.URL = window.URL || window.webkitURL;
+  createDB();
+
+  loadStyle(localStorage["currentStyle"],
+    function(){
+      installStyle(defaultControls, function(id) {
+        localStorage["currentStyle"] = id;
+        console.log('style', id);
+        loadStyle(id, showUI, function(){
+          loadStyle(0, showUI, function(){
+            console.error('Load style error');
+          });
+        });
+      })
+    }, showUI
+  );
+  UIcanvas = document.getElementById("ui");
+  UIctx = UIcanvas.getContext("2d");
+
+  // end UI init
+
+  // Enable Load Bios
+  var gbSettings = localStorage.getItem('GameBoySettings');
+  if (!gbSettings)
+  {
+    gbSettings = {
+      audioEngineVolume: 0.5,
+      enableLoadBios: true,
+    };
+  }
+  else
+  {
+    gbSettings = JSON.parse(gbSettings);
+  }
+
+  var enableLoadBiosController = document.getElementById('enableLoadBiosControl');
+  var currentEnableLoadBios = gbSettings.enableLoadBios;
+  enableLoadBiosController.checked = currentEnableLoadBios;
+  enableLoadBiosController.onchange = function (e)
+  {
+    gbSettings.enableLoadBios = e.target.checked;
+    localStorage.setItem('GameBoySettings', JSON.stringify(gbSettings));
+    alert('You must restart / refresh this app to apply setting');
+  }
+
+  gba = new GameBoyAdvance();
+
+  gameboy = new gb(null, currentGB.canvas, {
+    cButByte: true,
+    rootDir: '',
+    enableLoadBios: currentEnableLoadBios,
+  });
+  backButtonDisp('none');
+  setUpButtons();
+  //populateRecentFiles();
+
+  // Selections
+  initROMSelection(null, false);
+
+  // Volume
+  var volumeController = document.getElementById('audioEngineVolumeControl');
+  volumeController.onchange = function(e) {
+    gbSettings.audioEngineVolume = e.target.value;
+    currentGB.setVolume(gbSettings.audioEngineVolume);
+    localStorage.setItem('GameBoySettings', JSON.stringify(gbSettings));
+  };
+  var currentVolume = gbSettings.audioEngineVolume;
+  volumeController.value = currentVolume;
+  currentGB.setVolume(gbSettings.audioEngineVolume);
+
+  document.getElementById('chooseFile').onchange = function (e) {
+    if (!e.target.files.length)
+    {
+      return;
+    }
+    var file = e.target.files[0];
+    var reader = new FileReader();
+    reader.gb = gameboy;
+    gameboy.onload = function() {
+      addROM(file.name, byteToString(gameboy.game), populateRecentFiles);
+    }
+    reader.onload = function(e) {
+      e.target.gb.loadROMBuffer(e.target.result, e.target.result);
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  setTimeout(function(){setActiveMenu(1)}, 16);
+
+  setInterval(periodicState, 1000);
+
+  window.addEventListener('unload', gameboy.saveBattery);
+  var p = navigator.platform;
+  var iOS = ( p === 'iPad' || p === 'iPhone' || p === 'iPod' );
+  if (iOS) setInterval(gameboy.saveBattery, 1000);
+
+  // Event Handle
+  var ui = document.getElementById('ui');
+  ui.addEventListener('touchmove', handleTouch);
+  ui.addEventListener('touchstart', handleTouch);
+  ui.addEventListener('touchend', handleTouch);
+  ui.addEventListener('mousedown', handleMouse);
+  ui.addEventListener('mouseup', handleMouse);
+  ui.addEventListener('mousemove', handleMouse);
+  window.addEventListener("keydown", handleKeyboard);
+  window.addEventListener("keyup", handleKeyboard);
+  window.addEventListener('resize', renderUI);
+  window.addEventListener('scroll', scrollFix);
+  window.addEventListener('orientationchange', scrollFix);
+  window.addEventListener('message', handleMessage);
 };
 

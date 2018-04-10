@@ -236,8 +236,17 @@ function gbTouchUI(input, id, callback) {
     elem.style.backgroundImage = "url("+img.src+")";
   }
 
-  this.getButtons = function(touches) {
+  this.getButtons = function(touches, event) {
     var buttonByte = 0;
+
+    if (currentGB.emu instanceof gb)
+    {
+      event.preventDefault();
+      if ((event.type === 'mouseup') || !isMouseClicked)
+      {
+        touches = [];
+      }
+    }
 
     var i;
     var tl = touches.length;
@@ -287,6 +296,10 @@ function gbTouchUI(input, id, callback) {
             if ((x > t.x-t.width/2) && (x < t.x+t.width/2) && (y > t.y-t.width/2) && (y < t.y+t.width/2)) buttonByte |= t.mask;
             break;
           case "specialbutton":
+            if (!isMouseClicked)
+            {
+              break;
+            }
             if (Math.sqrt(Math.pow(x-t.x, 2)+Math.pow(y-t.y, 2)) < t.radius) {
               switch (t.btype) {
                 case "menu":
@@ -303,7 +316,7 @@ function gbTouchUI(input, id, callback) {
 
     if (currentGB.emu instanceof GameBoyAdvance)
     {
-      gba.keypad.joypadHandler(buttonByte);
+      gba.keypad.joypadHandler(buttonByte, event);
     }
     else
     {
@@ -465,119 +478,6 @@ function handleMessage(e) {
   }
 }
 
-window.addEventListener('load', function(evt) {
-  // UI Init
-
-  window.URL = window.URL || window.webkitURL;
-  createDB();
-
-  loadStyle(localStorage["currentStyle"],
-    function(){
-      installStyle(defaultControls, function(id) {
-        localStorage["currentStyle"] = id;
-        console.log('style', id);
-        loadStyle(id, showUI, function(){
-          loadStyle(0, showUI, function(){
-            console.error('Load style error');
-          });
-        });
-      })
-    }, showUI
-  );
-  UIcanvas = document.getElementById("ui");
-  UIctx = UIcanvas.getContext("2d");
-
-  // end UI init
-
-  // Enable Load Bios
-  var gbSettings = localStorage.getItem('GameBoySettings');
-  if (!gbSettings)
-  {
-    gbSettings = {
-      audioEngineVolume: 0.5,
-      enableLoadBios: true,
-    };
-  }
-  else
-  {
-    gbSettings = JSON.parse(gbSettings);
-  }
-
-  var enableLoadBiosController = document.getElementById('enableLoadBiosControl');
-  var currentEnableLoadBios = gbSettings.enableLoadBios;
-  enableLoadBiosController.checked = currentEnableLoadBios;
-  enableLoadBiosController.onchange = function (e)
-  {
-    gbSettings.enableLoadBios = e.target.checked;
-    localStorage.setItem('GameBoySettings', JSON.stringify(gbSettings));
-    alert('You must restart / refresh this app to apply setting');
-  }
-
-  gameboy = new gb(null, currentGB.canvas, {
-    cButByte: true,
-    rootDir: '',
-    enableLoadBios: currentEnableLoadBios,
-  });
-  backButtonDisp('none');
-  setUpButtons();
-  //populateRecentFiles();
-
-  // Selections
-  initROMSelection(null, false);
-
-  // Volume
-  var volumeController = document.getElementById('audioEngineVolumeControl');
-  volumeController.onchange = function(e) {
-    gbSettings.audioEngineVolume = e.target.value;
-    currentGB.setVolume(gbSettings.audioEngineVolume);
-    localStorage.setItem('GameBoySettings', JSON.stringify(gbSettings));
-  };
-  var currentVolume = gbSettings.audioEngineVolume;
-  volumeController.value = currentVolume;
-  currentGB.setVolume(gbSettings.audioEngineVolume);
-
-  document.getElementById('chooseFile').onchange = function (e) {
-    if (!e.target.files.length)
-    {
-      return;
-    }
-    var file = e.target.files[0];
-    var reader = new FileReader();
-    reader.gb = gameboy;
-    gameboy.onload = function() {
-      addROM(file.name, byteToString(gameboy.game), populateRecentFiles);
-    }
-    reader.onload = function(e) {
-      e.target.gb.loadROMBuffer(e.target.result, e.target.result);
-    };
-    reader.readAsArrayBuffer(file);
-  };
-
-  setTimeout(function(){setActiveMenu(1)}, 16);
-
-  setInterval(periodicState, 1000);
-
-  window.addEventListener('unload', gameboy.saveBattery);
-  var p = navigator.platform;
-  var iOS = ( p === 'iPad' || p === 'iPhone' || p === 'iPod' );
-  if (iOS) setInterval(gameboy.saveBattery, 1000);
-
-  // Event Handle
-  var ui = document.getElementById('ui');
-  ui.addEventListener('touchmove', handleTouch);
-  ui.addEventListener('touchstart', handleTouch);
-  ui.addEventListener('touchend', handleTouch);
-  ui.addEventListener('mousedown', handleMouse);
-  ui.addEventListener('mouseup', handleMouse);
-  ui.addEventListener('mousemove', handleMouse);
-  window.addEventListener("keydown", handleKeyboard);
-  window.addEventListener("keyup", handleKeyboard);
-  window.addEventListener('resize', renderUI);
-  window.addEventListener('scroll', scrollFix);
-  window.addEventListener('orientationchange', scrollFix);
-  window.addEventListener('message', handleMessage);
-});
-
 function showUI() {
   document.getElementById('splash').style.opacity = 0;
   if (localStorage["lastROM"] != null) {
@@ -661,18 +561,13 @@ function handleMouse(evt) { //fallback for non touch devices
   if (takeInput)
   {
     var pos = [{pageX: evt.pageX, pageY: evt.pageY}];
-    evt.preventDefault();
-    if ((evt.type === 'mouseup') || !isMouseClicked)
-    {
-      pos = [];
-    }
-    mainUI.getButtons(pos, UIcanvas);
+    mainUI.getButtons(pos, evt);
   }
 }
 
 function handleTouch(evt) {
   if (takeInput) {
-    mainUI.getButtons(evt.touches, UIcanvas);
+    mainUI.getButtons(evt.touches, evt);
     evt.preventDefault();
   }
 }

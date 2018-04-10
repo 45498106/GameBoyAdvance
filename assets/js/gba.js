@@ -2,50 +2,30 @@ var gba;
 var runCommands = [];
 
 // Initialize emulator once the browser loads
-window.onload = function () {
-  gba = new GameBoyAdvance();
-  if (gba && FileReader) {
-    var canvas = currentGB.canvas;
-    gba.setCanvas(canvas);
-
-    gba.logLevel = gba.LOG_ERROR;
-
-    // Load the BIOS file of GBA (change the path according to yours)
-    loadRom('assets/libs/GBA.js/resources/bios.bin', function (bios) {
-      gba.setBios(bios);
-    });
-
-    if (!gba.audio.context) {
-      // Remove the sound box if sound isn't available
-      var soundbox = document.getElementById('sound');
-      soundbox.parentElement.removeChild(soundbox);
-    }
-
-  } else {
-    var dead = document.getElementById('controls');
-    dead.parentElement.removeChild(dead);
-  }
-}
-
-/**
- * Starts the emulator with the given ROM file
- *
- * @param file
- */
-function run(file) {
-  gba.loadRomFromFile(file, function (result) {
-    if (result) {
-      for (var i = 0; i < runCommands.length; ++i) {
-        runCommands[i]();
-      }
-
-      runCommands = [];
-      gba.runStable();
-    } else {
-      load.textContent = 'FAILED';
-    }
-  });
-}
+// window.onload = function () {
+//   gba = new GameBoyAdvance();
+//   if (gba && FileReader) {
+//     var canvas = currentGB.canvas;
+//     gba.setCanvas(canvas);
+//
+//     gba.logLevel = gba.LOG_ERROR;
+//
+//     // Load the BIOS file of GBA (change the path according to yours)
+//     loadRom('assets/libs/GBA.js/resources/bios.bin', function (bios) {
+//       gba.setBios(bios);
+//     });
+//
+//     if (!gba.audio.context) {
+//       // Remove the sound box if sound isn't available
+//       var soundbox = document.getElementById('sound');
+//       soundbox.parentElement.removeChild(soundbox);
+//     }
+//
+//   } else {
+//     var dead = document.getElementById('controls');
+//     dead.parentElement.removeChild(dead);
+//   }
+// }
 
 /**
  * Resets the emulator
@@ -85,17 +65,6 @@ function uploadSavedataPending(file) {
   runCommands.push(function () {
     gba.loadSavedataFromFile(file)
   });
-}
-
-/**
- * Toggles the state of the game
- */
-function togglePause() {
-  if (gba.paused) {
-    gba.runStable();
-  } else {
-    gba.pause();
-  }
 }
 
 /**
