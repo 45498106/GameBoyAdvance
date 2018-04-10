@@ -1,7 +1,35 @@
-var indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB,
-  IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction,
-  dbVersion = 1.0;
-var idxDB = indexedDB.open('gbidxdb', dbVersion);
+window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB;
+window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction;
+window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder ||
+  window.MozBlobBuilder;
+var idxDB;
+
+function createidxDB()
+{
+  var DBOpenRequest = window.indexedDB.open('gbidxdb', 1.0);
+
+  DBOpenRequest.onsuccess = function(event) {
+    // store the result of opening the database in the db variable. This is used a lot below
+    idxDB = DBOpenRequest.result;
+  };
+
+  DBOpenRequest.onupgradeneeded = function(event) {
+    var idxDB = event.target.result;
+
+    idxDB.onerror = function(event) {
+    };
+
+    // Create an objectStore for this database
+
+    var romsStore = idxDB.createObjectStore('roms', { autoIncrement : true });
+
+    // define what data items the roms will contain
+
+    romsStore.createIndex('name', 'name', { unique: false });
+    romsStore.createIndex('emu', 'emu', { unique: false });
+    romsStore.createIndex('data', 'data', { unique: true });
+  }
+};
 
 var db = openDatabase('gbwdb', '1.0', 'amebo state and rom store', 2 * 1024 * 1024); //, createDB
 var mainUI;
@@ -45,7 +73,35 @@ var currentGB = {
    */
   loadROM: function(rom)
   {
-  }
+  },
+
+  /**
+   * Load ROM from buffer
+   *
+   * @param {ArrayBuffer}
+   * @param {string}
+   */
+  loadRomFromBuffer(buffer, emu)
+  {
+    gameboy.canvas = null;
+    gba.targetCanvas = null;
+
+    if (emu === 'gb')
+    {
+      gameboy.canvas = currentGB.canvas;
+      currentGB.emu = gameboy;
+      gameboy.loadROMBuffer(buffer);
+    }
+    else if (emu === 'gba')
+    {
+      gba.setCanvas(currentGB.canvas);
+      currentGB.emu = gba;
+      gba.setRom(buffer);
+      gba.runStable();
+    }
+
+    currentGB.setPause(false);
+  },
 };
 
 window.onerror = function(errorMsg, url, lineNumber, column, errorObj) {
@@ -64,6 +120,7 @@ window.onload = function(evt) {
   // UI Init
 
   window.URL = window.URL || window.webkitURL;
+  createidxDB();
   createDB();
 
   loadStyle(localStorage["currentStyle"],
@@ -109,6 +166,11 @@ window.onload = function(evt) {
   }
 
   gba = new GameBoyAdvance();
+  gba.setCanvas(currentGB.canvas);
+  gba.logLevel = gba.LOG_ERROR;
+  loadRom('assets/libs/GBA.js/resources/bios.bin', function (bios) {
+    gba.setBios(bios);
+  });
 
   gameboy = new gb(null, currentGB.canvas, {
     cButByte: true,

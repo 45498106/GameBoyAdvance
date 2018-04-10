@@ -3400,7 +3400,7 @@ window.gb = function(file, canvas, options) {
 function byteToString(byteArray, noBase64)
 {
   if (typeof byteArray == 'undefined') return;
-  var string = ''
+  var string = '';
   var i;
   var bal = byteArray.length;
   for (var i=0; i < bal; i++) {

@@ -457,7 +457,7 @@ function createDB() {
 
   // Web SQL
   db.transaction(function (tx) {
-    tx.executeSql('CREATE TABLE IF NOT EXISTS roms (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME);', [], function(){}, function(t, e){console.log(t, e)});
+    tx.executeSql('CREATE TABLE IF NOT EXISTS roms (id integer PRIMARY KEY AUTOINCREMENT, name varchar, emu varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME);', [], function(){}, function(t, e){console.log(t, e)});
     tx.executeSql('CREATE TABLE IF NOT EXISTS styles (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar);', [], function(){}, function(t, e){console.log(t, e)});
     tx.executeSql('CREATE TABLE IF NOT EXISTS styleres (id integer PRIMARY KEY AUTOINCREMENT, res_id integer, style_id integer, data varchar);', [], function(){}, function(t, e){console.log(t, e)});
     tx.executeSql('CREATE TABLE IF NOT EXISTS states (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME, rom_id integer, rom_name varchar);', [], function(){}, function(t, e){console.log(t, e)});
@@ -730,16 +730,24 @@ function deleteStyle() {
   })
 }
 
-function addROM(name, data, callback) {
-  console.log("addROM");
+function addROM(name, emu, data, callback) {
+  var transaction = idxDB.transaction(['roms'], 'readwrite');
+  var romsStore = transaction.objectStore('roms');
+  romsStore.add({
+    name: name,
+    emu: emu,
+    data: data,
+  });
+  return;
+
   db.transaction(function (tx) {
     tx.executeSql('SELECT id FROM roms WHERE data = ?', [data], function(tx, result){
       if (result.rows.length)
       {
         return;
       }
-      tx.executeSql('INSERT INTO roms (name, data) VALUES (?, ?)', [name, data], function (tx, results) {
-        console.log("addedROM");
+      console.log('data',data);
+      tx.executeSql('INSERT INTO roms (name, emu, data) VALUES (?, ?, ?)', [name, emu, data], function (tx, results) {
         activeROM = results.insertId;
         aROMname = name;
         if (callback) callback();
@@ -1078,12 +1086,11 @@ function loadMenu(i, menuID) {
     }
   }
   loadDownloaded(i)
-
 }
 
 function loadDownloaded(i) {
   db.transaction(function (tx) {
-    tx.executeSql('SELECT data, name FROM roms WHERE id = ?', [i], function (tx, results) {
+    tx.executeSql('SELECT data, emu, name FROM roms WHERE id = ?', [i], function (tx, results) {
       if (results.rows.length == 0) { //rom does not exist, go back to menu if not already there
         openFileSelect();
         return;
@@ -1091,7 +1098,12 @@ function loadDownloaded(i) {
       activeROM = i;
       aROMname = results.rows.item(0).name;
       backButtonDisp("block");
-      gameboy.loadROMBuffer(stringToByte(results.rows.item(0).data));
+
+      currentGB.loadRomFromBuffer(
+        stringToByte(results.rows.item(0).data),
+        results.rows.item(0).emu
+      );
+
       closeFileSelect();
     },
       function(tx, err){
@@ -1132,37 +1144,19 @@ function loadURL(url) {
   var filename = url.split('/').pop();
   if ('.gba' === filename.slice(-4))
   {
-    gameboy.canvas = null;
-    gba.setCanvas(currentGB.canvas);
-    currentGB.emu = gba;
     loadRomFromUrl(url, function(result){
-      addROM(filename, byteToString(result), populateRecentFiles);
-      gba.setRom(result);
-      gba.runStable();
-      console.log('loaded');
+      currentGB.loadRomFromBuffer(result, 'gba');
     });
   }
   else
   {
-    gba.targetCanvas = null;
-    gameboy.canvas = currentGB.canvas;
-    currentGB.emu = gameboy;
-    gameboy.onload = function() {
-      addROM(gameboy.filename, byteToString(gameboy.game), populateRecentFiles);
-    }
-    try
-    {
-      gameboy.loadROM(url);
-    }
-    catch(err)
-    {
-      throw err;
-    }
+    loadRomFromUrl(url, function(result){
+      currentGB.loadRomFromBuffer(result, 'gb');
+    });
   }
 
   backButtonDisp("block");
   closeFileSelect();
-  currentGB.setPause(true);
 }
 
 function initROMSelection(event, update)
@@ -1316,9 +1310,9 @@ function loadRomFromUrl(url, callback)
   }
   var filename = url.split('/').pop();
   loadfile.onload = function() {
-    var fcontent = loadfile.response;
-    addROM(filename, byteToString(fcontent), populateRecentFiles);
-    callback(fcontent);
+    var emu = filename.slice(-4) === '.gba' ? 'gba' : 'gb';
+    addROM(filename, emu, loadfile.response, populateRecentFiles);
+    callback(loadfile.response);
     renderUI();
   };
   loadfile.onerror = function() {
