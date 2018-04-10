@@ -135,12 +135,3 @@ function lcdFade(context, target, callback) {
   }, 50);
 }
 
-/**
- * Set the volume of the emulator.
- *
- * @param value
- */
-function setVolume(value) {
-  gba.audio.masterVolume = Math.pow(2, value) - 1;
-}
-
