@@ -241,7 +241,6 @@ function gbTouchUI(input, id, callback) {
 
     if (currentGB.emu instanceof gb)
     {
-      event.preventDefault();
       if ((event.type === 'mouseup') || !isMouseClicked)
       {
         touches = [];
@@ -320,6 +319,7 @@ function gbTouchUI(input, id, callback) {
     }
     else
     {
+      event.preventDefault();
       gameboy.setButtonByte(255-buttonByte);
     }
   }
@@ -566,10 +566,11 @@ function handleMouse(evt) { //fallback for non touch devices
 }
 
 function handleTouch(evt) {
-  if (takeInput) {
-    mainUI.getButtons(evt.touches, evt);
-    evt.preventDefault();
+  if (!takeInput)
+  {
+    return;
   }
+  mainUI.getButtons(evt.touches, evt);
 }
 
 
