@@ -1282,7 +1282,34 @@ function chooseROMSearchOnInput(event)
 
 function loadRomFromUrl(url, callback)
 {
+	function drawProgress(e) {
+		var progressSeg = ["#B90546", "#5255A5", "#79AD36", "#DDB10A", "#009489"]
+
+    var internalCanvas = currentGB.canvas;
+    var internalCtx = internalCanvas.getContext('2d');
+		internalCtx.fillStyle = "#FFFFFF"
+		internalCtx.fillRect(0, 0, 160, 144);
+
+		internalCtx.fillStyle = "#EEEEEE"
+		internalCtx.fillRect(30, 71, 100, 2);
+		var percent = e.loaded/e.total;
+
+		for (var i=0; i<5; i++) {
+			var ext = Math.min(0.2, percent-(i*0.2));
+			if (ext > 0) {
+				internalCtx.fillStyle = progressSeg[i]
+				internalCtx.fillRect(30+i*20, 71, ext*100, 2);
+			}
+		}
+
+		internalCtx.fillStyle = "rgba(0, 0, 0, 0.2)"
+		internalCtx.fillRect(30, 71, 100, 1);
+
+		ctx.drawImage(internalCanvas, 0, 0, canvas.width, canvas.height);
+	}
+
   var loadfile = new XMLHttpRequest();
+  // loadfile.onprogress = drawProgress;
   loadfile.open('GET', url);
   loadfile.responseType = 'arraybuffer';
 
