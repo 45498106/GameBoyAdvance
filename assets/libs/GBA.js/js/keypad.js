@@ -195,8 +195,6 @@ GameBoyAdvanceKeypad.prototype.joypadHandler = function(btn, e) {
 
 	toggle = 1 << toggle;
 
-  console.log(btn);
-
   if ((e.type !== 'mouseup') && (e.type !== 'touchend'))
   {
     this.currentDown &= ~toggle;

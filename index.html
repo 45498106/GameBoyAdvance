@@ -210,6 +210,19 @@
 				</div>
 			</div>
 		</div>
+		<script type="text/javascript">
+			window.onerror = function(errorMsg, url, lineNumber, column, errorObj) {
+				var p = navigator.platform
+				if ((p === 'iPad') || (p === 'iPhone') || (p === 'iPod'))
+				{
+					alert(
+						JSON.stringify(errorMsg)
+						+ ' line: '
+						+ lineNumber
+					);
+				}
+			};
+		</script>
 		<script type="text/javascript" src="assets/js/global.js"></script>
 		<script type="text/javascript" src="assets/libs/jszip/jszip.js"></script>
 		<script type="text/javascript" src="assets/libs/jszip/jszip-inflate.js"></script>
@@ -244,4 +257,3 @@
 
 		<script type="text/javascript" src="assets/js/index.js"></script>
 	</body>
-</html>

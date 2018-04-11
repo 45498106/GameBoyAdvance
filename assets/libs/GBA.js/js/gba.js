@@ -60,11 +60,10 @@ function GameBoyAdvance() {
 
 	this.queue = null;
 	this.reportFPS = null;
-	this.throttle = 16; // This is rough, but the 2/3ms difference gives us a good overhead
 
 	var self = this;
 	window.queueFrame = function (f) {
-		self.queue = window.setTimeout(f, self.throttle);
+    self.queue = window.requestAnimationFrame(f);
 	};
 
 	window.URL = window.URL || window.webkitURL;

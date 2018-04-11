@@ -392,11 +392,12 @@ function renderUI() {
   cont.style.height = document.body.clientHeight+"px";
 }
 
-function periodicState() {
+function periodicState()
+{
   if (!(currentGB.isPaused) && gameboy.game) {
     if (activeROM != null) localStorage["lastState"] = JSON.stringify(gameboy.saveState());
-    localStorage["lastROM"] = activeROM;
   }
+  localStorage.setItem("lastROM", activeROM);
 }
 
 function applyTransform(elem, trans) {
@@ -437,12 +438,12 @@ function handleMessage(e) {
 
 function showUI() {
   document.getElementById('splash').style.opacity = 0;
-  if (localStorage["lastROM"] != null) {
+  if (localStorage.getItem("lastROM")) {
     takeInput = true;
     gameboy.onstart = function(){
       gameboy.loadState(JSON.parse(localStorage["lastState"]));
     }
-    loadDownloaded(localStorage["lastROM"]);
+    loadDownloaded(localStorage.getItem("lastROM"));
   } else { openFileSelect(); }
 }
 
@@ -1069,6 +1070,7 @@ function loadDownloaded(id)
     openFileSelect();
     return;
   }
+  id = parseInt(id);
   var romsStore = idxDB.transaction(['roms'], 'readonly').objectStore('roms');
   romsStore.openCursor().onsuccess = function(event) {
     var cursor = event.target.result;

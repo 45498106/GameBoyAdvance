@@ -3,6 +3,7 @@ window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || 
 window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder ||
   window.MozBlobBuilder;
 var idxDB;
+var animationFrameId;
 
 function createidxDB()
 {
@@ -108,18 +109,6 @@ var currentGB = {
   },
 };
 
-window.onerror = function(errorMsg, url, lineNumber, column, errorObj) {
-  var p = navigator.platform
-  if ((p === 'iPad') || (p === 'iPhone') || (p === 'iPod'))
-  {
-    alert(
-      JSON.stringify(errorMsg)
-      + ' line: '
-      + lineNumber
-    );
-  }
-};
-
 window.onload = function(evt) {
   // UI Init
 
@@ -215,7 +204,9 @@ window.onload = function(evt) {
     reader.readAsArrayBuffer(file);
   };
 
-  setTimeout(function(){setActiveMenu(1)}, 16);
+  setTimeout(function(){
+    setActiveMenu(1);
+  }, 16);
 
   setInterval(periodicState, 1000);
 
