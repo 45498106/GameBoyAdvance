@@ -239,14 +239,6 @@ function gbTouchUI(input, id, callback) {
   this.getButtons = function(touches, event) {
     var buttonByte = 0;
 
-    if (currentGB.emu instanceof gb)
-    {
-      if ((event.type === 'mouseup') || !isMouseClicked)
-      {
-        touches = [];
-      }
-    }
-
     var i;
     var tl = touches.length;
     for (i = 0; i < tl; i++) {
@@ -295,10 +287,6 @@ function gbTouchUI(input, id, callback) {
             if ((x > t.x-t.width/2) && (x < t.x+t.width/2) && (y > t.y-t.width/2) && (y < t.y+t.width/2)) buttonByte |= t.mask;
             break;
           case "specialbutton":
-            if (!isMouseClicked)
-            {
-              break;
-            }
             if (Math.sqrt(Math.pow(x-t.x, 2)+Math.pow(y-t.y, 2)) < t.radius) {
               switch (t.btype) {
                 case "menu":
@@ -322,6 +310,7 @@ function gbTouchUI(input, id, callback) {
       event.preventDefault();
       gameboy.setButtonByte(255-buttonByte);
     }
+    console.log(buttonByte);
   }
 
   function finishedLoading() {
@@ -561,6 +550,14 @@ function handleMouse(evt) { //fallback for non touch devices
   if (takeInput)
   {
     var pos = [{pageX: evt.pageX, pageY: evt.pageY}];
+    if (currentGB.emu instanceof gb)
+    {
+      if ((event.type === 'mouseup') || !isMouseClicked)
+      {
+        pos = [];
+      }
+    }
+
     mainUI.getButtons(pos, evt);
   }
 }
