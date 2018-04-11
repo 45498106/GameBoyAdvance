@@ -403,50 +403,6 @@ var activeROM = -1;
 var aROMname = "";
 
 function createDB() {
-  // IndexedDB
-  open.onupgradeneeded = function() {
-    console.log(1);
-    var db = open.result;
-    var store = db.createObjectStore(
-      "MyObjectStore",
-      {keyPath: "id"}
-    );
-    var index = store.createIndex(
-      "NameIndex",
-      ["name.last", "name.first"]
-    );
-  };
-
-  open.onsuccess = function() {
-    // Start a new transaction
-    var db = open.result;
-    var tx = db.transaction("MyObjectStore", "readwrite");
-    var store = tx.objectStore("MyObjectStore");
-    var index = store.index("NameIndex");
-
-    // Add some data
-    store.put({id: 12345, name: {first: "John", last: "Doe"}, age: 42});
-    store.put({id: 67890, name: {first: "Bob", last: "Smith"}, age: 35});
-
-    // Query the data
-    var getJohn = store.get(12345);
-    var getBob = index.get(["Smith", "Bob"]);
-
-    getJohn.onsuccess = function() {
-      console.log(getJohn.result.name.first);  // => "John"
-    };
-
-    getBob.onsuccess = function() {
-      console.log(getBob.result.name.first);   // => "Bob"
-    };
-
-    // Close the db when the transaction is done
-    tx.oncomplete = function() {
-      db.close();
-    };
-  }
-
-  // Web SQL
   db.transaction(function (tx) {
     tx.executeSql('CREATE TABLE IF NOT EXISTS roms (id integer PRIMARY KEY AUTOINCREMENT, name varchar, emu varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME);', [], function(){}, function(t, e){console.log(t, e)});
     tx.executeSql('CREATE TABLE IF NOT EXISTS styles (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar);', [], function(){}, function(t, e){console.log(t, e)});
@@ -747,30 +703,15 @@ function deleteStyle() {
 function addROM(name, emu, data, callback) {
   var transaction = idxDB.transaction(['roms'], 'readwrite');
   var romsStore = transaction.objectStore('roms');
-  romsStore.add({
+  romsStore.put({
     name: name,
     emu: emu,
     data: data,
   });
-  return;
-
-  db.transaction(function (tx) {
-    tx.executeSql('SELECT id FROM roms WHERE data = ?', [data], function(tx, result){
-      if (result.rows.length)
-      {
-        return;
-      }
-      console.log('data',data);
-      tx.executeSql('INSERT INTO roms (name, emu, data) VALUES (?, ?, ?)', [name, emu, data], function (tx, results) {
-        activeROM = results.insertId;
-        aROMname = name;
-        if (callback) callback();
-      },
-        function(tx, err) {
-          console.log(err)
-        });
-    });
-  });
+  if (callback)
+  {
+    callback();
+  }
 }
 
 function loadState(id, rom_id) {
@@ -1050,80 +991,96 @@ function singleQSafe(input) {
 }
 
 function populateRecentFiles() {
-  db.transaction(function (tx) {
-    tx.executeSql('SELECT id, name FROM roms ORDER BY accessed DESC', [], function (tx, results) {
-      editingFiles = false;
-      var rFCont = document.getElementById('rFCont');
-      recentFilesState = [];
-      var rows = results.rows
-      var html = '';
-      for (var i=0; i<rows.length; i++)
-      {
-        var row = rows.item(i);
-        var filename = htmlSafe(row.name);
-        var loadStr = 'loadMenu(\''+row.id+'\', '+i+'); event.preventDefault();'
-        var renameStr = 'renameFile(\''+row.id+'\', '+i+', \''+singleQSafe(filename)+'\');'
-        var deleteStr = 'deleteFile(\''+row.id+'\', '+i+', \''+singleQSafe(filename)+'\');'
-
-        //r u rdy for the longest generated html ever
-        html += '<div class="fileEntry" onclick="'+loadStr+'">'
-          + '<div class="entryText">'+filename+'</div>'
-          + '<div class="expandDiv">'
-          + '<img src="assets/images/expandb.svg" class="expBut fileEx" id="FExp'+i+'" onclick="expandEdit('+i+'); event.preventDefault();" ontouchstart="expandEdit('+i+'); event.preventDefault();" />'
-          + '<div class="fEditControls" id="feC'+i+'">'
-          + '<img src="assets/images/rename.svg" class="rename" onclick="'+renameStr+'" />'
-          + '<img src="assets/images/bin.svg" class="delete" onclick="'+deleteStr+'" />'
-          + '</div>'
-          + '</div>'
-          + '</div>'
-        ;
-        //i dont think u were ready
-
-        recentFilesState.push({editing: false});
-      }
+  if (!idxDB)
+  {
+    setTimeout(populateRecentFiles, 100);
+    return;
+  }
+  editingFiles = false;
+  var rFCont = document.getElementById('rFCont');
+  recentFilesState = [];
+  var html = '';
+  var romsStore = idxDB.transaction('roms').objectStore('roms');
+  var i = 0;
+  romsStore.openCursor().onsuccess = function(event) {
+    var cursor = event.target.result;
+    if (!cursor)
+    {
       rFCont.innerHTML = html;
-    },
-      function(tx, err){console.log(err)});
-  })
+      return;
+    }
+    var row = cursor.value;
+    var filename = htmlSafe(row.name);
+    var loadStr = 'loadMenu('+row.id+', '+i+'); event.preventDefault();'
+    var renameStr = 'renameFile('+row.id+', '+i+', \''+singleQSafe(filename)+'\');'
+    var deleteStr = 'deleteFile('+row.id+', '+i+', \''+singleQSafe(filename)+'\');'
+
+    html += '<div class="fileEntry" onclick="'+loadStr+'">'
+      + '<div class="entryText">'+filename+'</div>'
+      + '<div class="expandDiv">'
+      + '<img src="assets/images/expandb.svg" class="expBut fileEx" id="FExp'+i+'" onclick="expandEdit('+i+'); event.preventDefault();" ontouchstart="expandEdit('+i+'); event.preventDefault();" />'
+      + '<div class="fEditControls" id="feC'+i+'">'
+      + '<img src="assets/images/rename.svg" class="rename" onclick="'+renameStr+'" />'
+      + '<img src="assets/images/bin.svg" class="delete" onclick="'+deleteStr+'" />'
+      + '</div>'
+      + '</div>'
+      + '</div>'
+    ;
+
+    recentFilesState.push({editing: false});
+    i++;
+    cursor.continue();
+  };
 }
 
-function loadMenu(i, menuID) {
+function loadMenu(id, menuID) {
   if (editingFiles) {
     if (recentFilesState[menuID].editing) {
       recentFilesState[menuID].editing = false;
       var e = document.getElementById("feC"+menuID)
       applyTransform(e, "translate(90px, 0)");
-      return;
     } else {
       expandEdit(menuID);
-      return;
     }
+    return;
   }
-  loadDownloaded(i)
+  loadDownloaded(id);
 }
 
-function loadDownloaded(i) {
-  db.transaction(function (tx) {
-    tx.executeSql('SELECT data, emu, name FROM roms WHERE id = ?', [i], function (tx, results) {
-      if (results.rows.length == 0) { //rom does not exist, go back to menu if not already there
-        openFileSelect();
-        return;
-      }
-      activeROM = i;
-      aROMname = results.rows.item(0).name;
-      backButtonDisp("block");
+function loadDownloaded(id)
+{
+  if (!idxDB)
+  {
+    setTimeout(loadDownloaded, 100);
+    return;
+  }
+  if (!id)
+  {
+    openFileSelect();
+    return;
+  }
+  var romsStore = idxDB.transaction(['roms'], 'readonly').objectStore('roms');
+  romsStore.openCursor().onsuccess = function(event) {
+    var cursor = event.target.result;
+    if (!cursor)
+    {
+      return;
+    }
 
-      currentGB.loadRomFromBuffer(
-        stringToByte(results.rows.item(0).data),
-        results.rows.item(0).emu
-      );
+    var rom = cursor.value;
+    if (rom.id !== id)
+    {
+      cursor.continue();
+      return;
+    }
+    currentGB.loadRomFromBuffer(rom.data, rom.emu);
+    activeROM = id;
+    aROMname = rom.name;
 
-      closeFileSelect();
-    },
-      function(tx, err){
-        console.error(err);
-      });
-  })
+    // UI
+    backButtonDisp("block");
+    closeFileSelect();
+  };
 }
 
 function saveCurrentState() {

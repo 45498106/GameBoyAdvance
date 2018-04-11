@@ -6,7 +6,7 @@ var idxDB;
 
 function createidxDB()
 {
-  var DBOpenRequest = window.indexedDB.open('gbidxdb', 1.0);
+  var DBOpenRequest = window.indexedDB.open('gbidxdb', 1.1);
 
   DBOpenRequest.onsuccess = function(event) {
     // store the result of opening the database in the db variable. This is used a lot below
@@ -21,7 +21,10 @@ function createidxDB()
 
     // Create an objectStore for this database
 
-    var romsStore = idxDB.createObjectStore('roms', { autoIncrement : true });
+    var romsStore = idxDB.createObjectStore('roms', {
+      keyPath: 'id',
+      autoIncrement : true,
+    });
 
     // define what data items the roms will contain
 
@@ -101,6 +104,7 @@ var currentGB = {
     }
 
     currentGB.setPause(false);
+    renderUI();
   },
 };
 
