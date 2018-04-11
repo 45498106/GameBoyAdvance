@@ -185,9 +185,17 @@ GameBoyAdvanceKeypad.prototype.joypadHandler = function(btn, e) {
     case 64:
       toggle = this.SELECT;
       break;
+    case 256:
+      toggle = this.L;
+      break;
+    case 512:
+      toggle = this.R;
+      break;
   }
 
 	toggle = 1 << toggle;
+
+  console.log(btn);
 
   if ((e.type !== 'mouseup') && (e.type !== 'touchend'))
   {

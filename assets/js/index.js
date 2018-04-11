@@ -7,7 +7,9 @@ var defaultControls = {
     "assets/resources/styles/default/dpad.svg",
     "assets/resources/styles/default/bg.svg",
     "assets/resources/styles/default/menu.svg",
-    "assets/resources/styles/default/indent.svg"
+    "assets/resources/styles/default/indent.svg",
+    "assets/resources/styles/default/abtn.svg",
+    "assets/resources/styles/default/bbtn.svg",
   ],
 
   "name": "Default",
@@ -34,7 +36,9 @@ var defaultControls = {
     },
     {"type": "recbutton", "x":-21, "y":93, "imgwidth":18.33333333, "imgheight":8.33333333, "width": 40, "height":10, "halign":"right", "mask":128, "image":2}, //start
     {"type": "recbutton", "x":21, "y":93, "imgwidth":18.33333333, "imgheight":8.33333333, "width": 40, "height":10, "halign":"left", "mask":64, "image":3}, //select
-    {"type": "specialbutton", "btype": "menu", "y":16, "x":-20, "image":6, "imgheight":16.6666667, "imgwidth":16.6666667, "halign":"right", "radius":10}
+    {"type": "specialbutton", "btype": "menu", "y":0, "x":0, "image":6, "imgheight":16.6666667, "imgwidth":16.6666667, "halign":"right", "radius":10},
+    {"type": "button", "x":20, "y":15, "mask":256, "radius":17, "halign":"left", "image":0, "imgwidth":18.3333333, "imgheight":18.3333333}, // L Button
+    {"type": "button", "x":-20, "y":15, "mask":512, "radius":17, "halign":"right", "image":1, "imgwidth":18.3333333, "imgheight":18.3333333},// R Button
   ],
 
   "portrait": [
@@ -51,7 +55,9 @@ var defaultControls = {
     },
     {"type": "recbutton", "x":-40, "y":151.25, "imgwidth":18.33333333, "imgheight":8.33333333, "width": 40, "height":10, "halign":"right", "mask":128, "image":2}, //start
     {"type": "recbutton", "x":40, "y":151.25, "imgwidth":18.33333333, "imgheight":8.33333333, "width": 40, "height":10, "halign":"left", "mask":64, "image":3}, //select
-    {"type": "specialbutton", "btype": "menu", "y":151.25, "x":-14, "image":6, "imgheight":16.6666667, "imgwidth":16.6666667, "halign":"right", "radius":10}
+    {"type": "specialbutton", "btype": "menu", "y":151.25, "x":-14, "image":6, "imgheight":16.6666667, "imgwidth":16.6666667, "halign":"right", "radius":10},
+    {"type": "button", "x": 15, "y":85, "mask":256, "radius":17, "halign":"left", "image":0, "imgwidth":18.3333333, "imgheight":18.3333333}, // L Button
+    {"type": "button", "x": -15, "y":85, "mask":512, "radius":17, "halign":"right", "image":1, "imgwidth":18.3333333, "imgheight":18.3333333},// R Button
   ]
 };
 
@@ -102,9 +108,13 @@ function loadStyle(id, failed, callback) {
       if (results.rows.length > 0) {
         mainUI = new gbTouchUI(JSON.parse(results.rows.item(0).data), results.rows.item(0).id, callback);
         mainUI.onload = function() {mainUI.setBG(document.getElementById("container")); renderUI();};
+        // TEST
+        tx.executeSql('DELETE FROM styles',[],function(){});
+        tx.executeSql('DELETE FROM stylesres',[],function(){});
       } else if (typeof failed == "function") failed();
-    },
-      function(tx, err){console.error(err)});
+    }, function(tx, err){
+      console.error(err)
+    });
   });
 }
 
