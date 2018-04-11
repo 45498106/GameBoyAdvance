@@ -159,7 +159,6 @@ GameBoyAdvanceKeypad.prototype.pollGamepads = function() {
 GameBoyAdvanceKeypad.prototype.joypadHandler = function(btn, e) {
   // TODO: Make an array and set which key is pushed
   var toggle = 0;
-  console.log(this.currentDown);
   switch (btn)
   {
     case 4:
@@ -186,25 +185,17 @@ GameBoyAdvanceKeypad.prototype.joypadHandler = function(btn, e) {
     case 64:
       toggle = this.SELECT;
       break;
-    default:
-      return;
   }
 
 	toggle = 1 << toggle;
 
-  if (isMouseClicked)
+  if ((e.type !== 'mouseup') && (e.type !== 'touchend'))
   {
     this.currentDown &= ~toggle;
   }
   else
   {
     this.currentDown |= toggle;
-  }
-
-
-  if (this.eatInput)
-  {
-		e.preventDefault();
   }
 };
 

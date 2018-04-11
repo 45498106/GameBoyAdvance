@@ -287,6 +287,10 @@ function gbTouchUI(input, id, callback) {
             if ((x > t.x-t.width/2) && (x < t.x+t.width/2) && (y > t.y-t.width/2) && (y < t.y+t.width/2)) buttonByte |= t.mask;
             break;
           case "specialbutton":
+            if ((event.type === 'mousemove') || (event.type === 'touchmove'))
+            {
+              break;
+            }
             if (Math.sqrt(Math.pow(x-t.x, 2)+Math.pow(y-t.y, 2)) < t.radius) {
               switch (t.btype) {
                 case "menu":
@@ -307,10 +311,8 @@ function gbTouchUI(input, id, callback) {
     }
     else
     {
-      event.preventDefault();
       gameboy.setButtonByte(255-buttonByte);
     }
-    console.log(buttonByte);
   }
 
   function finishedLoading() {
@@ -538,7 +540,8 @@ function scrollFix()
 }
 
 var isMouseClicked = false;
-function handleMouse(evt) { //fallback for non touch devices
+function handleMouse(evt)
+{
   if (evt.type === 'mousedown')
   {
     isMouseClicked = true;
@@ -558,6 +561,7 @@ function handleMouse(evt) { //fallback for non touch devices
       }
     }
 
+    evt.preventDefault();
     mainUI.getButtons(pos, evt);
   }
 }
@@ -567,7 +571,19 @@ function handleTouch(evt) {
   {
     return;
   }
-  mainUI.getButtons(evt.touches, evt);
+
+  var pos = evt.touches;
+
+  if (currentGB.emu instanceof GameBoyAdvance)
+  {
+    if (evt.type === 'touchend')
+    {
+      pos = evt.changedTouches;
+    }
+  }
+
+  evt.preventDefault();
+  mainUI.getButtons(pos, evt);
 }
 
 

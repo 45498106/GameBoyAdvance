@@ -179,7 +179,6 @@ window.onload = function(evt) {
   });
   backButtonDisp('none');
   setUpButtons();
-  //populateRecentFiles();
 
   // Selections
   initROMSelection(null, false);
@@ -235,5 +234,11 @@ window.onload = function(evt) {
   window.addEventListener('scroll', scrollFix);
   window.addEventListener('orientationchange', scrollFix);
   window.addEventListener('message', handleMessage);
+  window.addEventListener('touchstart', function onFirstHover() {
+    ui.removeEventListener('mouseup', handleMouse, false);
+    ui.removeEventListener('mousedown', handleMouse, false);
+    ui.removeEventListener('mousemove', handleMouse, false);
+    window.removeEventListener('touchstart', onFirstHover, false);
+  }, false);
 };
 
