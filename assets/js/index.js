@@ -395,7 +395,10 @@ function renderUI() {
 function periodicState()
 {
   if (!(currentGB.isPaused) && gameboy.game) {
-    if (activeROM != null) localStorage["lastState"] = JSON.stringify(gameboy.saveState());
+    if (activeROM != null)
+    {
+      localStorage.setItem('lastState', JSON.stringify(gameboy.saveState()));
+    }
   }
   localStorage.setItem("lastROM", activeROM);
 }
@@ -440,8 +443,11 @@ function showUI() {
   document.getElementById('splash').style.opacity = 0;
   if (localStorage.getItem("lastROM")) {
     takeInput = true;
-    gameboy.onstart = function(){
-      gameboy.loadState(JSON.parse(localStorage["lastState"]));
+    gameboy.onstart = function() {
+      if (localStorage.getItem('lastState'))
+      {
+        gameboy.loadState(JSON.parse(localStorage.getItem("lastState")));
+      }
     }
     loadDownloaded(localStorage.getItem("lastROM"));
   } else { openFileSelect(); }
@@ -1085,7 +1091,7 @@ function loadDownloaded(id)
       cursor.continue();
       return;
     }
-    currentGB.loadRomFromBuffer(rom.data, rom.emu);
+    currentGB.loadROM(rom.data, rom.emu);
     activeROM = id;
     aROMname = rom.name;
 
@@ -1124,22 +1130,7 @@ function loadURL(url) {
     return;
   }
 
-  var filename = url.split('/').pop();
-  if ('.gba' === filename.slice(-4))
-  {
-    loadRomFromUrl(url, function(result){
-      currentGB.loadRomFromBuffer(result, 'gba');
-    });
-  }
-  else
-  {
-    loadRomFromUrl(url, function(result){
-      currentGB.loadRomFromBuffer(result, 'gb');
-    });
-  }
-
-  backButtonDisp("block");
-  closeFileSelect();
+  currentGB.loadROM(url);
 }
 
 function initROMSelection(event, update)

@@ -75,20 +75,120 @@ var currentGB = {
   /**
    *
    */
-  loadROM: function(rom)
+  loadROM: function(rom, emu)
   {
-  },
-
-  /**
-   * Load ROM from buffer
-   *
-   * @param {ArrayBuffer}
-   * @param {string}
-   */
-  loadRomFromBuffer(buffer, emu)
-  {
+    currentGB.setPause(true);
     gameboy.canvas = null;
     gba.targetCanvas = null;
+
+    var buffer;
+    if (rom instanceof ArrayBuffer)
+    {
+      buffer = rom;
+    }
+    else if (typeof rom === 'string')
+    {
+      function drawProgress(e)
+      {
+        var progressSeg = ["#B90546", "#5255A5", "#79AD36", "#DDB10A", "#009489"]
+
+        var internalCanvas = currentGB.canvas;
+        var internalCtx = internalCanvas.getContext('2d');
+        internalCtx.fillStyle = "#FFFFFF"
+        internalCtx.fillRect(0, 0, 160, 144);
+
+        internalCtx.fillStyle = "#EEEEEE"
+        internalCtx.fillRect(30, 71, 100, 2);
+        var percent = e.loaded/e.total;
+
+        for (var i=0; i<5; i++) {
+          var ext = Math.min(0.2, percent-(i*0.2));
+          if (ext > 0) {
+            internalCtx.fillStyle = progressSeg[i]
+            internalCtx.fillRect(30+i*20, 71, ext*100, 2);
+          }
+        }
+
+        internalCtx.fillStyle = "rgba(0, 0, 0, 0.2)"
+        internalCtx.fillRect(30, 71, 100, 1);
+
+        ctx.drawImage(internalCanvas, 0, 0, canvas.width, canvas.height);
+      }
+
+      var url = rom;
+      var loadfile = new XMLHttpRequest();
+      loadfile.onprogress = drawProgress;
+      loadfile.open('GET', url);
+      loadfile.responseType = 'arraybuffer';
+
+      if (!url)
+      {
+        errorScreen('URL is empty');
+        return;
+      }
+      var filename = url.split('/').pop();
+      loadfile.onload = function() {
+        var ext = filename.slice(-4);
+        buffer = loadfile.response;
+        if (ext === '.zip')
+        {
+          if (!JSZip)
+          {
+            return;
+          }
+          var zip = new JSZip(loadfile.response);
+          var file = zip.file(/.gba/)[0];
+          if (file)
+          {
+            emu = 'gba';
+          }
+          else
+          {
+            file = zip.file(/.gb/)[0];
+            emu = 'gb';
+          }
+
+          if (file)
+          {
+            filename = file.name;
+            buffer = file.asArrayBuffer();
+          }
+          else
+          {
+            // TODO: Error
+            return;
+          }
+        }
+        else if (ext === '.gba')
+        {
+          emu = 'gba';
+        }
+        else if ((ext.slice(-3) === '.gb') || (ext.slice(-4) === '.gbc'))
+        {
+          emu = 'gb';
+        }
+        else
+        {
+          // TODO: Unsupported
+          return;
+        }
+        addROM(filename, emu, buffer, populateRecentFiles);
+        currentGB.loadROM(buffer, emu);
+      };
+      loadfile.onerror = function() {
+        loadfile.open('POST', url);
+        loadfile.onerror = function(err) {
+          // errorScreen(err);
+        }
+        loadfile.send();
+      }
+      loadfile.send();
+    }
+    else
+    {
+      // TODO: Unsupported
+      return;
+    }
 
     if (emu === 'gb')
     {
@@ -104,8 +204,10 @@ var currentGB = {
       gba.runStable();
     }
 
-    currentGB.setPause(false);
+    backButtonDisp("block");
+    closeFileSelect();
     renderUI();
+    currentGB.setPause(buffer ? false : true);
   },
 };
 
