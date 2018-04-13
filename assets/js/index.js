@@ -8,8 +8,8 @@ var defaultControls = {
     "assets/resources/styles/default/bg.svg",
     "assets/resources/styles/default/menu.svg",
     "assets/resources/styles/default/indent.svg",
-    "assets/resources/styles/default/abtn.svg",
-    "assets/resources/styles/default/bbtn.svg",
+    "assets/resources/styles/default/lbtn.svg",
+    "assets/resources/styles/default/rbtn.svg",
   ],
 
   "name": "Default",
@@ -99,7 +99,6 @@ function installStyle(style, callback) {
       xhr.send();
     })(i);
   }
-
 }
 
 function loadStyle(id, failed, callback) {
@@ -394,8 +393,11 @@ function renderUI() {
 
 function periodicState()
 {
-  if (!(currentGB.isPaused) && gameboy.game) {
-    if (activeROM != null) localStorage["lastState"] = JSON.stringify(gameboy.saveState());
+  if (!(currentGB.isPaused)) {
+    if ((activeROM != null) || (activeROM != -1))
+    {
+      localStorage.setItem('lastState', JSON.stringify(currentGB.getSaveState()));
+    }
   }
   localStorage.setItem("lastROM", activeROM);
 }
@@ -415,10 +417,8 @@ var aROMname = "";
 
 function createDB() {
   db.transaction(function (tx) {
-    tx.executeSql('CREATE TABLE IF NOT EXISTS roms (id integer PRIMARY KEY AUTOINCREMENT, name varchar, emu varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME);', [], function(){}, function(t, e){console.log(t, e)});
     tx.executeSql('CREATE TABLE IF NOT EXISTS styles (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar);', [], function(){}, function(t, e){console.log(t, e)});
     tx.executeSql('CREATE TABLE IF NOT EXISTS styleres (id integer PRIMARY KEY AUTOINCREMENT, res_id integer, style_id integer, data varchar);', [], function(){}, function(t, e){console.log(t, e)});
-    tx.executeSql('CREATE TABLE IF NOT EXISTS states (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME, rom_id integer, rom_name varchar);', [], function(){}, function(t, e){console.log(t, e)});
   });
 }
 
@@ -440,8 +440,11 @@ function showUI() {
   document.getElementById('splash').style.opacity = 0;
   if (localStorage.getItem("lastROM")) {
     takeInput = true;
-    gameboy.onstart = function(){
-      gameboy.loadState(JSON.parse(localStorage["lastState"]));
+    gameboy.onstart = function() {
+      if (localStorage.getItem('lastState'))
+      {
+        gameboy.loadState(JSON.parse(localStorage.getItem("lastState")));
+      }
     }
     loadDownloaded(localStorage.getItem("lastROM"));
   } else { openFileSelect(); }
@@ -503,7 +506,7 @@ function triggerEdit(state) {
 
 function scrollFix()
 {
-  window.scrollTo(0, 0)
+  window.scrollTo(0, 0);
 }
 
 var isMouseClicked = false;
@@ -714,11 +717,15 @@ function deleteStyle() {
 function addROM(name, emu, data, callback) {
   var transaction = idxDB.transaction(['roms'], 'readwrite');
   var romsStore = transaction.objectStore('roms');
+  var id = Math.random().toString(36).substring(2);
   romsStore.put({
+    id: id,
     name: name,
     emu: emu,
     data: data,
   });
+  aROMname = name;
+  activeROM = id;
   if (callback)
   {
     callback();
@@ -726,18 +733,29 @@ function addROM(name, emu, data, callback) {
 }
 
 function loadState(id, rom_id) {
-  db.transaction(function (tx) {
-    tx.executeSql('SELECT rom_id, data FROM states WHERE id = ?', [id], function (tx, results) {
-      item = results.rows.item(0);
-      var state = JSON.parse(item.data);
-      if (item.rom_id == activeROM) { gameboy.loadState(state); closeFileSelect();}
-      else {
-        loadDownloaded(item.rom_id);
-        gameboy.onstart = function(){gameboy.loadState(state);}
+  var statesStore = idxDB.transaction(['states'], 'readonly').objectStore('states');
+  var statesStoreRequest = statesStore.get(id);
+  statesStoreRequest.onsuccess = function() {
+    var state = statesStoreRequest.result;
+    if (!state)
+    {
+      return;
+    }
+    var romsStore = idxDB.transaction(['roms'], 'readonly').objectStore('roms');
+    var romsStoreRequest = romsStore.get(rom_id);
+    romsStoreRequest.onsuccess = function() {
+      var rom = romsStoreRequest.result;
+      if (!rom)
+      {
+        alert('ROM not found');
+        return;
       }
-    },
-      function(tx, err){console.log(err)});
-  });
+      aROMname = rom.name;
+      activeROM = rom.id;
+      currentGB.loadROM(rom.data, rom.emu);
+      currentGB.loadState(state.data);
+    };
+  };
 }
 
 function uploadState(event, rom_id)
@@ -824,15 +842,10 @@ function renameState(i, menuID, oldName) {
   }
 }
 
-function deleteState(i, menuID, name) {
-  if (confirm("Are you sure you want to delete the state "+name+"?")) {
-    if (activeROM == i) activeROM = null;
-    db.transaction(function (tx) {
-      tx.executeSql('DELETE FROM states WHERE id = ?', [i], function (tx, results) {
-        populateStates();
-      })
-    })
-  }
+function deleteState(id, menuID, name) {
+  var statesStore = idxDB.transaction(['states'], 'readwrite').objectStore('states');
+  var statesStoreRequest = statesStore.delete(id);
+  populateStates();
 }
 
 function stateMenu(id, romid, menuID) {
@@ -851,61 +864,27 @@ function stateMenu(id, romid, menuID) {
 }
 
 function populateStates() {
-  db.transaction(function (tx) {
-    tx.executeSql('SELECT id, name, rom_name, rom_id FROM states ORDER BY rom_id', [], function (tx, results) {
-      var stateCont = document.getElementById('stateCont');
-      var html = '';
-      var thisRomHTML = '';
-      function uploadStateHTML(rom_id){
-        return '<div>'
-          + 'Upload State: '
-          + '<input type="file" onchange="uploadState(event, \''+rom_id+'\')" accept=".gba-state" />'
-          + '</div>'
-        ;
-      }
-      editingStates = false;
-      var rows = results.rows
-      var prevRomID = -1;
-      statesState = [];
+  var stateCont = document.getElementById('stateCont');
+  var html = '';
+  var thisRomHTML = '';
+  function uploadStateHTML(rom_id){
+    return '<div>'
+      + 'Upload State: '
+      + '<input type="file" onchange="uploadState(event, \''+rom_id+'\')" accept=".gba-state" />'
+      + '</div>'
+    ;
+  }
+  editingStates = false;
+  var prevRomID = -1;
+  statesState = [];
 
-      for (var i = 0; i < rows.length; i++) {
-        var row = rows.item(i);
-
-        var downloadStr = 'downloadState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
-        var renameStr = 'renameState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
-        var deleteStr = 'deleteState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
-
-        var temp = '<div class="fileEntry" onclick="stateMenu('+row.id+', '+row.rom_id+', '+i+'); event.preventDefault();">'
-          + '<div class="entryText">'+htmlSafe(row.name)+'</div>'
-          + '<div class="expandDiv">'
-          + '<img src="assets/images/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.stopPropagation();" />'
-          + '<div class="sEditControls" id="seC'+i+'">'
-          + '<img src="assets/images/download.svg" width="30" height="30" class="download" onclick="' + downloadStr + '" />'
-          + '<img src="assets/images/rename.svg" class="rename" onclick="' + renameStr + '" />'
-          + '<img src="assets/images/bin.svg" class="delete" onclick="' + deleteStr + '" />'
-          + '</div>'
-          + '</div>'
-          + '</div>'
-        ;
-
-        if (row.rom_id == parseInt(activeROM))
-        {
-          thisRomHTML += temp;
-          statesState.push({editing:false});
-          continue;
-        }
-        if (prevRomID != row.rom_id) {
-          prevRomID = row.rom_id;
-          html += '<div class="sectDivider" style="background-color:#B90546">'
-            + htmlSafe(row.rom_name)
-            + uploadStateHTML(row.rom_id)
-            + '</div>'
-          ;
-        }
-        html += temp;
-        statesState.push({editing:false});
-      }
-      if ((thisRomHTML.length > 0) || (parseInt(activeROM) >= 0))
+  var statesStore = idxDB.transaction('states').objectStore('states');
+  var i = 0;
+  statesStore.openCursor().onsuccess = function(event) {
+    var cursor = event.target.result;
+    if (!cursor)
+    {
+      if ((thisRomHTML.length > 0) || (activeROM != -1))
       {
         thisRomHTML = '<div class="sectDivider" style="background-color:#B90546">'
           + 'For Current Game ('+htmlSafe(aROMname)+')'
@@ -914,10 +893,50 @@ function populateStates() {
           + thisRomHTML
         ;
       }
+
       stateCont.innerHTML = thisRomHTML + html;
-    },
-      function(tx, err){console.error(err)});
-  });
+      return;
+    }
+
+    var row = cursor.value;
+
+    var downloadStr = 'downloadState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
+    var renameStr = 'renameState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
+    var deleteStr = 'deleteState(\''+row.id+'\', '+i+', \''+singleQSafe(row.name)+'\');'
+
+    var temp = '<div class="fileEntry" onclick="stateMenu(\''+row.id+'\', \''+row.rom_id+'\', '+i+'); event.preventDefault();">'
+      + '<div class="entryText">'+htmlSafe(row.name)+'</div>'
+      + '<div class="expandDiv">'
+      + '<img src="assets/images/expandr.svg" class="expBut stateEx" id="SExp'+i+'" onclick="expandSEdit('+i+'); event.stopPropagation();" />'
+      + '<div class="sEditControls" id="seC'+i+'">'
+      + '<img src="assets/images/download.svg" width="30" height="30" class="download" onclick="' + downloadStr + '" />'
+      + '<img src="assets/images/rename.svg" class="rename" onclick="' + renameStr + '" />'
+      + '<img src="assets/images/bin.svg" class="delete" onclick="' + deleteStr + '" />'
+      + '</div>'
+      + '</div>'
+      + '</div>'
+    ;
+
+    if (row.rom_id == activeROM)
+    {
+      thisRomHTML += temp;
+      statesState.push({editing:false});
+      cursor.continue();
+      return;
+    }
+    if (prevRomID != row.rom_id) {
+      prevRomID = row.rom_id;
+      html += '<div class="sectDivider" style="background-color:#B90546">'
+        + htmlSafe(row.rom_name)
+        + uploadStateHTML(row.rom_id)
+        + '</div>'
+      ;
+    }
+    html += temp;
+    statesState.push({editing:false});
+
+    cursor.continue();
+  };
 }
 
 function expandSEdit(i) {
@@ -1022,7 +1041,7 @@ function populateRecentFiles() {
     }
     var row = cursor.value;
     var filename = htmlSafe(row.name);
-    var loadStr = 'loadMenu('+row.id+', '+i+'); event.preventDefault();'
+    var loadStr = 'loadMenu(\''+row.id+'\', '+i+'); event.preventDefault();'
     var renameStr = 'renameFile('+row.id+', '+i+', \''+singleQSafe(filename)+'\');'
     var deleteStr = 'deleteFile('+row.id+', '+i+', \''+singleQSafe(filename)+'\');'
 
@@ -1065,28 +1084,24 @@ function loadDownloaded(id)
     setTimeout(loadDownloaded, 100);
     return;
   }
-  if (!id)
+  if (!id || (id == -1))
   {
     openFileSelect();
     return;
   }
-  id = parseInt(id);
   var romsStore = idxDB.transaction(['roms'], 'readonly').objectStore('roms');
-  romsStore.openCursor().onsuccess = function(event) {
-    var cursor = event.target.result;
-    if (!cursor)
+  var request = romsStore.get(id);
+  request.onsuccess = function() {
+    var rom = request.result;
+
+    if (!rom)
     {
+      openFileSelect();
       return;
     }
 
-    var rom = cursor.value;
-    if (rom.id !== id)
-    {
-      cursor.continue();
-      return;
-    }
-    currentGB.loadRomFromBuffer(rom.data, rom.emu);
-    activeROM = id;
+    currentGB.loadROM(rom.data, rom.emu);
+    activeROM = rom.id;
     aROMname = rom.name;
 
     // UI
@@ -1101,20 +1116,29 @@ function saveCurrentState() {
     alert('You must play a game!');
     return;
   }
+
   var d = new Date();
-  var suggestedName = gameboy.ROMname+" - "+d.getDate()+"/"+d.getMonth()+"/"+d.getFullYear()+" - "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+  var suggestedName = d.getDate()+"/"+d.getMonth()+"/"+d.getFullYear()+" - "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
   var name = prompt("What would you like to name the state?", suggestedName)
   if (!name) return;
-  var state = JSON.stringify(gameboy.saveState());
 
-  db.transaction(function (tx) {
-    tx.executeSql('INSERT INTO states (name, data, rom_id, rom_name) VALUES (?, ?, ?, ?)', [name, state, activeROM, aROMname], function (tx, results) {
-      console.log("addedState");
-    },
-      function(tx, err) {
-        console.log(err)
-      });
+  var state = currentGB.getSaveState();
+  if (!state)
+  {
+    return;
+  }
+
+  var transaction = idxDB.transaction(['states'], 'readwrite');
+  var statesStore = transaction.objectStore('states');
+  var id = Math.random().toString(36).substring(2);
+  statesStore.put({
+    id: id,
+    name: name,
+    data: state,
+    rom_id: activeROM,
+    rom_name: aROMname,
   });
+
   populateStates();
 }
 
@@ -1124,22 +1148,7 @@ function loadURL(url) {
     return;
   }
 
-  var filename = url.split('/').pop();
-  if ('.gba' === filename.slice(-4))
-  {
-    loadRomFromUrl(url, function(result){
-      currentGB.loadRomFromBuffer(result, 'gba');
-    });
-  }
-  else
-  {
-    loadRomFromUrl(url, function(result){
-      currentGB.loadRomFromBuffer(result, 'gb');
-    });
-  }
-
-  backButtonDisp("block");
-  closeFileSelect();
+  currentGB.loadROM(url);
 }
 
 function initROMSelection(event, update)
@@ -1282,31 +1291,31 @@ function chooseROMSearchOnInput(event)
 
 function loadRomFromUrl(url, callback)
 {
-	function drawProgress(e) {
-		var progressSeg = ["#B90546", "#5255A5", "#79AD36", "#DDB10A", "#009489"]
+  function drawProgress(e) {
+    var progressSeg = ["#B90546", "#5255A5", "#79AD36", "#DDB10A", "#009489"]
 
     var internalCanvas = currentGB.canvas;
     var internalCtx = internalCanvas.getContext('2d');
-		internalCtx.fillStyle = "#FFFFFF"
-		internalCtx.fillRect(0, 0, 160, 144);
+    internalCtx.fillStyle = "#FFFFFF"
+    internalCtx.fillRect(0, 0, 160, 144);
 
-		internalCtx.fillStyle = "#EEEEEE"
-		internalCtx.fillRect(30, 71, 100, 2);
-		var percent = e.loaded/e.total;
+    internalCtx.fillStyle = "#EEEEEE"
+    internalCtx.fillRect(30, 71, 100, 2);
+    var percent = e.loaded/e.total;
 
-		for (var i=0; i<5; i++) {
-			var ext = Math.min(0.2, percent-(i*0.2));
-			if (ext > 0) {
-				internalCtx.fillStyle = progressSeg[i]
-				internalCtx.fillRect(30+i*20, 71, ext*100, 2);
-			}
-		}
+    for (var i=0; i<5; i++) {
+      var ext = Math.min(0.2, percent-(i*0.2));
+      if (ext > 0) {
+        internalCtx.fillStyle = progressSeg[i]
+        internalCtx.fillRect(30+i*20, 71, ext*100, 2);
+      }
+    }
 
-		internalCtx.fillStyle = "rgba(0, 0, 0, 0.2)"
-		internalCtx.fillRect(30, 71, 100, 1);
+    internalCtx.fillStyle = "rgba(0, 0, 0, 0.2)"
+    internalCtx.fillRect(30, 71, 100, 1);
 
-		ctx.drawImage(internalCanvas, 0, 0, canvas.width, canvas.height);
-	}
+    ctx.drawImage(internalCanvas, 0, 0, canvas.width, canvas.height);
+  }
 
   var loadfile = new XMLHttpRequest();
   // loadfile.onprogress = drawProgress;
