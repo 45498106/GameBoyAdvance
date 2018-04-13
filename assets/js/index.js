@@ -99,7 +99,6 @@ function installStyle(style, callback) {
       xhr.send();
     })(i);
   }
-
 }
 
 function loadStyle(id, failed, callback) {
@@ -418,10 +417,8 @@ var aROMname = "";
 
 function createDB() {
   db.transaction(function (tx) {
-    tx.executeSql('CREATE TABLE IF NOT EXISTS roms (id integer PRIMARY KEY AUTOINCREMENT, name varchar, emu varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME);', [], function(){}, function(t, e){console.log(t, e)});
     tx.executeSql('CREATE TABLE IF NOT EXISTS styles (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar);', [], function(){}, function(t, e){console.log(t, e)});
     tx.executeSql('CREATE TABLE IF NOT EXISTS styleres (id integer PRIMARY KEY AUTOINCREMENT, res_id integer, style_id integer, data varchar);', [], function(){}, function(t, e){console.log(t, e)});
-    tx.executeSql('CREATE TABLE IF NOT EXISTS states (id integer PRIMARY KEY AUTOINCREMENT, name varchar, data varchar, accessed timestamp DEFAULT SYSDATETIME, rom_id integer, rom_name varchar);', [], function(){}, function(t, e){console.log(t, e)});
   });
 }
 
@@ -509,7 +506,7 @@ function triggerEdit(state) {
 
 function scrollFix()
 {
-  window.scrollTo(0, 0)
+  window.scrollTo(0, 0);
 }
 
 var isMouseClicked = false;
@@ -742,7 +739,6 @@ function loadState(id, rom_id) {
     var state = statesStoreRequest.result;
     if (!state)
     {
-      alert('State not found');
       return;
     }
     var romsStore = idxDB.transaction(['roms'], 'readonly').objectStore('roms');
@@ -760,23 +756,6 @@ function loadState(id, rom_id) {
       currentGB.loadState(state.data);
     };
   };
-
-  return;
-  db.transaction(function (tx) {
-    tx.executeSql('SELECT rom_id, data FROM states WHERE id = ?', [id], function (tx, results) {
-      item = results.rows.item(0);
-      var state = JSON.parse(item.data);
-      if (item.rom_id == activeROM) {
-        gameboy.loadState(state); closeFileSelect();
-      }
-      else
-      {
-        loadDownloaded(item.rom_id);
-        gameboy.onstart = function(){gameboy.loadState(state);}
-      }
-    },
-      function(tx, err){console.log(err)});
-  });
 }
 
 function uploadState(event, rom_id)
@@ -863,15 +842,10 @@ function renameState(i, menuID, oldName) {
   }
 }
 
-function deleteState(i, menuID, name) {
-  if (confirm("Are you sure you want to delete the state "+name+"?")) {
-    if (activeROM == i) activeROM = null;
-    db.transaction(function (tx) {
-      tx.executeSql('DELETE FROM states WHERE id = ?', [i], function (tx, results) {
-        populateStates();
-      })
-    })
-  }
+function deleteState(id, menuID, name) {
+  var statesStore = idxDB.transaction(['states'], 'readwrite').objectStore('states');
+  var statesStoreRequest = statesStore.delete(id);
+  populateStates();
 }
 
 function stateMenu(id, romid, menuID) {

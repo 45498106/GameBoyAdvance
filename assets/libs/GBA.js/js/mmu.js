@@ -812,3 +812,4 @@ GameBoyAdvanceMMU.prototype.flushSave = function() {
 GameBoyAdvanceMMU.prototype.allocGPIO = function(rom) {
 	return new GameBoyAdvanceGPIO(this.core, rom);
 };
+
