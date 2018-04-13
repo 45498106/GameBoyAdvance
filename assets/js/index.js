@@ -879,8 +879,9 @@ function populateStates() {
   statesState = [];
 
   var statesStore = idxDB.transaction('states').objectStore('states');
+  var statesIndex = statesStore.index('name');
   var i = 0;
-  statesStore.openCursor().onsuccess = function(event) {
+  statesIndex.openCursor().onsuccess = function(event) {
     var cursor = event.target.result;
     if (!cursor)
     {
@@ -1031,8 +1032,9 @@ function populateRecentFiles() {
   recentFilesState = [];
   var html = '';
   var romsStore = idxDB.transaction('roms').objectStore('roms');
+  var indexRoms = romsStore.index('name');
   var i = 0;
-  romsStore.openCursor().onsuccess = function(event) {
+  indexRoms.openCursor().onsuccess = function(event) {
     var cursor = event.target.result;
     if (!cursor)
     {
