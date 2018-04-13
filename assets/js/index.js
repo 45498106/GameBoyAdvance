@@ -843,6 +843,10 @@ function renameState(i, menuID, oldName) {
 }
 
 function deleteState(id, menuID, name) {
+  if (!confirm('You want to delete state ' + name + '?'))
+  {
+    return;
+  }
   var statesStore = idxDB.transaction(['states'], 'readwrite').objectStore('states');
   var statesStoreRequest = statesStore.delete(id);
   populateStates();
@@ -922,20 +926,22 @@ function populateStates() {
     {
       thisRomHTML += temp;
       statesState.push({editing:false});
-      cursor.continue();
-      return;
     }
-    if (prevRomID != row.rom_id) {
-      prevRomID = row.rom_id;
-      html += '<div class="sectDivider" style="background-color:#B90546">'
-        + htmlSafe(row.rom_name)
-        + uploadStateHTML(row.rom_id)
-        + '</div>'
-      ;
+    else
+    {
+      if (prevRomID != row.rom_id)
+      {
+        prevRomID = row.rom_id;
+        html += '<div class="sectDivider" style="background-color:#B90546">'
+          + htmlSafe(row.rom_name)
+          + uploadStateHTML(row.rom_id)
+          + '</div>'
+        ;
+      }
+      html += temp;
+      statesState.push({editing:false});
     }
-    html += temp;
-    statesState.push({editing:false});
-
+    i++;
     cursor.continue();
   };
 }
@@ -971,18 +977,20 @@ function renameFile(i, menuID, oldName) {
   }
 }
 
-function deleteFile(i, menuID, name) {
-  if (confirm("Are you sure you want to delete "+name+"? This will delete all states associated to it!")) {
-    if (activeROM == i) activeROM = null;
-    db.transaction(function (tx) {
-      tx.executeSql('DELETE FROM roms WHERE id = ?', [i], function (tx, results) {
-        tx.executeSql('DELETE FROM states WHERE rom_id = ?', [i], function (tx, results) {
-          populateRecentFiles();
-          populateStates();
-        })
+function deleteFile(id, menuID, name) {
+  if (!confirm("Are you sure you want to delete "+name+"? This will delete all states associated to it!"))
+  {
+    return;
+  }
+  if (activeROM == id) activeROM = null;
+  db.transaction(function (tx) {
+    tx.executeSql('DELETE FROM roms WHERE id = ?', [i], function (tx, results) {
+      tx.executeSql('DELETE FROM states WHERE rom_id = ?', [i], function (tx, results) {
+        populateRecentFiles();
+        populateStates();
       })
     })
-  }
+  })
 }
 
 var recentFilesState = [];
