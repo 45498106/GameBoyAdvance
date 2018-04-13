@@ -2,7 +2,7 @@
 
 This project is trying to make an emulator for GB, GBC, GBA that can run in browser.
 
-I'm trying to implement the most of lightweight library to helping more browser can using it
+I'm trying to implement the most of lightweight library, to helping more browser can using it.
 
 Frontend: https://hadesd.github.io/GameBoyAdvance/index.html
 
@@ -39,6 +39,7 @@ Frontend: https://hadesd.github.io/GameBoyAdvance/index.html
 
 ## License
 
+- Follow https://github.com/endrift/gbajs
 - Follow https://github.com/riperiperi/amebo
 - MIT (c) Hai Le (a.k.a Dark.Hades)
 
