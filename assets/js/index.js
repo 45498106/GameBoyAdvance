@@ -393,10 +393,10 @@ function renderUI() {
 
 function periodicState()
 {
-  if (!(currentGB.isPaused) && gameboy.game) {
-    if (activeROM != null)
+  if (!(currentGB.isPaused)) {
+    if ((activeROM != null) || (activeROM != -1))
     {
-      localStorage.setItem('lastState', JSON.stringify(gameboy.saveState()));
+      localStorage.setItem('lastState', JSON.stringify(currentGB.getSaveState()));
     }
   }
   localStorage.setItem("lastROM", activeROM);
