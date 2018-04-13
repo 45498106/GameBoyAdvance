@@ -107,6 +107,13 @@ var currentGB = {
     currentGB.setPause(false);
     renderUI();
   },
+
+  saveState: function() {
+    if (!currentGB.emu)
+    {
+      return;
+    }
+  },
 };
 
 window.onload = function(evt) {

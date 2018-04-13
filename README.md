@@ -1,47 +1,18 @@
+# GameBoy & GameBoy Color & GameBoy Advance Emulator
+
+This project is trying to make an emulator for GB, GBC, GBA that can run in browser.
+
+I'm trying to implement the most of lightweight library to helping more browser can using it
+
 Frontend: https://hadesd.github.io/GameBoyAdvance/index.html
 
-This project is using amebo - a javascript Gameboy Colour emulator (DMG/GBC). The future focus is to improve accuracy and clean up the API while maintaining solid performance on relevant devices.
+## Some Demos
 
-## Using amebo
-
-You can instantiate a gameboy object in the following manner:
-
-```javascript
-var gameboyObj = new gb('yourROM.gb', canvas, options);
-```
-
-The gameboy object exposes a number of properties, but the most important ones are
-```javascript
-gameboyObj.paused = true; //you can pause the emulation this way
-gameboyObj.reset(); //resets the console
-gameboyObj.saveState(); //saves the current state into a JSON object and returns it.
-gameboyObj.loadState(state); //loads the specified state.
-
-gameboyObj.loadROM(url, pauseAfter); //used to load a ROM from an url
-gameboyObj.loadROMBuffer(buffer, battery); //load a rom from an ArrayBuffer
-
-gameboyObj.onload = func; //calls this when the ROM loads
-gameboyObj.onstart = func; //calls this when the ROM starts emulating
-
-gameboyObj.setButtonByte(b); //sets the input byte to the specified value.
-gameboyObj.prepareButtonByte(); //called internally to generate the next input. Overwrite this with something that uses the above to implement a custom input system.
-
-// Set Volume
-gameboyObj.setAudioEngineVolume((float)volume);
-```
-
-## Mobile Frontend
 <img src="https://cdn.discordapp.com/attachments/157873776040607744/361569999820816386/image.png" width=200><img src="https://cdn.discordapp.com/attachments/157873776040607744/361569816416616448/unknown.png" width=200><img src="https://cdn.discordapp.com/attachments/157873776040607744/361569052373549056/image.png" width=200><img src="https://cdn.discordapp.com/attachments/157873776040607744/361569011411976199/image.png" width=200>
-
-## GBS Player
-![image](https://cdn.discordapp.com/attachments/157873776040607744/361571899828076544/unknown.png)
-
-This repo also contains a .gbs audio player that uses amebo to provide its emulation.
-
-https://hadesd.github.io/GameBoyAdvance/gbsplayer.html
 
 ## Features:
 
+- Supported GB, GBC, GBA ROM
 - DMG/CGB mode
 - Heavily Optimized (no asm.js tho)
 - Customizable controls
@@ -64,7 +35,7 @@ https://hadesd.github.io/GameBoyAdvance/gbsplayer.html
 - Downsample audio from high frequency/generate antialiased waves
 - IDE for assembling and debugging gameboy programs.
 - Support Firefox / IE (Remove WebSQL)
-- Support GBA ROM
+- Optimize GBA.js
 
 ## License
 
